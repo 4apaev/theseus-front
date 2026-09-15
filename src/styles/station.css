@@ -1,0 +1,201 @@
+.facility-list {
+    margin: 0.6875rem 0 1.3125rem;
+}
+
+.facility-card {
+    padding: 1.0625rem 0;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    border-bottom: var(--stroke) solid color-mix(in srgb, var(--line) 53%, transparent);
+    text-align: left;
+    gap: 0.8125rem;
+
+    & b {
+        color: var(--cream);
+    }
+
+    & small {
+        display: block;
+        color: var(--muted);
+        margin-top: var(--space-1);
+    }
+
+    & svg {
+        margin-left: auto;
+        width: var(--space-4);
+        height: var(--space-4);
+        color: var(--muted);
+    }
+
+    &:hover {
+        background: color-mix(in srgb, var(--text) 2%, transparent);
+
+        & b,
+        & svg {
+            color: var(--amber);
+        }
+    }
+}
+
+.facility-number {
+    color: var(--muted);
+    align-self: flex-start;
+    margin-top: 0.1875rem;
+}
+
+.view-rig {
+    & space-scene {
+        bottom: 6.25rem;
+    }
+
+    & .scene-coordinate {
+        bottom: -4.8125rem;
+    }
+}
+
+.module-art {
+    height: 7rem;
+    background: radial-gradient(ellipse, color-mix(in srgb, var(--amber) 11%, transparent), transparent 65%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin: 0 0 0.9375rem;
+
+    &>span:not([data-shape]) {
+        width: 2.25rem;
+        height: 2.5625rem;
+        background: var(--amber);
+        transform: skewY(-22deg);
+        border: var(--stroke) solid var(--text);
+        box-shadow: var(--space-2) 0.3125rem 0 var(--amber);
+        margin: 0 0.125rem;
+    }
+
+    &>[data-shape] {
+        width: 4.375rem;
+        height: 4.375rem;
+        position: absolute;
+        border: var(--stroke) solid color-mix(in srgb, var(--amber) 40%, transparent);
+        transform: rotate(45deg);
+        z-index: -1;
+    }
+
+    &>[data-shape] svg {
+        display: none;
+    }
+
+    &.drive>span:not([data-shape]) {
+        width: 1.4375rem;
+        height: 3.125rem;
+        background: var(--cyan);
+        border-color: var(--cyan);
+        box-shadow: var(--space-2) 0.3125rem 0 var(--cyan);
+    }
+
+    &.ansible>span:not([data-shape]) {
+        width: 0.3125rem;
+        height: 2.6875rem;
+        background: var(--mint);
+        border-color: var(--mint);
+        box-shadow: 0.125rem var(--stroke) 0 var(--cyan);
+        margin: 0 0.875rem;
+
+        &:nth-child(2) {
+            height: var(--space-16);
+            width: 0.875rem;
+        }
+    }
+}
+
+.commodity-list {
+    margin: 0.4375rem -0.5625rem 1.3125rem;
+}
+
+.commodity {
+    width: 100%;
+    display: flex;
+    text-align: left;
+    align-items: center;
+    gap: 0.6875rem;
+    border: var(--stroke) solid transparent;
+    padding: var(--space-3) 0.5625rem;
+
+    &.active {
+        border-color: var(--line);
+        background: color-mix(in srgb, var(--line) 7%, transparent);
+    }
+
+    &:hover {
+        background: color-mix(in srgb, var(--line) 9%, transparent);
+    }
+
+    & b {
+        color: var(--text);
+    }
+
+    & small {
+        display: block;
+        color: var(--muted);
+        margin-top: 0.1875rem;
+    }
+
+    & strong {
+        margin-left: auto;
+        color: var(--cream);
+        text-align: right;
+    }
+}
+
+.commodity-icon {
+    display: grid;
+    place-items: center;
+    height: var(--space-8);
+    width: var(--space-8);
+    border: var(--stroke) solid color-mix(in srgb, var(--commodity) 30%, transparent);
+    background: color-mix(in srgb, var(--commodity) 12%, transparent);
+    color: var(--commodity);
+}
+
+@media (min-width: 96.875rem) {
+    .facility-card {
+        padding: var(--space-5) 0;
+    }
+}
+
+@media (max-width: 56.25rem) {
+    .view-comms {
+        & .viewport {
+            height: auto;
+        }
+    }
+
+    .view-rig {
+        & .viewport {
+            height: 30rem;
+        }
+    }
+}
+
+@media (max-width: 34.375rem) {
+    h1 {
+        font-size: 1.9375rem;
+    }
+
+    .view-rig {
+        & .viewport {
+            height: 26.875rem;
+        }
+
+        & .scene-coordinate {
+            bottom: -5.125rem;
+        }
+    }
+
+    .view-orbit {
+        & .viewport {
+            height: 29.6875rem;
+        }
+    }
+}

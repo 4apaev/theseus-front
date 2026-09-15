@@ -1,0 +1,200 @@
+@font-face {
+    font-family: 'SF Pro Rounded';
+    src: local('SF Pro Rounded Medium'), local('SFProRounded-Medium');
+    font-weight: 500;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'SF Pro Rounded';
+    src: local('SF Pro Rounded Semibold'), local('SFProRounded-Semibold');
+    font-weight: 600;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'SF Pro Rounded';
+    src: local('SF Pro Rounded Bold'), local('SFProRounded-Bold');
+    font-weight: 700;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'SF Mono';
+    src: local('SF Mono Regular'), local('SFMono-Regular');
+    font-weight: 400;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'SF Mono';
+    src: local('SF Mono Medium'), local('SFMono-Medium');
+    font-weight: 500 600;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'SF Mono';
+    src: local('SF Mono Bold'), local('SFMono-Bold');
+    font-weight: 700;
+    font-display: swap;
+}
+
+body {
+    font-family: var(--font-mono);
+    font-size: var(--text-base);
+    line-height: 1.5;
+}
+
+:where(h1, h2, h3, h4, h5, h6) {
+    font-family: var(--font-title);
+    color: var(--cream);
+    line-height: 1.2;
+    text-wrap: balance;
+}
+
+h1 {
+    font-size: var(--title-lg);
+    font-weight: var(--weight-bold);
+    letter-spacing: -.04em;
+}
+
+h2 {
+    font-size: var(--title-sm);
+    font-weight: var(--weight-semibold);
+    letter-spacing: -.025em;
+}
+
+:where(h3, h4, h5, h6) {
+    font-size: var(--text-lg);
+    font-weight: var(--weight-medium);
+}
+
+p {
+    line-height: 1.75;
+    text-wrap: pretty;
+}
+
+small {
+    font-size: var(--text-sm);
+    color: var(--muted);
+}
+
+b { font-weight: var(--weight-semibold) }
+
+strong {
+    font-weight: var(--weight-bold);
+    color: var(--cream);
+}
+
+em {
+    font-style: italic;
+    color: inherit;
+}
+
+i { font-style: italic }
+
+:where(cite, dfn) {
+    font-style: italic;
+    color: var(--muted);
+}
+
+span { font: inherit }
+
+:where(u, ins) {
+    text-decoration: underline;
+    text-underline-offset: .2em;
+}
+
+ins { color: var(--mint) }
+
+:where(s, del) {
+    text-decoration: line-through;
+    color: var(--muted);
+}
+
+del { text-decoration-color: var(--red) }
+
+q {
+    quotes: '“' '”' '‘' '’';
+    font-style: italic;
+}
+
+abbr[title] {
+    cursor: help;
+    text-decoration: underline dotted;
+    text-underline-offset: .2em;
+}
+
+:where(code, samp, kbd, time, output) {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+}
+
+code {
+    background: var(--panel);
+    padding: .1em .3em;
+    border-radius: var(--radius);
+}
+
+samp {
+    color: var(--mint);
+    font-size: var(--text-sm);
+}
+
+kbd {
+    border: var(--stroke) solid var(--line);
+    border-block-end-width: .15em;
+    border-radius: var(--radius);
+    padding: .1em .4em;
+    font-size: .9em;
+}
+
+time { color: var(--muted) }
+
+mark {
+    color: var(--mint);
+    background: color-mix(in srgb, var(--mint) 8%, transparent);
+    border: var(--stroke) solid color-mix(in srgb, var(--mint) 25%, transparent);
+    padding: .15em .5em;
+    font-size: var(--text-xs);
+}
+
+:where(sub, sup) {
+    font-size: .75em;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+}
+
+sub { bottom: -.25em }
+sup { top: -.5em }
+
+[data-kicker] {
+    display: block;
+    font-size: var(--text-xs);
+    color: var(--muted);
+    letter-spacing: .12em;
+    margin-block-end: var(--space-2);
+}
+
+:where(a) {
+    color: var(--cyan);
+    text-decoration: underline;
+    text-underline-offset: .25em;
+
+    &:hover {
+        color: var(--amber);
+    }
+}
+
+:where([data-shape]) {
+    display: inline-block;
+    font-style: normal;
+}
+
+:where(.wordmark, .ship-signature button) {
+    font-family: var(--font-title);
+    font-weight: var(--weight-semibold);
+    text-decoration: none;
+}

@@ -1,0 +1,61 @@
+:where(*, *::before, *::after) {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 100%;
+    font-synthesis: none;
+    background: var(--ink);
+    color: var(--text);
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+    min-inline-size: 20rem;
+}
+
+:where(h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd) { margin: 0 }
+
+:where(button, input, select, textarea) {
+    font: inherit;
+    color: inherit;
+}
+
+:where(button, input, select, textarea, a) {
+    -webkit-tap-highlight-color: transparent;
+
+    &:focus-visible {
+        outline: var(--focus-ring);
+        outline-offset: var(--space-1);
+    }
+}
+
+:where(svg, canvas, img) {
+    display: block;
+    max-inline-size: 100%;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+.sr-only {
+    position   : absolute;
+    inline-size: var(--stroke);
+    block-size : var(--stroke);
+    margin     : calc(-1 * var(--stroke));
+    padding    : 0;
+    border     : 0;
+    overflow   : hidden;
+    white-space: nowrap;
+    clip-path  : inset(50%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    :where(*, *::before, *::after) {
+        scroll-behavior: auto !important;
+        transition: none !important;
+        animation: none !important;
+    }
+}

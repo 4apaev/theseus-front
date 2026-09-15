@@ -1,0 +1,77 @@
+:root {
+    --font-title     : 'SF Pro Rounded', ui-rounded, 'Avenir Next', system-ui, sans-serif;
+    --font-mono      : 'SF Mono', ui-monospace, 'Cascadia Code', 'Liberation Mono', monospace;
+
+    --weight-medium  : 500;
+    --weight-semibold: 600;
+    --weight-bold    : 700;
+
+    --text-xs        : .6875rem;
+    --text-sm        : .75rem;
+    --text-base      : .8125rem;
+    --text-lg        : 1.125rem;
+
+    --title-sm       : 1.5rem;
+    --title-lg       : clamp(1.75rem, 2.8vw, 2.6875rem);
+
+    --space-1        : .25rem;
+    --space-2        : .5rem;
+    --space-3        : .75rem;
+    --space-4        : 1rem;
+    --space-5        : 1.25rem;
+    --space-6        : 1.5rem;
+    --space-8        : 2rem;
+    --space-10       : 2.5rem;
+    --space-12       : 3rem;
+    --space-16       : 4rem;
+
+    --stroke         : .0625rem;
+    --radius         : .25rem;
+    --control-size   : 2rem;
+    --icon-size      : 1.25em;
+    --rail-width     : 5.4375rem;
+    --bar-height     : 4.75rem;
+    --panel-width    : 22.1875rem;
+    --speed          : 160ms;
+
+    color-scheme: light;
+
+    --ink       : #f4f2ee;
+    --panel     : #e9e6e1;
+    --line      : #beb5c7;
+    --text      : #342e43;
+    --muted     : #655c73;
+    --cream     : #282236;
+    --amber     : #865615;
+    --mint      : #356451;
+    --cyan      : #306b80;
+    --red       : #a13f36;
+    --civil     : #39685e;
+    --security  : #9b4645;
+    --industrial: #875917;
+    --on-accent : #fffaf0;
+
+    --focus-ring: .125rem solid var(--amber);
+    --shadow    : 0 .75rem 3rem color-mix(in srgb, var(--text) 15%, transparent);
+
+    --surface-hover: color-mix(in srgb, var(--text) 8%, var(--panel));
+    --surface-glass: color-mix(in srgb, var(--ink) 94%, transparent);
+
+    &[data-theme='dark'] {
+        color-scheme: dark;
+        --ink       : #141122;
+        --panel     : #1d182e;
+        --line      : #50465f;
+        --text      : #cdc5dc;
+        --muted     : #a39ab2;
+        --cream     : #eee2ca;
+        --amber     : #e4bc75;
+        --mint      : #a2c1b4;
+        --cyan      : #9fcbd4;
+        --red       : #e5988e;
+        --civil     : #a2c4bd;
+        --security  : #c37d78;
+        --industrial: #d6ab61;
+        --on-accent : #302534;
+    }
+}

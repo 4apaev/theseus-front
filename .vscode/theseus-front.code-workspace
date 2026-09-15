@@ -1,0 +1,17 @@
+{
+    "folders": [
+        {
+            "path": "../",
+            "name": "💈 theseus-front"
+        }
+    ],
+
+    "settings": {
+
+        "files.exclude": {
+            ".git": true,
+            // "node_modules": true,
+        }
+    },
+}
+

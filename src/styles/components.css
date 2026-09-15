@@ -1,0 +1,219 @@
+:where(port-screen, rig-screen, market-screen, comms-screen, flight-screen, atlas-view) {
+    display: block;
+    min-inline-size: 0;
+    flex: 1;
+}
+
+app-panel {
+    display: block;
+    background: var(--panel);
+    border-color: var(--line);
+
+    &>.panel-heading {
+        & mark {
+            position: absolute;
+            inset-block-start: 0;
+            inset-inline-end: 0;
+        }
+    }
+
+    &>p {
+        margin-block-end: var(--space-4);
+    }
+}
+
+button {
+    &[data-variant='primary'] {
+        background: var(--amber);
+        color: var(--on-accent);
+    }
+
+    &[data-variant='secondary'] {
+        color: var(--text);
+        border-color: var(--line);
+    }
+
+    &[data-variant='icon'] {
+        min-inline-size: var(--control-size);
+        min-block-size: var(--control-size);
+    }
+
+    &[aria-pressed='true'] {
+        border-color: var(--amber);
+        color: var(--amber);
+    }
+}
+
+.theme-switch,
+theme-switch {
+    display: block;
+
+    & label {
+        display: grid;
+        gap: var(--space-1);
+        margin: 0;
+    }
+
+    & small {
+        font-size: var(--text-xs);
+        letter-spacing: .1em;
+    }
+
+    & select {
+        padding: .25em .5em;
+        inline-size: 6.5em;
+        font-size: var(--text-sm);
+    }
+}
+
+.wordmark {
+    font-family: var(--font-title);
+    font-weight: var(--weight-bold);
+}
+
+dl {
+    & small {
+        font-size: .9em;
+        margin-inline-start: .25em;
+    }
+}
+
+.mount {
+    & samp {
+        display: block;
+        margin-block-start: var(--space-1);
+        color: var(--muted);
+
+        &[data-fitted='true'] {
+            color: var(--mint);
+        }
+    }
+}
+
+.power-readout,
+.delta-budget {
+    &>small {
+        display: block;
+        margin-block-start: var(--space-2);
+    }
+}
+
+.scene-tools {
+    &>small {
+        color: var(--muted);
+        margin-inline-end: var(--space-2);
+    }
+}
+
+.account-stat {
+    & b small {
+        font-size: var(--text-sm);
+    }
+}
+
+.atlas-clock-pair,
+.orbit-stats,
+.station-metrics {
+    & b {
+        font-family: var(--font-mono);
+    }
+}
+
+.burn-control {
+    & output small {
+        margin-inline-start: .4em;
+    }
+}
+
+.atlas-inspector {
+    scrollbar-color: var(--line) transparent;
+}
+
+.atlas-camera {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.atlas-tabs {
+    width: auto;
+}
+
+.atlas-map-caption {
+    gap: var(--space-2);
+}
+
+[data-theme='light'] {
+
+    & .viewport,
+    & .atlas-map-surface {
+        background: color-mix(in srgb, var(--panel) 45%, transparent);
+    }
+}
+
+@media (max-width: 56.25rem) {
+    .view-comms .viewport {
+        height: auto;
+    }
+}
+
+@media (max-width: 34.375rem) {
+    .account {
+        gap: var(--space-2);
+    }
+
+    theme-switch {
+        & label>small {
+            display: none;
+        }
+
+        & select {
+            inline-size: 5.5em;
+        }
+    }
+
+    .topbar {
+        padding-inline: var(--space-3);
+        gap: var(--space-2);
+    }
+
+    .wordmark {
+        font-size: 1.25rem;
+    }
+
+    .account-stat {
+        & small {
+            font-size: var(--text-xs);
+        }
+
+        & b {
+            font-size: var(--text-sm);
+        }
+    }
+
+    .atlas-time-controls {
+        flex-wrap: wrap;
+    }
+
+    .atlas-map-caption {
+        flex-wrap: wrap;
+    }
+}
+
+.station-metrics,
+.atlas-clock-pair,
+.orbit-stats,
+.delta-budget {
+    & b small {
+        display: inline;
+        margin: 0 0 0 .25em;
+        font-size: .75em;
+        font-weight: normal;
+    }
+}
+
+.conversation-heading {
+    & h2 {
+        font-family: var(--font-title);
+        font-weight: var(--weight-semibold);
+    }
+}
