@@ -1,0 +1,164 @@
+[
+    {
+        "file": "2026-09-11-exploration-01.png",
+        "date": "2026-09-11",
+        "source": "exec-a0ca62d6-6089-40b8-920b-4dbc71179770.png",
+        "sha256": "abc08a7a2d63adbf580633fdb377fb921537a22af7c9ed76935658cbacd036b1"
+    },
+    {
+        "file": "2026-09-11-exploration-02.png",
+        "date": "2026-09-11",
+        "source": "exec-c5528a07-ff67-4fc0-8f01-e4741a4427ea.png",
+        "sha256": "514d6bb4891f5ca32b2549d31bdf59becc7e766737a063a85ba5df53629fecf2"
+    },
+    {
+        "file": "2026-09-11-exploration-03.png",
+        "date": "2026-09-11",
+        "source": "exec-1a31f8d0-3f27-4ae3-a5cb-0b5aae8a9ee8.png",
+        "sha256": "4e5b5ec4bde379204f54bba058ac5a756d1ec23ea07a9cfa68e1d1262f75b33d"
+    },
+    {
+        "file": "2026-09-11-exploration-04.png",
+        "date": "2026-09-11",
+        "source": "exec-55b4b92a-6297-4dc5-8c1a-6340803769ac.png",
+        "sha256": "15fe4d1fac7556c8a52589c473e1520c84771f5bad4a5779107640df14177d3b"
+    },
+    {
+        "file": "2026-09-11-exploration-05.png",
+        "date": "2026-09-11",
+        "source": "exec-c2052f3b-ff36-49d2-89b5-7d829c0c081e.png",
+        "sha256": "39d2f2ac645931bf91e10e6de807f6c61aee198b5b0743c365698f86730e911b"
+    },
+    {
+        "file": "2026-09-11-exploration-06.png",
+        "date": "2026-09-11",
+        "source": "exec-08c921ac-8f4e-402f-a2de-a662555da158.png",
+        "sha256": "7b5c4e9f8c57c633615492ef556ca9f6f591e8d48290619034336fca91167e31"
+    },
+    {
+        "file": "2026-09-11-exploration-07.png",
+        "date": "2026-09-11",
+        "source": "exec-475e0fbe-6c4e-4afb-b478-f02b16273847.png",
+        "sha256": "592c7afafc5e3ab4043c82d0f70179cedb866158eff21ecb7a91a8d86b92ff77"
+    },
+    {
+        "file": "2026-09-11-exploration-08.png",
+        "date": "2026-09-11",
+        "source": "exec-1bddaa72-0565-4996-8014-aeb593c75223.png",
+        "sha256": "bdffcac1d0de5cc1fe5f0561ba6b58925d839c0c2acb5b03f278165df057f5f1"
+    },
+    {
+        "file": "brachistochrone-transfer-planning.png",
+        "date": "2026-09-11",
+        "source": "exec-c3730666-d088-49b0-ad52-0619f3b4508b.png",
+        "sha256": "a97c62d2193d780090de8b6a3935edc0f744573acb48a8dba7ea882933842289"
+    },
+    {
+        "file": "2026-09-11-exploration-10.png",
+        "date": "2026-09-11",
+        "source": "exec-2f5ff512-c960-4072-958f-0984d8f72480.png",
+        "sha256": "d31b2a37c9a448d59c151979c47b61968cb472da03679c0ac0fd60b7a6ef47ef"
+    },
+    {
+        "file": "2026-09-11-exploration-11.png",
+        "date": "2026-09-11",
+        "source": "exec-e1226dbc-d6d2-45e6-97dc-710e2c5c2f18.png",
+        "sha256": "b919367e50d33fe9dc9e8f4de6a6b065ff2b6058524122dbca9daa00ed0f89d3"
+    },
+    {
+        "file": "2026-09-11-exploration-12.png",
+        "date": "2026-09-11",
+        "source": "exec-e994de24-d5ee-42da-8154-becc89e82adb.png",
+        "sha256": "701fdaa228d25194513c955846604347eca25945996743ca4ca2d9b3bfcffa52"
+    },
+    {
+        "file": "2026-09-11-exploration-13.png",
+        "date": "2026-09-11",
+        "source": "exec-a5d6b592-c3b7-46ff-a941-06aff219abdf.png",
+        "sha256": "2112803b024934ae788be33157623bd0dd9a82ae0b07e4a9667da17e38525d35"
+    },
+    {
+        "file": "2026-09-11-exploration-14.png",
+        "date": "2026-09-11",
+        "source": "exec-db96b9e7-003d-491b-8b18-7aa6b93217de.png",
+        "sha256": "ded04aa631e177645d5a0b55ff0c9d9b4f7e9d523438389cc1712204496b1a49"
+    },
+    {
+        "file": "2026-09-11-exploration-15.png",
+        "date": "2026-09-11",
+        "source": "exec-770a6861-7935-4960-af96-48d927f2616d.png",
+        "sha256": "b8427f5a826e86a4cb1d2073e5960e69c0654fc5da1d87ba7ce337509fbe757c"
+    },
+    {
+        "file": "2026-09-11-exploration-16.png",
+        "date": "2026-09-11",
+        "source": "exec-24503864-8c49-4f18-8561-71011d1ac1c1.png",
+        "sha256": "4b59b26197358eb89cae94a3052e7a67f760bb5464fcab59ddaad9ce4050ae30"
+    },
+    {
+        "file": "2026-09-11-exploration-17.png",
+        "date": "2026-09-11",
+        "source": "exec-be83f7b0-f4b3-41eb-a368-24cbd1ce165d.png",
+        "sha256": "5789df240d25a53d7913f75dbb65b9391cbc2cf55a0d4b8673bfefba2b434f7a"
+    },
+    {
+        "file": "2026-09-11-exploration-18.png",
+        "date": "2026-09-11",
+        "source": "exec-39d28fc1-aca5-4540-b93a-66a59d779d62.png",
+        "sha256": "0bb90e5fad9abff347b85ee941a4952609183ccfee04f9546df9d95e57cd319c"
+    },
+    {
+        "file": "2026-09-11-exploration-19.png",
+        "date": "2026-09-11",
+        "source": "exec-78983890-d94f-4b32-b764-79b6ea684bf3.png",
+        "sha256": "60134138bc3adb1f6816ff7715b8a9d36b815227bb7756676984ed4909ca7df9"
+    },
+    {
+        "file": "2026-09-12-exploration-01.png",
+        "date": "2026-09-12",
+        "source": "exec-c5106a3f-a7c3-4e1b-8d79-4cafb1fcf0b4.png",
+        "sha256": "0d65b05305e1d6ce3a36ebd65d870d6eba35202a8bf1c0d5be2fa8aa520ce357"
+    },
+    {
+        "file": "2026-09-12-exploration-02.png",
+        "date": "2026-09-12",
+        "source": "exec-97676a62-c14a-4e4b-901f-9ae2ec7e4613.png",
+        "sha256": "d78616bcace89517f1c3a85b462bdbfe7663cbd76b4e70ff413838f75d6a442e"
+    },
+    {
+        "file": "2026-09-12-exploration-03.png",
+        "date": "2026-09-12",
+        "source": "exec-dd012ec4-3030-4614-bb31-3dc0082a9e37.png",
+        "sha256": "0823a40f69e37045f46eacf1e9075e3617bbc04c546c9730dfc280491ad20627"
+    },
+    {
+        "file": "hull-studies-02.png",
+        "date": "2026-09-14",
+        "source": "exec-3dd66542-5e77-4238-b756-f61399c07683.png",
+        "sha256": "b2f933fbd407ac2727365db92b41a8717e4e22bb4305fb8164a0d1d411f90600"
+    },
+    {
+        "file": "nostromo-study.png",
+        "date": "2026-09-14",
+        "source": "exec-7d3e6c9d-c548-4f2b-bc24-5569745b30fc.png",
+        "sha256": "9cd1d557b7489226122b9c07dec51a99c23cd6176db57bb2501b37b91367528b"
+    },
+    {
+        "file": "discovery-one-study.png",
+        "date": "2026-09-14",
+        "source": "exec-6a6c5522-6ab5-4769-979c-84a12a0a28dc.png",
+        "sha256": "ae628372f94915c35d0c0b20c6dece9b8d71d7f82cc677ebe9645f24d982db90"
+    },
+    {
+        "file": "military-studies-03.png",
+        "date": "2026-09-14",
+        "source": "exec-dfba478f-f797-4eb5-b4a6-b4317728d9c2.png",
+        "sha256": "910024ec87f50ba61ed8508eed669497322fbe81ed40068f46acb7c88cd9e056"
+    },
+    {
+        "file": "military-game-style-preview.png",
+        "date": "2026-09-16",
+        "source": "exec-07692f9c-d4e9-4104-b93a-9ba89df39699.png",
+        "sha256": "b1ace6fde35b6866b8ef05ac6ce30fb0fbdbd45d155eba6126017513c8e59d9e"
+    }
+]

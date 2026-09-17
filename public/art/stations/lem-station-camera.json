@@ -1,0 +1,30 @@
+{
+    "coordinates": "blender z up; glb is y up; glb mapping [x,z,-y]",
+    "camera_position_blender": [
+        12.0,
+        -20.0,
+        12.0
+    ],
+    "camera_target_blender": [
+        0,
+        0,
+        0.85
+    ],
+    "orthographic_vertical_span": 11.666666666666666,
+    "image_size": [
+        1200,
+        1000
+    ],
+    "hybrid_hidden_groups": [
+        "dish_pivot",
+        "beacons"
+    ],
+    "hotspots": [
+        "socket_market",
+        "socket_comms",
+        "socket_berth"
+    ],
+    "animation": "dish scans 8 degrees and returns over 10 seconds; emission beacons are runtime controlled",
+    "station_meshes": 59,
+    "station_triangles": 5188
+}

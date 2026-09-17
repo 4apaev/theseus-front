@@ -1,11 +1,12 @@
 import { html } from 'lit'
 import * as T from 'three'
 import { AppElement } from './element.ts'
-import { buildShip, disposeGroup } from '../render/geometry.ts'
+import { disposeGroup } from '../render/geometry.ts'
+import { loadHullModel } from '../render/hull-model.ts'
 import { configureShipRenderer, shipLighting } from '../render/ship-lighting.ts'
-import type { HullId, Category } from '../model.ts'
+import { HULLS, type HullId, type Category } from '../model.ts'
 
-/** Static procedural thumbnail; one render per size change, no animation loop. */
+/** Static glb thumbnail; one render per size change, no animation loop. */
 class HullPreview extends AppElement {
     static properties = { hull: {}, category: {}}
     declare hull: HullId
@@ -17,6 +18,7 @@ class HullPreview extends AppElement {
     private bounds = new T.Box3
     private signature = ''
     private failed = false
+    private generation = 0
 
     constructor() {
         super()
@@ -26,7 +28,7 @@ class HullPreview extends AppElement {
 
     override render() {
         return this.failed
-            ? html`<span class="preview-fallback">procedural preview unavailable</span>`
+            ? html`<span class="preview-fallback">model preview unavailable</span>`
             : html`<canvas aria-hidden="true"></canvas>`
     }
 
@@ -50,19 +52,32 @@ class HullPreview extends AppElement {
         if (this.renderer && this.signature !== `${ this.hull }/${ this.category }`) this.rebuild()
     }
 
-    private rebuild() {
+    private async rebuild() {
+        const generation = ++this.generation
+        const hull = HULLS.find(item => item.id === this.hull)
+        if (!hull) return
+        this.signature = `${ this.hull }/${ this.category }`
         disposeGroup(this.scene)
         this.scene.clear()
-        const ship = buildShip(this.hull, this.category)
-        const bounds = (new T.Box3).setFromObject(ship)
-        const center = bounds.getCenter((new T.Vector3))
-        ship.position.sub(center)
-        this.bounds.copy(bounds).translate(center.negate())
-        this.scene.add(ship, shipLighting())
-        this.camera.position.set(-5, 6, 11)
-        this.camera.lookAt(0, 0, 0)
-        this.signature = `${ this.hull }/${ this.category }`
-        this.draw()
+        this.scene.add(shipLighting())
+        try {
+            const ship = await loadHullModel(hull)
+            if (generation !== this.generation) return
+            const bounds = (new T.Box3).setFromObject(ship)
+            const center = bounds.getCenter((new T.Vector3))
+            ship.position.sub(center)
+            this.bounds.copy(bounds).translate(center.negate())
+            this.scene.add(ship)
+            this.camera.position.set(-5, 6, 11)
+            this.camera.lookAt(0, 0, 0)
+            this.failed = false
+            this.draw()
+        }
+        catch {
+            if (generation !== this.generation) return
+            this.failed = true
+            this.requestUpdate()
+        }
     }
 
     private draw = () => {

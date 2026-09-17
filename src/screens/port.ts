@@ -1,30 +1,42 @@
 import { html, nothing } from 'lit'
 import { GameScreen } from './base.ts'
 import { button } from '../components/controls.ts'
-import { icon } from '../icons.ts'
-import { stationView } from '../components/station.ts'
+import { FACILITIES, type StationFacility } from '../render/lem-station.ts'
+import '../render/lem-scene.ts'
 
 class PortScreen extends GameScreen {
-    private scene() {
-        return stationView({ host: this, game: this.game, mode: 'port', selected: 'cargo', motion: this.motion, toggleMotion: () => { this.motion = !this.motion }, navigate: view => this.navigate(view), selectModule: id => { this.navigate('rig', id) } })
-    }
+    static properties = { selected: { state: true }}
+    declare selected: StationFacility
+
+    constructor() { super(); this.selected = 'rig' }
 
     override render() {
         if (!this.active) return nothing
-        return html`<div class="operations">${ this.scene() }<app-panel>${ this.portPanel() }</app-panel></div>`
-    }
-
-    private portPanel() {
-        return html`${ this.panelHeader('station manifest', 'welcome to the outpost', 'open') }
-            <p class="panel-intro">a little steel between you and the ether. refit, trade, and find your next departure.</p>
-            <div class="station-metrics"><div><small>population</small><b>1,284</b></div><div><small>local traffic</small><b>07 <small>vessels</small></b></div></div>
-            <div class="facility-list">${ [
-                { id: 'rig' as const, number: '01', name: 'drydock', sub: 'modules, power & capacity', note: '3 mounts' },
-                { id: 'market' as const, number: '02', name: 'commodity exchange', sub: 'ore produced · grain wanted', note: 'trading' },
-                { id: 'comms' as const, number: '03', name: 'relay array', sub: 'station channel & private signals', note: '2 channels' },
-            ].map(f => html`<button class="facility-card" @click=${ () => this.navigate(f.id) }><span class="facility-number">${ f.number }</span><span><b>${ f.name }</b><small>${ f.sub }</small></span>${ icon('arrow') }</button>`) }</div>
-            <div class="notice"><span class="tiny-rule"></span><p><b>outbound bulletin</b><br>outer depots are requesting grain.<br>check your hold before you burn.</p></div>
-            ${ button({ label: 'plot a departure', variant: 'primary', icon: 'arrow', click: () => this.navigate('map') }) }<small class="footnote">local sandbox · operations reset on reload</small>`
+        const facility = FACILITIES.find(f => f.id === this.selected)!
+        return html`<div class="operations lem-port">
+            <section class="viewport lem-viewport" aria-label="lem station" data-motion=${ this.motion }>
+                <div class="celestial-ether" aria-hidden="true"></div>
+                <div class="port-planet" aria-hidden="true"></div>
+                <lem-scene .selected=${ this.selected } .motion=${ this.motion }
+                    @station-select=${ (event: CustomEvent<StationFacility>) => { this.selected = event.detail } }
+                    @motion-toggle=${ () => { this.motion = !this.motion } }></lem-scene>
+                <header class="scene-title"><span class="tiny-rule" aria-hidden="true"></span><span>stanisław lem orbital observatory<small>earth high orbit / independent trading port</small></span></header>
+                <aside class="station-drawing"><b>lem station</b><small>observatory / trading port</small><span>sol system <span>berth 04</span></span></aside>
+            </section>
+            <app-panel>
+                ${ this.panelHeader('station directory', 'a port of many hands', 'open') }
+                <p class="panel-intro">an observatory, a trading hall, and generations of repairs. the listening array is still at work.</p>
+                <nav class="facility-list" aria-label="facility directory">${ FACILITIES.map((f, i) => html`<button class="facility-card" aria-pressed=${ this.selected === f.id } @click=${ () => { this.selected = f.id } }><span class="facility-number">0${ i + 1 }</span><span><b>${ f.name }</b><small>${ f.note }</small></span></button>`) }</nav>
+                <section class="facility-detail" aria-label="selected facility" aria-live="polite">
+                    <small data-kicker>selected facility</small><h3>${ facility.name }</h3>
+                    <p>${ facility.description }</p>
+                    ${ button({ label: facility.action, variant: 'primary', icon: 'arrow', click: () => this.navigate(facility.id) }) }
+                </section>
+                <p class="listening-status"><span class="status-dot" aria-hidden="true"></span>listening array active<small>no confirmed contact</small></p>
+                ${ button({ label: 'plot a departure', icon: 'arrow', click: () => this.navigate('map') }) }
+                <small class="footnote">local sandbox · operations reset on reload</small>
+            </app-panel>
+        </div>`
     }
 }
 customElements.define('port-screen', PortScreen)

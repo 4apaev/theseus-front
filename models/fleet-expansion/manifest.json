@@ -1,0 +1,234 @@
+[
+    {
+        "name": "honest-weight",
+        "kind": "freighter",
+        "category": "industrial",
+        "mesh_count": 23,
+        "triangles": 900,
+        "bytes": 78588
+    },
+    {
+        "name": "general-delivery",
+        "kind": "freighter",
+        "category": "industrial",
+        "mesh_count": 23,
+        "triangles": 900,
+        "bytes": 78620
+    },
+    {
+        "name": "long-ton",
+        "kind": "freighter",
+        "category": "industrial",
+        "mesh_count": 23,
+        "triangles": 900,
+        "bytes": 78612
+    },
+    {
+        "name": "amber-reserve",
+        "kind": "tanker",
+        "category": "industrial",
+        "mesh_count": 31,
+        "triangles": 1124,
+        "bytes": 91464
+    },
+    {
+        "name": "borrowed-rain",
+        "kind": "tanker",
+        "category": "industrial",
+        "mesh_count": 31,
+        "triangles": 1124,
+        "bytes": 91452
+    },
+    {
+        "name": "small-mercy",
+        "kind": "tug",
+        "category": "industrial",
+        "mesh_count": 18,
+        "triangles": 648,
+        "bytes": 56644
+    },
+    {
+        "name": "yard-dog",
+        "kind": "tug",
+        "category": "industrial",
+        "mesh_count": 18,
+        "triangles": 648,
+        "bytes": 56672
+    },
+    {
+        "name": "last-purchase",
+        "kind": "tug",
+        "category": "industrial",
+        "mesh_count": 18,
+        "triangles": 648,
+        "bytes": 56676
+    },
+    {
+        "name": "first-weather",
+        "kind": "colony",
+        "category": "industrial",
+        "mesh_count": 45,
+        "triangles": 2144,
+        "bytes": 170596
+    },
+    {
+        "name": "borrowed-sea",
+        "kind": "colony",
+        "category": "industrial",
+        "mesh_count": 45,
+        "triangles": 2144,
+        "bytes": 170616
+    },
+    {
+        "name": "evening-post",
+        "kind": "liner",
+        "category": "civil",
+        "mesh_count": 35,
+        "triangles": 1452,
+        "bytes": 126516
+    },
+    {
+        "name": "continental-service",
+        "kind": "liner",
+        "category": "civil",
+        "mesh_count": 35,
+        "triangles": 1452,
+        "bytes": 126520
+    },
+    {
+        "name": "short-notice",
+        "kind": "transport",
+        "category": "civil",
+        "mesh_count": 23,
+        "triangles": 908,
+        "bytes": 78440
+    },
+    {
+        "name": "local-arrangement",
+        "kind": "transport",
+        "category": "civil",
+        "mesh_count": 23,
+        "triangles": 908,
+        "bytes": 78476
+    },
+    {
+        "name": "nine-seats",
+        "kind": "transport",
+        "category": "civil",
+        "mesh_count": 23,
+        "triangles": 908,
+        "bytes": 78464
+    },
+    {
+        "name": "blue-hour",
+        "kind": "yacht",
+        "category": "civil",
+        "mesh_count": 18,
+        "triangles": 672,
+        "bytes": 58496
+    },
+    {
+        "name": "private-weather",
+        "kind": "yacht",
+        "category": "civil",
+        "mesh_count": 18,
+        "triangles": 672,
+        "bytes": 58496
+    },
+    {
+        "name": "discovery-one",
+        "kind": "research",
+        "category": "research",
+        "mesh_count": 19,
+        "triangles": 744,
+        "bytes": 66652
+    },
+    {
+        "name": "useful-doubt",
+        "kind": "research",
+        "category": "research",
+        "mesh_count": 20,
+        "triangles": 812,
+        "bytes": 72380
+    },
+    {
+        "name": "final-authority",
+        "kind": "battleship",
+        "category": "security",
+        "mesh_count": 33,
+        "triangles": 1300,
+        "bytes": 110000
+    },
+    {
+        "name": "long-memory",
+        "kind": "battleship",
+        "category": "security",
+        "mesh_count": 33,
+        "triangles": 1300,
+        "bytes": 110028
+    },
+    {
+        "name": "public-reason",
+        "kind": "battleship",
+        "category": "security",
+        "mesh_count": 33,
+        "triangles": 1300,
+        "bytes": 110020
+    },
+    {
+        "name": "common-defense",
+        "kind": "frigate",
+        "category": "security",
+        "mesh_count": 23,
+        "triangles": 924,
+        "bytes": 80356
+    },
+    {
+        "name": "patient-vector",
+        "kind": "frigate",
+        "category": "security",
+        "mesh_count": 23,
+        "triangles": 924,
+        "bytes": 80568
+    },
+    {
+        "name": "iron-clause",
+        "kind": "frigate",
+        "category": "security",
+        "mesh_count": 23,
+        "triangles": 924,
+        "bytes": 80560
+    },
+    {
+        "name": "necessary-force",
+        "kind": "corvette",
+        "category": "security",
+        "mesh_count": 21,
+        "triangles": 836,
+        "bytes": 73028
+    },
+    {
+        "name": "last-warning",
+        "kind": "corvette",
+        "category": "security",
+        "mesh_count": 21,
+        "triangles": 836,
+        "bytes": 73012
+    },
+    {
+        "name": "due-process",
+        "kind": "prison",
+        "category": "institutional",
+        "mesh_count": 36,
+        "triangles": 1432,
+        "bytes": 122788
+    },
+    {
+        "name": "closed-circuit",
+        "kind": "prison",
+        "category": "institutional",
+        "mesh_count": 36,
+        "triangles": 1432,
+        "bytes": 122780
+    }
+]

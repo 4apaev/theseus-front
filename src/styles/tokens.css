@@ -1,4 +1,5 @@
 :root {
+    --font-place     : 'Georgia', 'Times New Roman', serif;
     --font-title     : 'SF Pro Rounded', ui-rounded, 'Avenir Next', system-ui, sans-serif;
     --font-mono      : 'SF Mono', ui-monospace, 'Cascadia Code', 'Liberation Mono', monospace;
 

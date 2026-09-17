@@ -57,16 +57,12 @@ class FleetCatalog extends AppElement {
             : nothing
     }
 
-    private hullGrid(hulls: Hull[]) {
+    private hullGrid(hulls: readonly (Hull & { id: HullId })[]) {
         return html`<div class="hull-grid">${ hulls.map(h => html`
             <button class=${ this.game.hull === h.id ? 'hull-card selected' : 'hull-card' } @click=${ () => this.selectHull(h.id) }>
-                ${ h.id === 'discovery'
-                    ? html`<hull-preview hull=${ h.id } category=${ h.category }></hull-preview>`
-                    : html`<span class="hull-pictogram hull-${ h.id }" aria-hidden="true">
-                        ${ [ 0, 1, 2, 3, 4 ].map(() => html`<span data-shape></span>`) }
-                    </span>` }
+                <hull-preview hull=${ h.id } category=${ h.category }></hull-preview>
                 <b>${ h.name }</b>
-                <small>${ h.purpose }</small>
+                <small>${ h.kind } · ${ h.purpose }</small>
                 <small>${ h.capacity } hold units ${ this.game.hull === h.id ? '· selected' : '' }</small>
             </button>`) }</div>`
     }
@@ -114,7 +110,7 @@ class FleetCatalog extends AppElement {
                         : nothing }
 
                 </section>`) }
-                <p class="footnote">procedural hull previews · categories set the palette · cargo and attachments carry over</p>
+                <p class="footnote">blender hull models · categories set the palette · cargo and attachments carry over</p>
             </div>
         </dialog>`
     }

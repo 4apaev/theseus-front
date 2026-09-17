@@ -1,0 +1,14 @@
+[
+    {
+        "name": "sunday-catch",
+        "mesh_count": 61,
+        "triangles": 3971,
+        "bytes": 247804
+    },
+    {
+        "name": "patient-cargo",
+        "mesh_count": 128,
+        "triangles": 8148,
+        "bytes": 507412
+    }
+]

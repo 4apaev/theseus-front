@@ -3,6 +3,7 @@ import { html } from 'lit'
 import * as T from 'three'
 import { TrackballControls } from 'three/addons/controls/TrackballControls.js'
 import { configureShipRenderer, shipLighting } from './ship-lighting.ts'
+import { loadHullModel } from './hull-model.ts'
 import {
     HULLS,
     type HullId,
@@ -53,6 +54,7 @@ export class SpaceScene extends AppElement {
     private error     = ''
     private lastMode  = ''
     private lastHull = ''
+    private generation = 0
 
     constructor() {
         super()
@@ -68,7 +70,7 @@ export class SpaceScene extends AppElement {
 
         const label = this.mode === 'rig'
             ? 'interactive ship view. drag in any direction to rotate, scroll or pinch to zoom. module buttons provide keyboard access.'
-            : 'interactive procedural spaceport. use facility buttons or the ship module selector for keyboard access.'
+            : 'interactive spaceport. use facility buttons or the ship module selector for keyboard access.'
         return html`
         <div class="scene-frame">
             <canvas
@@ -131,7 +133,8 @@ export class SpaceScene extends AppElement {
         if (signature !== this.signature) { this.signature = signature; this.rebuild() }
     }
 
-    private rebuild() {
+    private async rebuild() {
+        const generation = ++this.generation
         disposeGroup(this.content)
 
         this.content.clear()
@@ -143,12 +146,25 @@ export class SpaceScene extends AppElement {
 
         const isRig = this.mode === 'rig'
 
-        this.ship = buildShip(
-            hull.id,
-            hull.category,
-            this.fitted,
-            isRig ? this.selection : void 0,
-        )
+        this.ship = undefined
+
+        if (!isRig) this.content.add(buildPort())
+
+        try {
+            const ship = await loadHullModel(hull, isRig ? this.selection : void 0)
+            if (generation !== this.generation) {
+                disposeGroup(ship)
+                return
+            }
+            this.ship = ship
+            this.error = ''
+        }
+        catch {
+            if (generation !== this.generation) return
+            this.ship = buildShip(hull.kind, hull.category, this.fitted, isRig ? this.selection : void 0)
+            this.error = 'the selected hull model could not be loaded; showing its schematic reserve.'
+            this.requestUpdate()
+        }
 
         if (isRig) {
             this.ship.scale.multiplyScalar(1.3)
@@ -156,10 +172,8 @@ export class SpaceScene extends AppElement {
 
         }
         else {
-            this.content.add(buildPort())
-
             this.ship.scale.multiplyScalar(0.85)
-            this.ship.position.set(-0.1, this.hull === 'discovery' ? 0.6 : 0.3, 5.3)
+            this.ship.position.set(-0.1, 0.3, 5.3)
 
             const miniShip = buildShip('transport', 'civil')
 
@@ -241,7 +255,7 @@ export class SpaceScene extends AppElement {
         else this.positionCamera()
 
         if (this.ship)
-            this.ship.position.y = (this.mode === 'rig' ? 1 : this.hull === 'discovery' ? 0.6 : 0.3) + (this.motion ? Math.sin(t * 0.6) * 0.045 : 0)
+            this.ship.position.y = (this.mode === 'rig' ? 1 : 0.3) + (this.motion ? Math.sin(t * 0.6) * 0.045 : 0)
 
         this.renderer.render(this.scene, this.camera)
         this.placeLabels()

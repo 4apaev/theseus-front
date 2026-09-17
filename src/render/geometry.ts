@@ -1,6 +1,6 @@
 import * as T from 'three'
 import { buildDiscovery } from './hulls/discovery.ts'
-import type { Category, HullId, ModuleId } from '../model.ts'
+import type { Category, HullKind, ModuleId } from '../model.ts'
 
 export const PALETTES: Record<Category, {
     hull     : string,
@@ -81,7 +81,7 @@ function capsule(parent: T.Group, x: number, color: string) {
 }
 
 /** hull recipes share primitives and materials; attachment groups carry module ids. */
-export function buildShip(id: HullId, category: Category, fitted: ModuleId[] = [], selection?: ModuleId) {
+export function buildShip(id: HullKind | 'discovery', category: Category, fitted: ModuleId[] = [], selection?: ModuleId) {
     if (id === 'discovery') return buildDiscovery(fitted, selection)
     const ship = (new T.Group)
     const p = PALETTES[ category ]

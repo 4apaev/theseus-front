@@ -43,7 +43,7 @@ export const MAP_DELTA_V = 7.8
 export const PLANETS: { id: PlanetId, radius: number, phase: number, color: string, size: number, port: string }[] = [
     { id: 'mercury', radius: 0.387, phase: 2.7            , color: '#b8b0c1', size: 0.028, port: 'caloris relay' },
     { id: 'venus'  , radius: 0.723, phase: 0.7            , color: '#d5c18a', size: 0.045, port: 'ishtar aerostat' },
-    { id: 'earth'  , radius: 1    , phase: DEPARTURE_ANGLE, color: '#8abec1', size: 0.051, port: 'sol outpost' },
+    { id: 'earth'  , radius: 1    , phase: DEPARTURE_ANGLE, color: '#8abec1', size: 0.051, port: 'lem station' },
     { id: 'mars'   , radius: 1.524, phase: 0              , color: '#c67e68', size: 0.042, port: 'mars hub' },
 ]
 

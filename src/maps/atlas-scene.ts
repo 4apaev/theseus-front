@@ -42,7 +42,7 @@ export class AtlasScene extends AppElement {
     override render() {
         const labels = this.mode === 'sector'
             ? STARS.map(s => ({ id: s.id, text: s.id, sub: s.id === 'sol' ? 'departure' : !s.surveyed ? 'unsurveyed' : `${ s.ports } ${ s.ports === 1 ? 'port' : 'ports' }`, selected: s.id === this.star }))
-            : PLANETS.map(p => ({ id: p.id, text: p.id, sub: p.id === this.planet ? `${ p.port } / now` : p.id === 'earth' ? 'sol outpost' : '', selected: p.id === this.planet }))
+            : PLANETS.map(p => ({ id: p.id, text: p.id, sub: p.id === this.planet ? `${ p.port } / now` : p.id === 'earth' ? 'lem station' : '', selected: p.id === this.planet }))
         return html`<canvas aria-label=${ this.mode === 'sector' ? 'interactive interstellar map; choose a system using map labels or the destination selector' : 'solar system orbital map with a calculated transfer and moving planets' }></canvas>
             <div class="atlas-labels">${ labels.map(l => html`<button data-object=${ l.id } class="atlas-label ${ l.selected ? 'selected' : '' }" @click=${ () => this.select(l.id) }><b>${ l.text }</b><small>${ l.sub }</small></button>`) }
                 <span class="atlas-arrival" data-object="arrival">${ this.mode === 'system' ? `${ this.planet } at arrival` : '' }</span>

@@ -17,7 +17,7 @@ import './screens/comms.ts'
 import './screens/flight.ts'
 
 const views: { id: View, name: string, title: string, sub: string }[] = [
-    { id: 'port', name: 'port', title: 'sol outpost', sub: 'a small foothold in the infinite.' },
+    { id: 'port', name: 'port', title: 'lem station', sub: 'an observatory that became a port.' },
     { id: 'rig', name: 'rigging', title: 'ship operations', sub: 'every attachment changes the equation.' },
     { id: 'market', name: 'exchange', title: 'market operations', sub: 'something to carry. somewhere to go.' },
     { id: 'comms', name: 'comms', title: 'the quiet between', sub: 'a signal is a kind of company.' },
@@ -93,7 +93,7 @@ class TheseusApp extends AppElement {
                 <aside class="rail-bottom"><span>sol</span><span data-shape aria-hidden="true"></span><small>04</small></aside>
             </nav>
             <main class="workspace view-${ this.view }">
-                <header class="page-heading"><hgroup><small data-kicker>${ String(views.indexOf(active) + 1).padStart(2, '0') } / ${ this.view === 'port' ? 'port authority' : active.name }</small><h1>${ active.title }</h1><p>${ active.sub }</p></hgroup><p class="location"><span class="status-dot" aria-hidden="true"></span>${ this.view === 'map' ? 'map simulation' : 'docked' }<small>${ this.view === 'map' ? 'local preview / sol' : 'sol outpost / berth 04' }</small></p></header>
+                <header class="page-heading"><hgroup><small data-kicker>${ String(views.indexOf(active) + 1).padStart(2, '0') } / ${ this.view === 'port' ? 'port authority' : active.name }</small><h1>${ active.title }</h1><p>${ active.sub }</p></hgroup><p class="location"><span class="status-dot" aria-hidden="true"></span>${ this.view === 'map' ? 'map simulation' : 'docked' }<small>${ this.view === 'map' ? 'local preview / sol' : 'lem station / berth 04' }</small></p></header>
                 <port-screen   .game=${ this.game } .active=${ this.view === 'port' } ?hidden=${ this.view !== 'port' }></port-screen>
                 <rig-screen    .game=${ this.game } .selectedModule=${ this.selectedModule } .active=${ this.view === 'rig' } ?hidden=${ this.view !== 'rig' }></rig-screen>
                 <market-screen .game=${ this.game } .active=${ this.view === 'market' } ?hidden=${ this.view !== 'market' }></market-screen>
