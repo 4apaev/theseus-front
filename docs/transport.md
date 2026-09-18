@@ -5,6 +5,40 @@ prototype.md's own "next integration step" names the target: replace
 adapter that emits commands and consumes authoritative server
 snapshots. this plans that work, and the stack decision underneath it.
 
+## status: landed 2026-09-18
+
+the adapter is in. the layout:
+
+| file                        | role                                                                 |
+|-----------------------------|----------------------------------------------------------------------|
+| `src/transport/api.ts`      | fetch wrapper, bearer token, 401 → logout                            |
+| `src/transport/feed.ts`     | websocket, reconnect with backoff, resync before reconnect           |
+| `src/transport/pending.ts`  | correlation id → command label, 15s timeout                         |
+| `src/transport/validate.ts` | wire parsers. every row and frame passes here. numeric strings coerce |
+| `src/session.ts`            | the immutable server snapshot and lookups, `legTime()` for the eta   |
+| `src/events.ts`             | `fold(session, frame)` and `flavor()`, pure, node-tested             |
+| `src/client.ts`             | `GameClient`: auth, hydrate, commands, the one owner of the above    |
+| `src/screens/auth.ts`       | docking clearance                                                    |
+| `vite.config.ts`            | `/api` proxy to the gateway, websocket included                      |
+
+screens read `session` and call the client. the server owns every rule.
+
+wired for real: port (traffic, departures, travel), rigging (slot-keyed
+rig, preview, install, remove, rename), exchange (quotes, buy, sell),
+comms (station chat, ansible to a ship in traffic).
+
+still local previews, labeled as such: the map and the flight screen.
+the hull catalog is a browser preference; the server knows `starter`.
+
+**one gap on the server side.** a message names its sender by pid.
+traffic names a ship by sid, and never publishes a pid. the client
+learns one pid → sid pair per reply to its own signal (`session.peers`),
+and shows an unmatched sender as "unknown pilot" with no reply button.
+a public ship id on `messages` rows, or a `sid` on `comms.sent`, closes
+it.
+
+the plan below stands as written.
+
 ## stack: stay on lit
 
 lit over react, for this project specifically:

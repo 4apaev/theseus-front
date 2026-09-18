@@ -1,7 +1,6 @@
 import { test } from 'node:test'
 import strict from 'node:assert/strict'
-import { assert, raise, Fail, ValidationError, number, decimal, credits, duration, clamp } from '../src/util.ts'
-import { initialState, trade, toggleModule, changeHull } from '../src/model.ts'
+import { assert, raise, Fail, ValidationError, number, decimal, credits, duration, clamp, countdown, span, fmtDist } from '../src/util.ts'
 import { themePreference } from '../src/theme.ts'
 
 test('assert and raise preserve typed failures, codes and causes', () => {
@@ -17,23 +16,20 @@ test('assert and raise preserve typed failures, codes and causes', () => {
     strict.equal(Fail.from(null).message, 'operation failed')
 })
 
-test('domain rejections have stable codes and cannot mutate a snapshot', () => {
-    const game = initialState()
-    const before = structuredClone(game)
-    strict.throws(() => trade(game, 'ore', 'buy', 999), { code: 'trade', name: 'ValidationError' })
-    const overloaded = { ...game, fitted: [ 'drive', 'cargo' ] as const }
-    strict.throws(() => toggleModule({ ...overloaded, fitted: [ ...overloaded.fitted ]}, 'ansible'), { code: 'fitting' })
-    strict.throws(() => changeHull(game, 'missing' as never), { code: 'hull' })
-    strict.deepEqual(game, before)
-})
-
 test('formatters retain orbital precision and duration units', () => {
     strict.equal(decimal(5.604), '5.60')
     strict.equal(number(258.91, 1), '258.9')
-    strict.equal(credits(12480), '₢12,480')
+    strict.equal(credits(12480), '₢12,480.00')
+    strict.equal(credits(25.5, 0), '₢26')
     strict.equal(duration(3660), '1h 1m')
     strict.equal(clamp(2), 1)
     strict.equal(clamp(-1), 0)
+    strict.equal(countdown(65000), 'T-01:05')
+    strict.equal(countdown(3600000), 'T-1:00:00')
+    strict.equal(span(59000), '59s')
+    strict.equal(span(125000), '2m 05s')
+    strict.equal(fmtDist(0.000008285), '0.52 au')
+    strict.equal(fmtDist(4.32), '4.32 ly')
 })
 
 test('unknown theme preferences fall back to the system setting', () => {

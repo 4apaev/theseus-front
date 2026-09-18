@@ -2,7 +2,6 @@ import { html, svg, nothing } from 'lit'
 import { GameScreen } from './base.ts'
 import { icon } from '../icons.ts'
 import type { PropertyValues } from 'lit'
-import { thrustOf } from '../model.ts'
 import { solveOrbit, closestApproach, brachistochrone, EARTH_RADIUS } from '../simulation/orbit.ts'
 import { number, duration } from '../util.ts'
 import { rangeField, selectField } from '../components/controls.ts'
@@ -47,14 +46,14 @@ class FlightScreen extends GameScreen {
     }
 
     private brachChart() {
-        const b = brachistochrone(this.distance, thrustOf(this.game))
+        const b = brachistochrone(this.distance, this.thrust())
         return html`<div class="brach-chart"><div class="brach-route"><div>${ icon('port') }<b>lem station</b><small>0 km</small></div><span class="burn-line"></span><div class="flip">${ icon('orbit') }<b>180° flip</b><small>${ number(this.distance / 2) } km</small></div><span class="burn-line brake"></span><div>${ icon('port') }<b>cersa depot</b><small>${ number(this.distance) } km</small></div></div><div class="chart-label">velocity <span>km/s</span></div>${ svg`<svg class="velocity-chart" viewBox="0 0 650 190" role="img" aria-label="velocity rises linearly to midpoint then falls to zero"><path d="M40 20V155H625" fill="none" stroke="var(--line)"/><path d="M332 20V155" stroke="var(--line)" stroke-dasharray="3 5"/><path d="M40 155 332 30" fill="none" stroke="var(--amber)" stroke-width="2"/><path d="M332 30 625 155" fill="none" stroke="var(--cyan)" stroke-width="2"/><text x="40" y="180">0 h</text><text x="295" y="180">${ number(b.seconds / 7200, 1) } h</text><text x="577" y="180">${ number(b.seconds / 3600, 1) } h</text><text x="345" y="30">${ number(b.peakKmS, 2) }</text></svg>` }<div class="burn-legend"><span><span data-shape aria-hidden="true"></span>accelerate / ${ number(b.deltaV / 2, 2) } km/s</span><span class="brake"><span data-shape aria-hidden="true"></span>brake / ${ number(b.deltaV / 2, 2) } km/s</span></div><div class="idealization"><b>constant thrust. midpoint flip.</b><p>an idealized rest-to-rest transfer. gravity, orbital velocity, and changing mass are omitted here.</p></div></div>`
     }
 
     private flightPanel() {
         if (this.flightMode === 'brachistochrone') {
-            const b = brachistochrone(this.distance, thrustOf(this.game))
-            return html`${ this.panelHeader('local transfer', 'burn profile', 'preview') }${ selectField({ id: 'distance', label: 'transfer distance / km', value: String(this.distance), options: [ 64800, 129600, 259200 ].map(value => ({ value: String(value), label: `${ number(value) } km` })), change: value => { this.distance = Number(value) } }) }<dl><div><dt>acceleration</dt><dd>${ thrustOf(this.game) } m/s²</dd></div><div><dt>flight time</dt><dd>${ duration(b.seconds) }</dd></div><div><dt>peak velocity</dt><dd>${ number(b.peakKmS, 2) } km/s</dd></div><div class="total"><dt>total burn δv</dt><dd>${ number(b.deltaV, 2) } km/s</dd></div></dl><div class="delta-budget"><div><span>available δv</span><b>7.80 km/s</b></div><div class="meter"><span data-shape aria-hidden="true" style=${ `width:${ Math.min(100, b.deltaV / 7.8 * 100) }%` } class=${ b.deltaV > 7.8 ? 'over' : '' }></span></div><small>${ b.deltaV > 7.8 ? 'insufficient δv for acceleration and braking' : `${ number(7.8 - b.deltaV, 2) } km/s remaining after transfer` }</small></div><button data-variant="primary" ?disabled=${ b.deltaV > 7.8 } @click=${ () => this.savePlan(`brachistochrone · ${ number(b.deltaV, 2) } km/s`) }>save transfer plan ${ icon('check') }</button><small class="footnote">preview only · fitted drive sets acceleration</small>`
+            const b = brachistochrone(this.distance, this.thrust())
+            return html`${ this.panelHeader('local transfer', 'burn profile', 'preview') }${ selectField({ id: 'distance', label: 'transfer distance / km', value: String(this.distance), options: [ 64800, 129600, 259200 ].map(value => ({ value: String(value), label: `${ number(value) } km` })), change: value => { this.distance = Number(value) } }) }<dl><div><dt>acceleration</dt><dd>${ this.thrust() } m/s²</dd></div><div><dt>flight time</dt><dd>${ duration(b.seconds) }</dd></div><div><dt>peak velocity</dt><dd>${ number(b.peakKmS, 2) } km/s</dd></div><div class="total"><dt>total burn δv</dt><dd>${ number(b.deltaV, 2) } km/s</dd></div></dl><div class="delta-budget"><div><span>available δv</span><b>7.80 km/s</b></div><div class="meter"><span data-shape aria-hidden="true" style=${ `width:${ Math.min(100, b.deltaV / 7.8 * 100) }%` } class=${ b.deltaV > 7.8 ? 'over' : '' }></span></div><small>${ b.deltaV > 7.8 ? 'insufficient δv for acceleration and braking' : `${ number(7.8 - b.deltaV, 2) } km/s remaining after transfer` }</small></div><button data-variant="primary" ?disabled=${ b.deltaV > 7.8 } @click=${ () => this.savePlan(`brachistochrone · ${ number(b.deltaV, 2) } km/s`) }>save transfer plan ${ icon('check') }</button><small class="footnote">preview only · fitted drive sets acceleration</small>`
         }
         let orbit
         try { orbit = solveOrbit(this.prograde, this.radial, this.phase) }
@@ -72,8 +71,13 @@ class FlightScreen extends GameScreen {
         return rangeField({ id, label, value, ...range, signed: id !== 'phase', step: id === 'phase' ? 1 : 0.01, change: value => { this[ id ] = id === 'phase' ? value * Math.PI / 180 : value; this.previewTime = 0 } })
     }
 
+    // the fitted maneuver drive sets acceleration. the starter hull flies at 0.002 m/s².
+    private thrust() {
+        return this.session.ship?.acceleration ?? 0.002
+    }
+
     private savePlan(description: string) {
-        this.commit({ ...this.game, log: [ `plan saved · ${ description }`, ...this.game.log ].slice(0, 30) }, 'plan saved locally · vessel remains docked')
+        this.notify(`plan noted · ${ description } · a preview, the vessel stays docked`)
     }
 
 }

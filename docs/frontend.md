@@ -2,11 +2,14 @@
 
 ## boundaries
 
-`app.ts` owns navigation, the game snapshot, the catalog, and notifications.
-`src/screens/` contains lit components for port, rigging, exchange, comms,
-and flight. each retains its own input state when hidden and releases its
-rendered scenes. screens emit typed game-change/navigation events; the app
-accepts the next immutable game snapshot. the map remains its own component.
+`client.ts` owns the session: auth, hydration, commands, and the feed.
+`app.ts` owns navigation, the hull preview choice, and notifications.
+`src/screens/` contains lit components for auth, port, rigging, exchange,
+comms, and flight. each retains its own input state when hidden and
+releases its rendered scenes. a screen renders one immutable session
+snapshot and calls commands on the client. it never computes the next
+state: the server does, and `events.ts` folds the result in from the
+feed. the map remains its own component.
 
 `src/components/` provides native-control template components, shared station
 composition, a panel surface, theme selection, and the hull catalog. template

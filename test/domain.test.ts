@@ -1,38 +1,9 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { initialState, trade, toggleModule, quote, powerOf, capacityOf, changeHull } from '../src/model.ts'
 import { solveOrbit, positionAt, velocityAt, closestApproach, brachistochrone, MU, INITIAL_RADIUS, CIRCULAR_SPEED } from '../src/simulation/orbit.ts'
 
 function near(a: number, b: number, tolerance = 1e-7) { assert.ok(Math.abs(a - b) < tolerance, `${ a } is not near ${ b }`) }
 
-test('trading conserves inventory and credits and does not mutate snapshots', () => {
-    const before = initialState()
-    const bought = trade(before, 'ore', 'buy', 10)
-    assert.equal(bought.credits, before.credits - 250)
-    assert.equal(bought.cargo.ore, 16)
-    assert.equal(bought.stock.ore, 170)
-    assert.equal(before.cargo.ore, 6)
-    const sold = trade(bought, 'ore', 'sell', 10)
-    assert.equal(sold.credits, before.credits - 30)
-    assert.equal(sold.cargo.ore, 6)
-    assert.equal(sold.stock.ore, 180)
-})
-test('invalid and overflowing trade quantities cannot change state', () => {
-    const s = initialState()
-    for (const n of [ 0, -1, 1.5, NaN, Infinity ]) assert.ok(quote(s, 'ore', 'buy', n).error)
-    assert.throws(() => trade(s, 'ore', 'sell', 7))
-    assert.throws(() => trade(s, 'parts', 'buy', 18))
-    assert.throws(() => trade({ ...s, credits: 0 }, 'ore', 'buy', 1))
-})
-test('rig validates resulting power and preserves loaded cargo on removal', () => {
-    let s = toggleModule(initialState(), 'cargo')
-    assert.equal(capacityOf(s), 60)
-    assert.equal(powerOf(s), 6)
-    assert.throws(() => toggleModule(s, 'drive'), /reactor/)
-    s = trade(s, 'ore', 'buy', 40)
-    assert.throws(() => toggleModule(s, 'cargo'), /unload/)
-    assert.throws(() => changeHull(s, 'yacht'), /unload/)
-})
 test('zero burn preserves circular orbit and its initial speed', () => {
     const o = solveOrbit(0, 0)
     near(o.e, 0)

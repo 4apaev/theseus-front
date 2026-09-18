@@ -31,10 +31,10 @@ closest approach is approximated over one planned revolution with 400 samples an
 
 brachistochrone mode is a separate idealized rest-to-rest, straight-line, constant-acceleration transfer. `t = 2 sqrt(d/a)`, peak speed `sqrt(d*a)`, and total δv `2 sqrt(d*a)`, with unit conversion. acceleration is derived from the fitted drive; gravity, initial orbital velocity, and mass change are omitted. accelerating and braking costs are both included.
 
-## next integration step
+## server integration
 
-replace the app's direct local state assignment with a transport adapter that emits commands and consumes authoritative server snapshots. keep renderer and simulation modules unchanged. validate payloads at that boundary; typescript types alone do not validate network input. the server must own trade settlement, fitting, message delivery, propellant, and travel time. this prototype does not yet implement that adapter or persistence.
+the transport adapter is in place, see [transport](transport.md). the app holds no local game rules. renderer and simulation modules are unchanged: the scene reads the hull preview and the 3 visual module groups from the server rig (`visualFitted()` in `session.ts`).
 
 ## validation
 
-node tests exercise trade conservation, rejection conditions, attachment power/capacity limits, circular and perturbed orbits, burn initial conditions, energy/angular momentum conservation, closest-approach sanity, and brachistochrone unit conversion. browser smoke checks exercise the lit bindings and renderer separately.
+node tests exercise the wire parsers, event folding, the eta model against the server's `legTime()`, pending-command settlement, circular and perturbed orbits, burn initial conditions, energy/angular momentum conservation, closest-approach sanity, and brachistochrone unit conversion. browser checks exercise the lit bindings and renderer against a live gateway.

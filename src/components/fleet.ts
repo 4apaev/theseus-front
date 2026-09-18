@@ -9,8 +9,7 @@ import './hull-preview.ts'
 
 import {
     HULLS,
-    initialState,
-    type GameState,
+    DEFAULT_HULL,
     type HullId,
     type Hull,
 } from '../model.ts'
@@ -18,18 +17,19 @@ import {
 import { emit } from '../util.ts'
 import { icon } from '../icons.ts'
 
+/** the hull catalogue is a visual preview. the server knows one hull today. */
 class FleetCatalog extends AppElement {
     static properties = {
-        game: { attribute: false },
+        hull: {},
         open: { type: Boolean },
     }
 
-    declare game: GameState
+    declare hull: HullId
     declare open: boolean
 
     constructor() {
         super()
-        this.game = initialState()
+        this.hull = DEFAULT_HULL
         this.open = false
     }
 
@@ -59,11 +59,11 @@ class FleetCatalog extends AppElement {
 
     private hullGrid(hulls: readonly (Hull & { id: HullId })[]) {
         return html`<div class="hull-grid">${ hulls.map(h => html`
-            <button class=${ this.game.hull === h.id ? 'hull-card selected' : 'hull-card' } @click=${ () => this.selectHull(h.id) }>
+            <button class=${ this.hull === h.id ? 'hull-card selected' : 'hull-card' } @click=${ () => this.selectHull(h.id) }>
                 <hull-preview hull=${ h.id } category=${ h.category }></hull-preview>
                 <b>${ h.name }</b>
                 <small>${ h.kind } · ${ h.purpose }</small>
-                <small>${ h.capacity } hold units ${ this.game.hull === h.id ? '· selected' : '' }</small>
+                <small>${ h.capacity } hold units ${ this.hull === h.id ? '· selected' : '' }</small>
             </button>`) }</div>`
     }
 
@@ -79,7 +79,7 @@ class FleetCatalog extends AppElement {
                     <div>
                         <small data-kicker>vessel architecture / ${ HULLS.length } hulls</small>
                         <h2>form follows purpose.</h2>
-                        <p>select a hull to inspect its geometry in drydock.</p>
+                        <p>select a hull to preview its geometry in drydock. more hulls are coming to the yards.</p>
                     </div>
                     <button
                         data-variant="icon"
@@ -110,7 +110,7 @@ class FleetCatalog extends AppElement {
                         : nothing }
 
                 </section>`) }
-                <p class="footnote">blender hull models · categories set the palette · cargo and attachments carry over</p>
+                <p class="footnote">blender hull models · categories set the palette · a visual preview, the starter hull flies</p>
             </div>
         </dialog>`
     }

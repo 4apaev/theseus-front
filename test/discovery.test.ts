@@ -1,18 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import * as T from 'three'
-import { HULLS, initialState, changeHull, toggleModule, capacityOf } from '../src/model.ts'
 import { buildShip, disposeGroup } from '../src/render/geometry.ts'
-
-test('discovery is a selectable research hull and preserves cargo and fitted modules', () => {
-    const initial = initialState()
-    const next = changeHull(initial, 'discovery')
-    assert.equal(HULLS.find(h => h.id === next.hull)?.family, 'research')
-    assert.equal(next.cargo, initial.cargo)
-    assert.deepEqual(next.fitted, initial.fitted)
-    assert.equal(initial.hull, 'freighter')
-    assert.equal(capacityOf(toggleModule(next, 'cargo')), 44)
-})
 
 test('discovery geometry is finite, berth-sized and gives each module a visible pick target', () => {
     const ship = buildShip('discovery', 'civil', [ 'cargo', 'drive', 'ansible' ])
