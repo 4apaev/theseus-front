@@ -23,5 +23,5 @@ export function shipLighting() {
 
 export function configureShipRenderer(renderer: T.WebGLRenderer) {
     renderer.shadowMap.enabled = true
-    renderer.shadowMap.type = T.PCFSoftShadowMap
+    renderer.shadowMap.type = T.PCFShadowMap
 }

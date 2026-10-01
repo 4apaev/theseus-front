@@ -2,25 +2,75 @@ import * as T from 'three'
 import type { View } from '../model.ts'
 import { assert } from '../util.ts'
 
-export const FACILITIES = [
+/**
+ * the station models and their runtime contract. every export carries
+ * `rig`, `market` and `comms` groups, one label socket per group,
+ * a `beacons` group of emissive lamps, and a `dish_pivot` with one
+ * scan clip. the game's station ids map onto the 2 models here.
+ */
+export type StationFacility = 'rig' | 'market' | 'comms'
+type StationModelId = 'lem' | 'many-hands'
+
+export interface Facility {
+    id         : StationFacility
+    name       : string
+    anchor     : string
+    note       : string
+    description: string
+    action     : string
+}
+
+export interface StationModel {
+    id        : StationModelId
+    file      : string
+    kind      : string
+    facilities: readonly Facility[]
+}
+
+const LEM_FACILITIES = [
     { id: 'rig', name: 'repair berth', anchor: 'socket_berth', note: 'berth 04 / available', description: 'fit modules, balance power, and prepare your next departure.', action: 'enter rigging' },
-    { id: 'market', name: 'market hall', anchor: 'socket_market', note: 'second orbit / open', description: 'cargo, provisions, and equipment with a previous life.', action: 'visit the market' },
+    { id: 'market', name: 'market hall', anchor: 'socket_market', note: 'hall 02 / open', description: 'cargo, provisions, and equipment with a previous life.', action: 'visit the market' },
     { id: 'comms', name: 'signals office', anchor: 'socket_comms', note: 'local & private channels', description: 'leave a message, find a trader, or listen to the station channel.', action: 'open comms' },
-] as const satisfies readonly { id: View, name: string, anchor: string, note: string, description: string, action: string }[]
+] as const satisfies readonly (Facility & { id: View })[]
 
-export type StationFacility = typeof FACILITIES[ number ][ 'id' ]
+const MANY_HANDS_FACILITIES = [
+    { id: 'rig', name: 'arrivals berth', anchor: 'socket_berth', note: 'docking ring / clear', description: 'the arrivals arm takes visiting hulls. refit, rename, and depart from here.', action: 'enter rigging' },
+    { id: 'market', name: 'freight exchange', anchor: 'socket_market', note: 'spine deck / open', description: 'containers, fuel, and packaged modules move along the freight spine.', action: 'visit the exchange' },
+    { id: 'comms', name: 'research relay', anchor: 'socket_comms', note: 'lab array / listening', description: 'the laboratory array relays private signals and carries the station channel.', action: 'open comms' },
+] as const satisfies readonly Facility[]
 
-export function facilityOf(object: T.Object3D | null): StationFacility | undefined {
+export const STATIONS: Record<StationModelId, StationModel> = {
+    lem         : { id: 'lem', file: 'stations/lem-station.glb', kind: 'observatory / trading port', facilities: LEM_FACILITIES },
+    'many-hands': { id: 'many-hands', file: 'stations/port-of-many-hands.glb', kind: 'system gateway / trading port', facilities: MANY_HANDS_FACILITIES },
+}
+
+// the gateway of each system, and the sol hub, are large ports. the rest are lem-class outposts.
+const HUBS = new Set([ 'sol.mars', 'alpha.exchange', 'barnards.port', 'wolf.reach', 'sirius.gate' ])
+
+export function stationModel(stid?: string): StationModel {
+    return stid && HUBS.has(stid)
+        ? STATIONS[ 'many-hands' ]
+        : STATIONS.lem
+}
+
+const FACILITY_IDS = new Set<string>([ 'rig', 'market', 'comms' ])
+
+function isFacility(id: unknown): id is StationFacility {
+    return typeof id === 'string' && FACILITY_IDS.has(id)
+}
+
+/** the facility a picked mesh belongs to, walking up to the group that names it. */
+export function facilityOf(object?: T.Object3D | null): StationFacility | undefined {
     while (object) {
         const id = object.userData.facility
-        if (FACILITIES.some(f => f.id === id)) return id
+        if (isFacility(id)) return id
         object = object.parent
     }
 }
 
 /** Validate the export contract before exposing an interactive station. */
-export function prepareStation(root: T.Group) {
-    const facilities = FACILITIES.map(facility => {
+export function prepareStation(root: T.Group, facilities: readonly Facility[] = LEM_FACILITIES) {
+    const prepared = facilities.map(facility => {
         const group = root.getObjectByName(facility.id)
         const anchor = root.getObjectByName(facility.anchor)
         assert(group && anchor, `station asset is missing ${ facility.id }`, 'station-asset')
@@ -49,5 +99,5 @@ export function prepareStation(root: T.Group) {
             lamps.push(object.material)
         }
     })
-    return { facilities, lamps }
+    return { facilities: prepared, lamps }
 }

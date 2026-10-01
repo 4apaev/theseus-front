@@ -2,23 +2,27 @@ import * as T from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import type { Hull, ModuleId } from '../model.ts'
 import { Fail } from '../util.ts'
+import { themeColor } from '../theme.ts'
 
 const loader = new GLTFLoader
 const cache = new Map<string, Promise<T.Group>>
 
+/* one fetch per file, shared by every view. a failed fetch leaves the
+   cache, so the next render retries instead of failing forever. */
 function source(path: string): Promise<T.Group> {
     const found = cache.get(path)
     if (found) return found
 
     const pending = fetch(`${ import.meta.env.BASE_URL }models/${ path }`)
         .then(response => {
-            if (!response.ok) throw new Fail(`hull model could not be loaded: ${ path }`, 'hull-load')
+            if (!response.ok) throw new Fail(`hull model could not be loaded: ${ path } (${ response.status })`, 'hull-load')
             return response.arrayBuffer()
         })
         .then(buffer => loader.parseAsync(buffer, ''))
         .then(asset => asset.scene)
 
     cache.set(path, pending)
+    pending.catch(() => cache.delete(path))
     return pending
 }
 
@@ -41,8 +45,21 @@ function moduleGroup(ship: T.Group, id: ModuleId): T.Object3D | undefined {
     return names.map(name => ship.getObjectByName(name)).find(Boolean)
 }
 
+/** a fitted mount glows in the accent color. an outline alone is too thin to read at a glance. */
+function equip(group: T.Object3D, accent: T.Color) {
+    group.traverse(object => {
+        if (!(object instanceof T.Mesh)) return
+        const materials = Array.isArray(object.material) ? object.material : [ object.material ]
+        for (const material of materials) {
+            if (!(material instanceof T.MeshStandardMaterial)) continue
+            material.emissive = accent
+            material.emissiveIntensity = 0.55
+        }
+    })
+}
+
 /** load, normalize and annotate one exported blender hull for interaction. */
-export async function loadHullModel(hull: Hull, selection?: ModuleId): Promise<T.Group> {
+export async function loadHullModel(hull: Hull, fitted: ModuleId[] = [], selection?: ModuleId): Promise<T.Group> {
     const ship = independent(await source(hull.model))
     ship.name = hull.name
 
@@ -56,9 +73,13 @@ export async function loadHullModel(hull: Hull, selection?: ModuleId): Promise<T
     ship.scale.setScalar(scale)
     ship.updateMatrixWorld(true)
 
+    const mint = new T.Color(themeColor('mint'))
     for (const id of [ 'cargo', 'drive', 'ansible' ] as ModuleId[]) {
         const group = moduleGroup(ship, id)
-        if (group) group.userData.module = id
+        if (!group) continue
+        group.userData.module = id
+        // a fitted mount glows, so the ship shows the rig, not just the panel.
+        if (fitted.includes(id)) equip(group, mint)
     }
 
     if (selection) {

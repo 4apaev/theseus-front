@@ -193,7 +193,7 @@ sup { top: -.5em }
     font-style: normal;
 }
 
-:where(.wordmark, .ship-signature button) {
+:where(.wordmark) {
     font-family: var(--font-title);
     font-weight: var(--weight-semibold);
     text-decoration: none;

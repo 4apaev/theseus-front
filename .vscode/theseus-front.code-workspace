@@ -6,13 +6,6 @@
         }
     ],
 
-    "settings": {
-
-        "files.exclude": {
-            ".git": true,
-            // "node_modules": true,
-        }
-    },
     "extensions": {
         "recommendations": [
             "bierner.lit-html",

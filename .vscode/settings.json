@@ -1,2 +1,11 @@
 {
+
+    "files.exclude": {
+        ".git": true,
+        // "node_modules": true,
+    },
+
+    "explorer.fileNesting.patterns": {
+        "package.json":  ".env*, .git*, .editor*, *rc, *.json, .*.yml, *.config.js, *.config.ts",
+    },
 }

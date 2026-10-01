@@ -3,7 +3,10 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    padding-right: 0.3125rem;
+    /* app-panel floats over the viewport's right edge (see .operations
+       app-panel in layout.css) - this clears its footprint so the
+       signal diagram and the composer's send button stay clear of it. */
+    padding-right: calc(var(--panel-width) + 1.5625rem);
 }
 
 .signal-diagram {
@@ -257,7 +260,10 @@
 
 @media (max-width: 56.25rem) {
     .comms-workspace {
+        /* app-panel stacks below here instead of floating - see
+           .operations app-panel in layout.css - so the clearance above no longer applies. */
         height: auto;
+        padding-right: 0.3125rem;
     }
 
     .signal-line {
@@ -268,6 +274,9 @@
 
 @media (max-width: 34.375rem) {
     .signal-diagram {
+        /* the icons anchor at the row top, so a node's name can wrap to 2
+           lines below without moving the line or its label into it. */
+        align-items: flex-start;
         min-height: 8.75rem;
     }
 
@@ -276,8 +285,14 @@
     }
 
     .signal-line {
-        margin-left: 0.3125rem;
-        margin-right: 0.3125rem;
+        /* half the icon height (2.375rem): centers the line on the icon
+           row instead of the old desktop pull-up, which assumed a
+           single-line name and no longer clears a wrapped one. */
+        margin: 1.1875rem 0.3125rem 0;
+
+        & span:not([data-shape]) {
+            top: 0.5rem;
+        }
     }
 
     .message-list {

@@ -1,4 +1,4 @@
-"""Build the Wandering Ward inhabited civil vessel.
+`"""Build the Wandering Ward inhabited civil vessel.
 
 Run with Blender:
     blender --background --python scripts/build-wandering-ward.py -- --output /tmp/wandering-ward

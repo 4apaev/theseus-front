@@ -1,0 +1,193 @@
+{
+    "hulls": [
+        {
+            "name": "far-treasure",
+            "category": "painted",
+            "triangles": 6328,
+            "bytes": 358652
+        },
+        {
+            "name": "tug",
+            "category": "painted",
+            "triangles": 6704,
+            "bytes": 373612
+        },
+        {
+            "name": "hauler",
+            "category": "painted",
+            "triangles": 26636,
+            "bytes": 1356984
+        },
+        {
+            "name": "nobody",
+            "category": "painted",
+            "triangles": 7028,
+            "bytes": 377168
+        },
+        {
+            "name": "patrol-cutter",
+            "category": "painted",
+            "triangles": 4432,
+            "bytes": 240992
+        },
+        {
+            "name": "tug-buoy",
+            "category": "painted",
+            "triangles": 2728,
+            "bytes": 153712
+        },
+        {
+            "name": "deckhand",
+            "category": "robots",
+            "triangles": 4048,
+            "bytes": 220488
+        },
+        {
+            "name": "porter",
+            "category": "robots",
+            "triangles": 2376,
+            "bytes": 130048
+        },
+        {
+            "name": "containers",
+            "category": "containers",
+            "triangles": 7720,
+            "bytes": 392224
+        }
+    ],
+    "modules": [
+        {
+            "name": "reactor.mk1",
+            "slot": "power1",
+            "planned": false,
+            "triangles": 2896,
+            "bytes": 143336
+        },
+        {
+            "name": "reactor.mk2",
+            "slot": "power1",
+            "planned": false,
+            "triangles": 1820,
+            "bytes": 95292
+        },
+        {
+            "name": "cruise.mk1",
+            "slot": "cruise1",
+            "planned": false,
+            "triangles": 1644,
+            "bytes": 92612
+        },
+        {
+            "name": "cruise.mk2",
+            "slot": "cruise1",
+            "planned": false,
+            "triangles": 2296,
+            "bytes": 125640
+        },
+        {
+            "name": "maneuver.mk1",
+            "slot": "maneuver1",
+            "planned": false,
+            "triangles": 1328,
+            "bytes": 74056
+        },
+        {
+            "name": "maneuver.mk2",
+            "slot": "maneuver1",
+            "planned": false,
+            "triangles": 2400,
+            "bytes": 126168
+        },
+        {
+            "name": "cargo.mk1",
+            "slot": "cargo1",
+            "planned": false,
+            "triangles": 1632,
+            "bytes": 92924
+        },
+        {
+            "name": "cargo.mk2",
+            "slot": "cargo1",
+            "planned": false,
+            "triangles": 2496,
+            "bytes": 139856
+        },
+        {
+            "name": "ansible.mk1",
+            "slot": "utility1",
+            "planned": false,
+            "triangles": 424,
+            "bytes": 26660
+        },
+        {
+            "name": "cargo.tank",
+            "slot": "cargo1",
+            "planned": true,
+            "triangles": 2536,
+            "bytes": 125060
+        },
+        {
+            "name": "cargo.reefer",
+            "slot": "cargo1",
+            "planned": true,
+            "triangles": 1388,
+            "bytes": 78088
+        },
+        {
+            "name": "cargo.pen",
+            "slot": "cargo1",
+            "planned": true,
+            "triangles": 2064,
+            "bytes": 105568
+        },
+        {
+            "name": "radar.mk1",
+            "slot": "utility1",
+            "planned": true,
+            "triangles": 348,
+            "bytes": 22188
+        },
+        {
+            "name": "driver.mk1",
+            "slot": "utility1",
+            "planned": true,
+            "triangles": 1216,
+            "bytes": 62568
+        },
+        {
+            "name": "empty.power",
+            "slot": "power1",
+            "planned": false,
+            "triangles": 220,
+            "bytes": 13296
+        },
+        {
+            "name": "empty.cruise",
+            "slot": "cruise1",
+            "planned": false,
+            "triangles": 648,
+            "bytes": 36324
+        },
+        {
+            "name": "empty.maneuver",
+            "slot": "maneuver1",
+            "planned": false,
+            "triangles": 216,
+            "bytes": 13004
+        },
+        {
+            "name": "empty.cargo",
+            "slot": "cargo1",
+            "planned": false,
+            "triangles": 756,
+            "bytes": 43008
+        },
+        {
+            "name": "empty.utility",
+            "slot": "utility1",
+            "planned": false,
+            "triangles": 108,
+            "bytes": 7156
+        }
+    ]
+}

@@ -1,22 +1,18 @@
 import { raise } from '../util.ts'
 
 /**
- * idealized planar two-body motion.
- *
- * kilometres, seconds, radians throughout.
- *
- * the server remains authoritative.
- * this module only computes local previews.
- * burns are instantaneous impulses.
- * there is no thrust integration or n-body gravity.
- *//*
-    ΔV δv τ tau
-    */ const TAU            = 2 * Math.PI
+ * idealized planar two-body motion for the flight preview. kilometres,
+ * seconds and radians. a burn is an instantaneous impulse. there is no
+ * thrust integration and no n-body gravity. the server stays the
+ * authority on travel; this only draws a study.
+ */
+const TAU          = 2 * Math.PI
+const TARGET_PHASE = 1.5
+
 export const MU             = 398600.4418
 export const EARTH_RADIUS   = 6371
 export const INITIAL_RADIUS = 7200
 export const TARGET_RADIUS  = 14500
-export const TARGET_PHASE   = 1.5
 export const CIRCULAR_SPEED = Math.sqrt(MU / INITIAL_RADIUS)
 
 export interface Vec { x: number, y: number }
@@ -171,8 +167,9 @@ export function closestApproach(orbit: Orbit) {
     }
 }
 
-export function brachistochrone(km: number, boost: number) { // ac acceleration
-    if (![ km, boost ].every(posNum))
+/** a rest-to-rest straight-line transfer at constant acceleration `boost`, m/s². */
+export function brachistochrone(km: number, boost: number) {
+    if (![ km, boost ].every(n => Number.isFinite(n) && n > 0))
         raise('positive distance and acceleration required')
 
     const halfTime = Math.sqrt(km * 1000 / boost)
@@ -182,6 +179,3 @@ export function brachistochrone(km: number, boost: number) { // ac acceleration
         deltaV: 2 * boost * halfTime / 1000,
     }
 }
-
-export function posNum(n: number): boolean { return Number.isFinite(n) && n > 0 }
-export function posInt(n: number): boolean { return Number.isSafeInteger(n) && n > 0 }

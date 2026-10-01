@@ -54,61 +54,6 @@
     }
 }
 
-.module-art {
-    height: 7rem;
-    background: radial-gradient(ellipse, color-mix(in srgb, var(--amber) 11%, transparent), transparent 65%);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    margin: 0 0 0.9375rem;
-
-    &>span:not([data-shape]) {
-        width: 2.25rem;
-        height: 2.5625rem;
-        background: var(--amber);
-        transform: skewY(-22deg);
-        border: var(--stroke) solid var(--text);
-        box-shadow: var(--space-2) 0.3125rem 0 var(--amber);
-        margin: 0 0.125rem;
-    }
-
-    &>[data-shape] {
-        width: 4.375rem;
-        height: 4.375rem;
-        position: absolute;
-        border: var(--stroke) solid color-mix(in srgb, var(--amber) 40%, transparent);
-        transform: rotate(45deg);
-        z-index: -1;
-    }
-
-    &>[data-shape] svg {
-        display: none;
-    }
-
-    &.drive>span:not([data-shape]) {
-        width: 1.4375rem;
-        height: 3.125rem;
-        background: var(--cyan);
-        border-color: var(--cyan);
-        box-shadow: var(--space-2) 0.3125rem 0 var(--cyan);
-    }
-
-    &.ansible>span:not([data-shape]) {
-        width: 0.3125rem;
-        height: 2.6875rem;
-        background: var(--mint);
-        border-color: var(--mint);
-        box-shadow: 0.125rem var(--stroke) 0 var(--cyan);
-        margin: 0 0.875rem;
-
-        &:nth-child(2) {
-            height: var(--space-16);
-            width: 0.875rem;
-        }
-    }
-}
-
 .commodity-list {
     margin: 0.4375rem -0.5625rem 1.3125rem;
 }
@@ -156,6 +101,71 @@
     border: var(--stroke) solid color-mix(in srgb, var(--commodity) 30%, transparent);
     background: color-mix(in srgb, var(--commodity) 12%, transparent);
     color: var(--commodity);
+}
+
+/* a module is packaged hardware, not stock. the cut corner marks it wherever a swatch shows. */
+.commodity-icon.module {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 25% 100%, 0 75%);
+}
+
+.cargo-list {
+    list-style: none;
+    margin: var(--space-3) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-2);
+}
+
+.cargo-row {
+    padding: var(--space-3) 0;
+    border-bottom: var(--stroke) solid var(--line);
+}
+
+.cargo-row-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+}
+
+.cargo-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6875rem;
+    min-width: 0;
+
+    & b {
+        color: var(--text);
+    }
+
+    & small {
+        display: block;
+        color: var(--muted);
+        margin-top: 0.1875rem;
+    }
+}
+
+.cargo-note {
+    text-align: right;
+    color: var(--muted);
+    max-width: 50%;
+}
+
+.cargo-sell {
+    display: grid;
+    gap: var(--space-3);
+    margin-top: var(--space-3);
+}
+
+.cargo-sell-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+
+    & strong {
+        color: var(--amber);
+    }
 }
 
 @media (min-width: 96.875rem) {

@@ -1,5 +1,1 @@
-import './styles/styles.css'
-import './render/space-scene.ts'
-import './render/orbit-view.ts'
-import './maps/atlas-view.ts'
 import './app.ts'

@@ -2,6 +2,10 @@ node_modules/
 dist/
 .DS_Store
 *.log
+*.dacrap*
 
 # blender backup files
 *.blend[0-9]*
+
+# python build helpers
+__pycache__/
