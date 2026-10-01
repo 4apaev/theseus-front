@@ -44,7 +44,7 @@ class FleetCatalog extends AppElement {
     }
 
     private closeFleet() {
-        emit(this, 'catalog-close', undefined)
+        emit(this, 'catalog-close', void 0)
     }
 
     private selectHull(id: HullId) {

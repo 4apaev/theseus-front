@@ -12,6 +12,8 @@ export interface LogLine { kind: LogKind, text: string, time: string }
  * immutable: every change produces a new object, so lit re-renders.
  * `peers` maps a pid to a sid. the feed names players by pid and
  * traffic names ships by sid. a sent message teaches one pair.
+ * `course` is the station the last travel command asked for. the
+ * server flies hop by hop and does not publish the manifest.
  */
 export interface Session {
     me?      : Player
@@ -25,6 +27,7 @@ export interface Session {
     traffic  : Record<string, TrafficRow>
     peers    : Record<string, string>
     log      : LogLine[]
+    course?  : string
 }
 
 const LOG_SIZE = 60
@@ -46,6 +49,10 @@ export function station(s: Session, stid?: string): Station | undefined {
 
 export function stationName(s: Session, stid?: string): string {
     return station(s, stid)?.name ?? stid ?? '—'
+}
+
+export function systemName(s: Session, sysid?: string): string {
+    return s.universe?.systems.find(sys => sys.sysid === sysid)?.name ?? sysid ?? '—'
 }
 
 export function good(s: Session, gid: string): Good | undefined {
@@ -99,6 +106,20 @@ export function peerOf(s: Session, pid: string): TrafficRow | undefined {
 
 export function pidOf(s: Session, sid: string): string | undefined {
     return Object.keys(s.peers).find(pid => s.peers[ pid ] === sid)
+}
+
+/**
+ * the stations whose exchange trades a good. every station quotes every
+ * commodity; a packaged module sells only where a station stocks it.
+ */
+export function sellersOf(s: Session, gid: string): Station[] {
+    const g = good(s, gid)
+    if (!g || !s.universe) return []
+    return s.universe.stations.filter(st => g.kind !== 'module' || !!st.stocks?.includes(gid))
+}
+
+export function quoted(s: Session, gid: string): boolean {
+    return docked(s) && s.market.some(m => m.gid === gid)
 }
 
 export function hasAnsible(s: Session): boolean {

@@ -1,4 +1,4 @@
-import { html, nothing } from 'lit'
+import { html, nothing, type PropertyValues } from 'lit'
 import { GameScreen } from './base.ts'
 import { icon } from '../icons.ts'
 import { docked, stationName, hasAnsible, pidOf, peerOf } from '../session.ts'
@@ -17,10 +17,11 @@ const UNKNOWN = 'pid:'
  * reply lands. an unmatched sender shows as an unknown pilot.
  */
 class CommsScreen extends GameScreen {
-    static properties = { contact: { state: true }, draft: { state: true }, now: { state: true }}
+    static properties = { contact: { state: true }, draft: { state: true }, now: { state: true }, presetContact: {}}
     declare contact: string
     declare draft: string
     declare now: number
+    declare presetContact?: string
     private timer?: ReturnType<typeof setInterval>
 
     constructor() {
@@ -38,6 +39,14 @@ class CommsScreen extends GameScreen {
     override disconnectedCallback() {
         super.disconnectedCallback()
         clearInterval(this.timer)
+    }
+
+    // a preset arrives once, on the transition into view. it does not fight a later manual pick.
+    override updated(changes: PropertyValues) {
+        if (changes.has('active') && this.active && this.presetContact) {
+            this.contact = this.presetContact
+            this.draft = ''
+        }
     }
 
     override render() {

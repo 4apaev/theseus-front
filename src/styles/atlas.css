@@ -2,6 +2,7 @@ atlas-view {
     display: block;
     min-width: 0;
     flex: 1;
+    padding: 3.5rem 1rem 1rem;
 
     &[hidden] {
         display: none;
@@ -131,16 +132,13 @@ atlas-scene {
     min-width: 3.875rem;
     border-left: var(--stroke) solid transparent;
 
-    & small {
-        display: block;
-        color: var(--muted);
-        line-height: 1.5;
-        margin-top: 0.125rem;
-    }
-
     &.selected {
         color: var(--amber);
         border-color: color-mix(in srgb, var(--amber) 38%, transparent);
+    }
+
+    &.here {
+        border-color: var(--mint);
     }
 
     &:hover {
@@ -149,7 +147,6 @@ atlas-scene {
     }
 }
 
-.atlas-arrival,
 .atlas-player-label {
     position: absolute;
     white-space: nowrap;
@@ -215,83 +212,6 @@ atlas-scene {
     }
 }
 
-.atlas-timeline {
-    border-top: var(--stroke) solid var(--line);
-    padding-top: 1.125rem;
-    margin-top: 0;
-}
-
-.atlas-time-heading {
-    display: flex;
-    justify-content: space-between;
-    gap: 0.625rem;
-    align-items: center;
-    color: var(--muted);
-
-    & b {
-        color: var(--cream);
-        font-variant-numeric: tabular-nums;
-    }
-}
-
-.atlas-status {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-
-    & [data-shape] {
-        width: var(--space-1);
-        height: var(--space-1);
-        background: var(--muted);
-    }
-
-    & [data-shape].running {
-        background: var(--amber);
-        box-shadow: 0 0 0.375rem color-mix(in srgb, var(--amber) 18%, transparent);
-    }
-}
-
-.atlas-time-controls {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--space-3);
-    padding: var(--space-4) 0 var(--space-2);
-
-    & select {
-        width: 3.875rem;
-        padding: 0.3125rem;
-        height: 1.8125rem;
-        border-color: var(--line);
-    }
-}
-
-.atlas-scrubber {
-    flex: 1;
-    min-width: 0;
-    padding-top: var(--space-1);
-
-    &>div {
-        display: flex;
-        justify-content: space-between;
-        color: var(--muted);
-        margin-top: var(--space-2);
-        gap: 0.625rem;
-    }
-}
-
-.atlas-travel-note {
-    line-height: 1.7;
-    color: var(--text);
-    min-height: 3.5625rem;
-    margin-top: 0.625rem;
-
-    & small {
-        display: block;
-        color: var(--muted);
-        margin-top: 0.1875rem;
-    }
-}
-
 .atlas-inspector {
     padding: var(--space-6);
     margin-bottom: 0;
@@ -311,49 +231,6 @@ atlas-scene {
     & .validation {
         margin: 0.9375rem 0 0.5625rem;
     }
-}
-
-.atlas-station-mini {
-    display: flex;
-    position: relative;
-    align-items: center;
-    justify-content: center;
-    gap: 1.0625rem;
-
-    & [data-shape] {
-        width: 2.375rem;
-        height: 1.75rem;
-        display: block;
-        background: var(--amber);
-        transform: skewY(-22deg);
-        box-shadow: 0.5625rem 0.3125rem 0 var(--amber);
-        border-top: var(--space-1) solid var(--text);
-
-        &:nth-child(2) {
-            width: 1.6875rem;
-            height: 3.4375rem;
-            background: var(--muted);
-            box-shadow: 0.5625rem 0.3125rem 0 var(--muted);
-            border-top-color: var(--text);
-        }
-
-        &:nth-child(3) {
-            height: var(--space-5);
-            width: 2.875rem;
-        }
-    }
-
-    & span:not([data-shape]) {
-        position: absolute;
-        width: 0.1875rem;
-        background: var(--muted);
-        left: calc(50% - 0.3125rem);
-        height: 1.75rem;
-        top: -0.3125rem;
-    }
-
-    height: 3.75rem;
-    margin: 0.625rem 0;
 }
 
 .atlas-clock-pair {
@@ -399,6 +276,53 @@ atlas-scene {
     }
 }
 
+.atlas-transit,
+.atlas-stops {
+    margin: var(--space-2) 0 var(--space-3);
+    padding: 0;
+    display: grid;
+    gap: var(--space-1);
+
+    & li {
+        display: flex;
+        justify-content: space-between;
+        gap: var(--space-3);
+        padding: var(--space-1) 0;
+        border-block-end: var(--stroke) solid var(--line);
+        font-variant-numeric: tabular-nums;
+    }
+
+    & small {
+        color: var(--muted);
+        text-align: end;
+    }
+}
+
+.atlas-transit {
+    list-style: none;
+}
+
+.atlas-stops {
+    list-style: decimal inside;
+    color: var(--muted);
+}
+
+.atlas-breadcrumb {
+    & label {
+        margin: 0;
+    }
+
+    & select {
+        padding: .25em .5em;
+        inline-size: auto;
+        font-size: var(--text-sm);
+    }
+}
+
+.atlas-inspector .meter {
+    margin-block: var(--space-2) var(--space-3);
+}
+
 .atlas-assumption {
     color: var(--muted);
     margin: 1.125rem 0 var(--space-1);
@@ -423,65 +347,53 @@ atlas-scene {
     }
 }
 
-.atlas-local-inset {
-    border-top: var(--stroke) solid var(--line);
-    margin: 1.4375rem -0.25rem 0;
-    padding-top: var(--space-5);
-
-    &>div {
-        display: flex;
-        justify-content: space-between;
-        align-items: baseline;
-        gap: 0.625rem;
-    }
-
-    & [data-kicker] {
-        letter-spacing: 0.05rem;
-        white-space: nowrap;
-        margin: 0;
-    }
-
-    & .atlas-link {
-        width: auto;
-        padding: 0;
-        white-space: nowrap;
-    }
-
-    & svg {
-        width: 100%;
-        height: auto;
-        max-height: 10.125rem;
-    }
-
-    & text {
-        fill: var(--text);
-    }
-
-    &>small {
-        display: block;
-        text-align: center;
-        color: var(--muted);
-    }
-}
-
 .view-map {
     & .location {
         color: var(--amber);
     }
 }
 
-.atlas-play-inline {
-    width: 1.875rem;
-    height: 1.8125rem;
+.crew-list {
+    list-style: none;
+    margin: var(--space-3) 0 var(--space-2);
+    padding: 0;
     display: grid;
-    place-items: center;
-    background: var(--amber);
-    color: var(--ink);
-    flex-shrink: 0;
+    gap: var(--space-2);
+    max-height: 18rem;
+    overflow-y: auto;
+}
+
+.crew-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    text-align: left;
+    gap: 0.6875rem;
+    padding: var(--space-2) 0;
+    border-bottom: var(--stroke) solid var(--line);
+
+    & b {
+        color: var(--cream);
+    }
+
+    & small {
+        display: block;
+        color: var(--muted);
+        margin-top: 0.1875rem;
+    }
 
     & svg {
-        width: 0.9375rem;
-        height: 0.9375rem;
+        margin-left: auto;
+        width: 0.875rem;
+        height: 0.875rem;
+        color: var(--muted);
+    }
+
+    &:hover {
+        & b,
+        & svg {
+            color: var(--amber);
+        }
     }
 }
 
@@ -512,6 +424,10 @@ atlas-scene {
 }
 
 @media (max-width: 56.25rem) {
+    atlas-view {
+        padding: 0;
+    }
+
     .atlas-layout {
         grid-template-columns: 1fr;
     }
@@ -530,15 +446,6 @@ atlas-scene {
         display: none;
     }
 
-    .atlas-local-inset {
-        & svg {
-            max-height: 12.5rem;
-        }
-    }
-
-    .atlas-travel-note {
-        margin-bottom: var(--space-3);
-    }
 }
 
 @media (max-width: 34.375rem) {
@@ -568,10 +475,6 @@ atlas-scene {
     .atlas-label {
         min-width: 0;
         padding: var(--stroke) 0.1875rem;
-
-        & small {
-            display: none;
-        }
     }
 
     .atlas-map-caption {
@@ -596,10 +499,6 @@ atlas-scene {
         display: none;
     }
 
-    .atlas-time-controls {
-        gap: var(--space-2);
-    }
-
     .atlas-camera {
         margin-left: auto;
     }
@@ -607,7 +506,7 @@ atlas-scene {
 
 @media (min-width: 56.3125rem) {
     .atlas-layout {
-        height: max(40.625rem, calc(100dvh - 18.125rem));
+        height: max(40.625rem, calc(100dvh - 26.125rem));
     }
 
     .atlas-map-surface {
@@ -620,17 +519,5 @@ atlas-scene {
         overflow-y: auto;
         scrollbar-width: thin;
         scrollbar-color: var(--line) transparent;
-    }
-
-    .view-map {
-        &>.page-heading {
-            position: absolute;
-            width: var(--stroke);
-            height: var(--stroke);
-            margin: -0.0625rem;
-            overflow: hidden;
-            clip-path: inset(50%);
-            padding: 0;
-        }
     }
 }

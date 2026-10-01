@@ -4,7 +4,7 @@ import type {
 } from 'lit'
 
 export type Theme = 'light' | 'dark' | 'system'
-export const THEME_KEY = 'theseus.theme'
+const THEME_KEY = 'theseus.theme'
 export function themePreference(value: unknown): Theme {
     return value === 'light'
         || value === 'dark'

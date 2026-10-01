@@ -1,40 +1,63 @@
-# implementation notes
+# architecture
 
 ## boundaries
 
-- `src/model.ts`: serializable game state, inventory, hulls, attachment constraints, and immutable domain operations. independent of browser, lit, and three.js.
-- `src/app.ts`: application shell and shared game snapshot. `src/screens/` owns screen interactions; `src/components/` provides shared native controls, panels and catalog composition. see [frontend foundations](frontend.md).
-- `src/render/geometry.ts`: procedural ship/port builders. faceted vertex colors define the palette; no textures, models, image downloads, lights, or postprocessing.
-- `src/render/space-scene.ts`: orthographic three.js renderer, camera controls, picking, facility labels, resize handling, and gpu resource disposal.
-- `src/render/orbit-view.ts`: canvas2d presentation of calculated coordinates, independent of the port camera. node dragging dispatches an event to the parent controller.
-- `src/simulation/orbit.ts`: pure orbital math, useful from a worker later if route searches become expensive.
+- `src/client.ts`: `GameClient`, the one owner of transport and session.
+  auth, hydration, commands, the feed. see [transport](transport.md).
+- `src/transport/`: the wire. `api.ts` fetches with the bearer token,
+  `feed.ts` holds the websocket and reconnects, `pending.ts` matches a
+  202 correlation id to its reply, `validate.ts` parses every row and
+  frame, `types.ts` names the shapes.
+- `src/session.ts`: the immutable server snapshot and its lookups.
+  `legTime()` repeats the domain's leg model for the eta.
+- `src/events.ts`: `fold(session, frame)` and `flavor()`. pure.
+- `src/app.ts`: the shell. navigation, the hull preview choice,
+  notifications. screens get one session snapshot and the client.
+- `src/screens/`: auth, port, rigging, exchange, comms, flight. a screen
+  renders and calls commands. it never computes the next state.
+- `src/maps/`: the navigation atlas. see [maps](maps.md).
+- `src/components/`: native-control templates, the panel surface, theme
+  selection, the shared ship viewport composition, the hull catalog.
+- `src/render/`: three.js. `lem-scene.ts` loads a station glb per
+  station id from `lem-station.ts`. `space-scene.ts` shows the hull in
+  the rig and at the exchange berth. `hull-model.ts` loads and caches
+  hull glbs. `geometry.ts` holds the schematic reserve and the berth
+  backdrop. `ship-lighting.ts` is the one lighting rig.
+- `src/simulation/orbit.ts`: two-body math for the flight preview.
+- `src/model.ts`: the visual catalogue only. hull previews, the 3 visual
+  module groups, good swatches. the server owns the game.
 
-lit updates the operational ui; three.js owns its own render loop. the render tree rebuilds only when hull, mode, attachments, selection, or cargo changes. geometry and materials are disposed when replaced. device pixel ratio is capped at two. reduced-motion preference disables ambient ship bobbing. all essential actions have dom controls; scene picking is optional.
+## rendering
 
-## category grammar
+lit updates the interface; each viewport owns its three.js render loop
+and disposes geometry and materials it replaces. device pixel ratio is
+capped at two. reduced motion disables ambient movement. every action
+has a dom control; scene picking is a shortcut.
 
-industrial: ochre / graphite / stone. exposed framing, containers, tanks, and repeated service modules. freighter, tanker, salvage tug, terraforming colony giant.
+one webgl context per live viewport. the hull catalog draws its 36
+thumbnails with one shared offscreen renderer and copies each frame
+into a 2d canvas: a browser keeps about 16 live contexts, and evicting
+the oldest would blank the port and rig viewports.
 
-civil: ivory / teal / slate. pressure cabins, passenger volumes, observation and communications hardware. liner, passenger transport, yacht, research vessel.
+a hull glb loads once per file and is cloned per view. a failed load
+leaves the cache, so the next render retries. the schematic reserve
+stands in meanwhile.
 
-security: gunmetal / oxide / cold gray. compact armor, hardpoints, repeated custody blocks. battleship, frigate, corvette, prison barge.
+## the flight preview
 
-geometry distinguishes hulls in addition to color. common attachment mounts allow the same module operations on every preview hull. scale is illustrative, not a claim that a colony giant and a corvette have equal real dimensions.
-
-## orbital model
-
-kilometres, seconds, and radians internally; earth gravitational parameter 398600.4418 km³/s²; spherical radius 6371 km. the initial circular orbit is 7200 km from the center. the target follows a coplanar circular orbit at 14500 km.
-
-an instantaneous prograde/radial impulse sets the post-burn energy and eccentricity vector. kepler's equation propagates the resulting bound ellipse. the drawn curve and markers come from that solution. the node angle rotates the departure location; target phase is fixed at that burn epoch. this is a geometry/phase experiment, not a scheduler that advances both vessels to a later burn time.
-
-closest approach is approximated over one planned revolution with 400 samples and local refinement. relative velocity is computed at that time. it is not a guaranteed rendezvous. inclination, perturbations, spheres of influence, finite burn duration, rendezvous capture, fuel mass, and n-body effects are omitted. intersecting and unbound trajectories cannot be saved. δv available is an illustrative fixed 7.80 km/s.
-
-brachistochrone mode is a separate idealized rest-to-rest, straight-line, constant-acceleration transfer. `t = 2 sqrt(d/a)`, peak speed `sqrt(d*a)`, and total δv `2 sqrt(d*a)`, with unit conversion. acceleration is derived from the fitted drive; gravity, initial orbital velocity, and mass change are omitted. accelerating and braking costs are both included.
-
-## server integration
-
-the transport adapter is in place, see [transport](transport.md). the app holds no local game rules. renderer and simulation modules are unchanged: the scene reads the hull preview and the 3 visual module groups from the server rig (`visualFitted()` in `session.ts`).
+kilometres, seconds and radians. earth's gravitational parameter is
+398600.4418 km³/s², its radius 6371 km. the ship starts in a 7200 km
+circular orbit; the target rides a 14500 km orbit. a prograde and radial
+impulse fixes the ellipse, kepler's equation propagates it, and closest
+approach is sampled over one revolution and refined. the brachistochrone
+mode is a rest-to-rest straight line at the fitted drive's acceleration.
+the budget of 7.80 km/s is a study figure. nothing here reaches the
+server.
 
 ## validation
 
-node tests exercise the wire parsers, event folding, the eta model against the server's `legTime()`, pending-command settlement, circular and perturbed orbits, burn initial conditions, energy/angular momentum conservation, closest-approach sanity, and brachistochrone unit conversion. browser checks exercise the lit bindings and renderer against a live gateway.
+`npm run check` runs eslint, the node tests, type checking and the
+production build. the tests cover the wire parsers, event folding, the
+eta model against the server's `legTime()`, pending-command settlement,
+the chart geometry and course search, the station asset contract, and
+the orbital math. browser checks run against a live gateway.

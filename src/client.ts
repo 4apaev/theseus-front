@@ -10,7 +10,7 @@ import { Fail } from './util.ts'
 
 export type ClientStatus = 'offline' | 'syncing' | 'online'
 
-export const TOKEN_KEY = 'theseus.token'
+const TOKEN_KEY = 'theseus.token'
 
 // the market pays up to 10% over quote on a buy, and accepts 10% under on a sell
 const RATE = { buy: 1.1, sell: 0.9 }
@@ -164,9 +164,11 @@ export class GameClient {
 
     // ── commands ─────────────────────────────────────────────
 
-    travel(to: string) {
+    /** the server plots the hops. the client remembers where it asked to go. */
+    async travel(to: string) {
         const { sid, stid } = this.needShip()
-        return this.command('post', `/api/ship/${ sid }/travel`, { to, from: stid }, { label: `travel → ${ stationName(this.session, to) }` })
+        await this.command('post', `/api/ship/${ sid }/travel`, { to, from: stid }, { label: `travel → ${ stationName(this.session, to) }` })
+        this.commit({ course: to })
     }
 
     rename(name: string) {

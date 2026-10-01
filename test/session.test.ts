@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { legTime, realMs, departures, cargoLoad, visualFitted, emptySession, dockedAt, withLog } from '../src/session.ts'
+import { legTime, realMs, departures, cargoLoad, visualFitted, emptySession, dockedAt, withLog, sellersOf, quoted } from '../src/session.ts'
 import type { Session } from '../src/session.ts'
 import type { Ship, Constants } from '../src/transport/types.ts'
 
@@ -55,6 +55,28 @@ test('departures list only routes from the current dock, closest first', () => {
     assert.ok(list[ 1 ]!.years_rel < list[ 1 ]!.years_abs, 'a relativistic hop ages the pilot less')
     assert.equal(list[ 0 ]!.years_rel, list[ 0 ]!.years_abs, 'an in-system hop has no dilation')
     assert.deepEqual(departures({ ...s, ship: { ...ship, status: 'transit', stid: undefined }}), [])
+})
+
+test('a commodity sells at every exchange, a module only where a station stocks it', () => {
+    const s: Session = {
+        ...emptySession(),
+        ship  : { ...ship, stid: 'sol.venus' },
+        market: [{ gid: 'ore', price_buy: 25, price_sell: 20 }],
+        universe: { systems: [], routes: [], hulls: {}, modules: {}, constants: K, goods: {
+            ore        : { name: 'ore', kind: 'commodity', volume: 1, price_base: 1 },
+            'cargo.mk1': { name: 'pod', kind: 'module', volume: 8, price_base: 1 },
+        }, stations: [
+            { stid: 'sol.venus', system: 'sol', name: 'Venus Lab', produces: {}, consumes: {}},
+            { stid: 'sol.outpost', system: 'sol', name: 'Sol Outpost', produces: {}, consumes: {}, stocks: [ 'cargo.mk1' ]},
+            { stid: 'sol.ganymede', system: 'sol', name: 'Ganymede Yards', produces: {}, consumes: {}, stocks: [ 'cargo.mk2' ]},
+        ]},
+    }
+    assert.deepEqual(sellersOf(s, 'ore').map(x => x.stid), [ 'sol.venus', 'sol.outpost', 'sol.ganymede' ])
+    assert.deepEqual(sellersOf(s, 'cargo.mk1').map(x => x.stid), [ 'sol.outpost' ])
+    assert.deepEqual(sellersOf(s, 'mystery'), [])
+    assert.equal(quoted(s, 'ore'), true)
+    assert.equal(quoted(s, 'cargo.mk1'), false, 'venus posts no module quote')
+    assert.equal(quoted({ ...s, ship: { ...ship, status: 'transit', stid: undefined }}, 'ore'), false, 'no quotes in transit')
 })
 
 test('cargo load weighs quantity by good volume', () => {

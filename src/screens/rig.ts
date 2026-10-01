@@ -9,7 +9,7 @@ import { fmtVel, fmtAccel } from '../util.ts'
 // the same rule as the contract's field.shipName. a bad name gets an answer with no round trip.
 const SHIP_NAME = /^[\p{L}\p{N} '.-]{1,24}$/u
 
-export function nameError(name: string) {
+function nameError(name: string) {
     if (!name) return 'a ship needs a name'
     if (name.length > 24) return 'too long · 24 characters or fewer'
     if (!SHIP_NAME.test(name) || name.trim() !== name) return 'letters, digits, space, and - \' . only'
@@ -100,6 +100,7 @@ class RigScreen extends GameScreen {
                 ${ carried.map(c => this.pickButton(c.gid, `fit ${ goodName(this.session, c.gid) } ×${ c.quantity }`)) }
                 ${ !gid && !carried.length ? html`<p class="footnote">no modules in the hold · the exchange sells packaged modules</p>` : nothing }
             </div>
+            ${ gid ? html`<p class="footnote">a removed or replaced module packs into the hold. sell it at an exchange that trades it.</p>` : nothing }
             ${ this.previewBlock() }
         </section>`
     }

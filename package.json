@@ -1,12 +1,13 @@
 {
     "name"       : "theseus-front",
     "version"    : "0.1.0",
-    "description": "procedural theseus flight and port prototype",
+    "description": "theseus client: port, rig, exchange, comms and atlas",
     "repository" : "github:4apaev/theseus-front",
     "type"       : "module",
     "engines"    : { "node": ">=24" },
 
     "scripts": {
+        "start"  : "npm run dev",
         "dev"    : "vite --host 0.0.0.0",
         "build"  : "tsc --noEmit && vite build",
         "preview": "vite preview --host 0.0.0.0",

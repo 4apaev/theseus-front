@@ -1,7 +1,7 @@
 import { html } from 'lit'
-import type { View, ModuleId } from '../model.ts'
+import type { View, ModuleId, Facility } from '../model.ts'
 import { hullById } from '../model.ts'
-import type { SpaceScene } from '../render/space-scene.ts'
+import type { SpaceScene, SceneMode } from '../render/space-scene.ts'
 import { iconButton } from './controls.ts'
 
 export interface StationOptions {
@@ -9,7 +9,7 @@ export interface StationOptions {
     hull        : string
     fitted      : ModuleId[]
     load        : number
-    mode        : 'port' | 'rig' | 'market'
+    mode        : SceneMode
     motion      : boolean
     selected    : ModuleId
     navigate    : (view: View) => void
@@ -36,7 +36,7 @@ export function stationView(options: StationOptions) {
             .selection=${ selected }
             .load=${ load }
 
-            @facility-select=${ (e: CustomEvent<'exchange' | 'drydock' | 'relay'>) => navigate(({ exchange: 'market', drydock: 'rig', relay: 'comms' } as const)[ e.detail ]) }
+            @facility-select=${ (e: CustomEvent<Facility>) => navigate(({ exchange: 'market', drydock: 'rig', relay: 'comms' } as const)[ e.detail ]) }
             @module-select=${ () => navigate('rig') }
         ></space-scene>
 

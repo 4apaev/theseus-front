@@ -58,24 +58,6 @@ mark {
     margin-bottom: var(--space-5);
 }
 
-.station-metrics {
-    display: flex;
-    padding-bottom: 1.3125rem;
-    border-bottom: var(--stroke) solid var(--line);
-    gap: var(--space-10);
-
-    & small {
-        display: block;
-        color: var(--muted);
-        margin-bottom: 0.3125rem;
-    }
-
-    & b {
-        color: var(--cream);
-        font-size: 1.125rem;
-    }
-}
-
 .notice {
     display: flex;
     gap: 0.8125rem;

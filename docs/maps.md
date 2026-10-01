@@ -1,52 +1,77 @@
 # navigation atlas
 
-open **map** in the operations rail.
-both views use procedural three.js geometry
-with lit controls and labels.
-no textures or image assets are loaded.
+open **map** in the operations rail. the atlas is the server's universe
+as a chart. both views use three.js geometry with lit controls and
+labels. no textures or image assets load.
 
-## examples
+## views
 
-- **interstellar:** sol → cersa by default.
-    choose another surveyed system or click its label,
-    adjust cruise speed, then run the travel example.
-    drag the map to rotate the stellar projection.
-    use zoom and reset controls.
-    clicking sol opens the system view.
+- **interstellar:** every system at its catalogue position, in light
+  years. the routes between systems are the universe's routes. a system
+  with one station is that station: click it to choose the destination.
+  a system with several stations opens the system view.
 
-- **in system:** earth → mars by default.
-    choose venus for an inward transfer. mercury exceeds
-    the example vessel's 7.80 km/s maneuver budget,
-    so playback is unavailable. clicking earth or focus orbit
-    opens the existing local maneuver planner.
+- **in system:** the stations of one system on their orbits, on one
+  radial line. the domain measures in-system routes as the difference of
+  orbit radii, so the line is the truth, not a layout choice. the chart
+  compresses radii with `log1p(4 · au)`: titan at 9.5 au would crush the
+  inner system into one dot. order holds; distances read from the panel.
+  click the star to return to the sector. the breadcrumb select changes
+  the system.
 
-both maps use free trackball camera rotation:
-drag in any direction to turn and tilt, including over the poles.
-right-drag to pan. scroll or pinch to zoom. one-finger touch
-rotates and two fingers pan/zoom. reset restores the default position,
-orientation and zoom. the x, y and z buttons clear individual world-axis
-rotation offsets from the initial view, using xyz euler order.
-they preserve pan and zoom. labels remain upright and picking follows the view.
-camera movement leaves travel coordinates and times unchanged.
+both views draw your ship, amber, and every other ship in transit, mint.
+a ship moves along its leg on the server clock: the leg starts
+`years_abs · time_scale` seconds before `arrives`. docked ships are not
+markers. the destination panel lists who is in port.
 
-playback takes 24 seconds at 1×, independent of modeled travel time. pause, scrub, restart, or choose 0.5× / 4×. switching scale or destination resets the route. leaving maps or hiding the browser pauses playback. returning retains the selected route and progress. completion adds a ship-log entry.
- inventory, credits, and actual vessel location remain unchanged. reload resets the prototype.
+the view follows your ship's system until you pick one.
 
-## models and limits
+## the course
 
-interstellar coordinates are fictional cartesian positions in light-years. distance includes depth. travel is constant-speed coast: system time is distance / speed.
- ship time applies the special-relativistic time-dilation factor. acceleration, braking, drive feasibility, fuel and departure conditions are excluded.
+choose a station with a label, a marker, or the destination select. the
+inspector shows what it produces and consumes, its module stock, who is
+docked there, and the course from your ship: the shortest travel time for
+your drive, hop by hop, with the distance and real arrival time of each
+leg, and the years you and the galaxy age.
 
-system orbits are circular and coplanar with symbolic planet sizes. the ship follows a two-impulse hohmann ellipse propagated with kepler's equation, while the destination advances to the same arrival point. initial phase is aligned to a launch window.
- this is not a live ephemeris or a launch-window search. displayed δv includes both heliocentric impulses and excludes planetary escape/capture, parking orbits, finite burns, inclination, perturbations, and fuel mass. the earth inset is a schematic link to the separate local planner.
+the course uses the server's own model. `legTime()` in `src/session.ts`
+repeats the domain's leg model: a route between stars holds one speed, an
+in-system route accelerates to the midpoint, flips and brakes. the search
+in `src/maps/chart.ts` weighs each edge by that time, as `universe.path()`
+does. a fast route does not help a slow ship, so the course depends on the
+ship.
 
-constants use kilometres and seconds: au = 149597870.7 km, solar gravitational parameter = 132712440041.27942 km³/s². references: [jpl astrodynamic parameters](https://ssd.jpl.nasa.gov/astro_par.html), [jpl launch-window explanation](https://www.jpl.nasa.gov/edu/resources/lesson-plan/lets-go-to-mars-calculating-launch-windows/).
+**depart** confirms, then sends one travel command with the destination.
+the server plots the same course and flies it. each leg is its own
+`ship.departed` / `ship.arrived` pair on the feed; a waypoint departs again
+right after it arrives. the client remembers the destination as
+`session.course`, draws it solid amber until arrival, and drops it on a
+travel rejection. a reload forgets it: the server does not publish the
+manifest.
+
+a selected destination that is not the active course draws dashed.
+
+## positions
+
+star positions come from the hipparcos-yale-gliese catalogue, in light
+years. the universe's route lengths are the straight lines between them,
+so the chart and the domain agree to the centimetre. a system the table
+does not know sits on a ring, so universe growth cannot break the map.
+
+orbit radii are the standard mean values: mercury 0.387, venus 0.723,
+earth 1.0 for sol outpost, mars 1.524, ganymede 5.203, titan 9.537. a
+station the table does not know gets the next ring out.
 
 ## implementation
 
-- `src/maps/navigation.ts`: pure typed catalog, coast/transfer solutions, synchronized positions, and playback state. no renderer dependencies.
-- `src/maps/atlas-scene.ts`: orthographic scene, picking, projected labels, camera controls, resize handling, and resource disposal.
-- `src/maps/atlas-view.ts`: selection, inspector, playback clock, and screen events.
-- `test/navigation.test.ts`: inward/outward rendezvous, orbital energy, delta-v, clock conversion, invalid routes, and playback boundaries.
+- `src/maps/chart.ts`: pure. positions, nodes, edges, rings, mover
+  positions and headings, the shortest-time course. no renderer.
+- `src/maps/atlas-scene.ts`: orthographic scene, picking, projected
+  labels, trackball camera, frame fitting, marker updates each frame.
+- `src/maps/atlas-view.ts`: a game screen. mode, system, destination,
+  inspector, the depart dialog, the one-second clock.
+- `test/chart.test.ts`: catalogue geometry, orbit tables, edges per
+  view, the time-weighted course, mover progress and framing.
 
-server integration should replace preview completion with an authoritative travel command and timestamped state. keep the renderer consuming calculated positions rather than defining the travel rules.
+the flight screen stays a local preview of maneuver planning. departures
+also leave from the port screen, one direct hop at a time.

@@ -3,8 +3,8 @@ import { GameScreen } from './base.ts'
 import { button, fieldLabel } from '../components/controls.ts'
 import { stationView } from '../components/station.ts'
 import { swatch } from '../model.ts'
-import { docked, stationName, goodName, good, aboard, cargoLoad, volumeOf, visualFitted } from '../session.ts'
-import type { Side, MarketRow } from '../transport/types.ts'
+import { docked, stationName, goodName, good, aboard, cargoLoad, volumeOf, visualFitted, sellersOf, quoted } from '../session.ts'
+import type { Side, MarketRow, CargoRow } from '../transport/types.ts'
 import { number, credits } from '../util.ts'
 
 /** the exchange: real quotes, real hold, one command per trade. */
@@ -36,11 +36,11 @@ class MarketScreen extends GameScreen {
     private panel() {
         const { ship } = this.session
         if (!ship || !docked(this.session))
-            return html`${ this.panelHeader('exchange', 'market offline', 'transit') }<p class="panel-intro">quotes return at the next dock.</p>`
+            return html`${ this.panelHeader('exchange', 'market offline', 'transit') }<p class="panel-intro">quotes return at the next dock.</p>${ this.hold() }`
 
         const row = this.row()
         if (!row)
-            return html`${ this.panelHeader(stationName(this.session, ship.stid), 'no goods quoted', 'open') }<p class="panel-intro">the exchange has posted no prices yet.</p>`
+            return html`${ this.panelHeader(stationName(this.session, ship.stid), 'no goods quoted', 'open') }<p class="panel-intro">the exchange has posted no prices yet.</p>${ this.hold() }`
 
         const q = this.quote(row)
         return html`${ this.panelHeader(`${ stationName(this.session, ship.stid) } exchange`, 'a fair exchange', 'open') }
@@ -62,14 +62,51 @@ class MarketScreen extends GameScreen {
             </dl>
             <p class=${ q.error ? 'validation error' : 'validation' }>${ q.error || 'the market settles at up to 10% off the quote' }</p>
             ${ button({ label: `${ this.side } ${ number(this.quantity) } ${ goodName(this.session, row.gid) }`, variant: 'primary', disabled: !!q.error, icon: 'arrow', click: () => this.run(() => this.client.trade(this.side, row.gid, this.quantity)) }) }
-            <small class="footnote">quotes drift with station stock · the server settles every trade</small>`
+            <small class="footnote">quotes drift with station stock · the server settles every trade</small>
+            ${ this.hold() }`
+    }
+
+    // ── the hold ─────────────────────────────────────────────
+
+    /* every row aboard, with its way out: a sell here when the station
+       quotes it, else the exchanges that do. a removed module lands here. */
+    private hold() {
+        const { ship, cargo } = this.session
+        return html`<section class="hold" aria-label="hold">
+            <small data-kicker>hold · ${ cargoLoad(this.session) } / ${ ship?.capacity ?? '—' }</small>
+            ${ cargo.length
+                ? html`<ul class="hold-list">${ cargo.map(c => this.holdRow(c)) }</ul>`
+                : html`<p class="footnote">the hold is empty</p>` }
+        </section>`
+    }
+
+    private holdRow(c: CargoRow) {
+        const kind = good(this.session, c.gid)?.kind ?? 'cargo'
+        return html`<li>
+            <span><b>${ goodName(this.session, c.gid) }</b><small>${ kind === 'module' ? html`<mark>module</mark>` : kind } · ${ c.quantity } × ${ volumeOf(this.session, c.gid) } vol</small></span>
+            ${ quoted(this.session, c.gid)
+                ? button({ label: 'sell', variant: 'secondary', click: () => this.sellFrom(c) })
+                : html`<small class="hold-note">${ this.buyers(c.gid, kind) }</small>` }
+        </li>`
+    }
+
+    private buyers(gid: string, kind: string) {
+        if (kind !== 'module') return 'sells at any exchange'
+        const names = sellersOf(this.session, gid).filter(s => s.stid !== this.session.ship?.stid).map(s => s.name)
+        return names.length ? `sells at ${ names.join(', ') }` : 'no exchange trades this'
+    }
+
+    private sellFrom(c: CargoRow) {
+        this.gid = c.gid
+        this.side = 'sell'
+        this.quantity = c.quantity
     }
 
     private commodity(m: MarketRow, active: boolean) {
         const s = swatch(m.gid)
         const kind = good(this.session, m.gid)?.kind ?? 'commodity'
         return html`<button class=${ active ? 'commodity active' : 'commodity' } @click=${ () => { this.gid = m.gid } }>
-            <span class="commodity-icon" style=${ `--commodity:${ s.tint }` }>${ s.code }</span>
+            <span class=${ `commodity-icon ${ kind === 'module' ? 'module' : '' }` } style=${ `--commodity:${ s.tint }` }>${ s.code }</span>
             <span><b>${ goodName(this.session, m.gid) }</b><small>${ kind } · ${ aboard(this.session, m.gid) } aboard</small></span>
             <strong>${ credits(m[ `price_${ this.side }` ]) }<small>/ unit</small></strong>
         </button>`

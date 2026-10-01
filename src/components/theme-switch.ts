@@ -15,7 +15,6 @@ class ThemeSwitch extends AppElement {
     override render() {
         return html`
         <label for="theme-preference">
-            <small>theme</small>
             <select
                 id="theme-preference"
                 aria-label="color theme"

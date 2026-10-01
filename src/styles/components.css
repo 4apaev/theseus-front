@@ -50,13 +50,7 @@ theme-switch {
 
     & label {
         display: grid;
-        gap: var(--space-1);
         margin: 0;
-    }
-
-    & small {
-        font-size: var(--text-xs);
-        letter-spacing: .1em;
     }
 
     & select {
@@ -75,18 +69,6 @@ dl {
     & small {
         font-size: .9em;
         margin-inline-start: .25em;
-    }
-}
-
-.mount {
-    & samp {
-        display: block;
-        margin-block-start: var(--space-1);
-        color: var(--muted);
-
-        &[data-fitted='true'] {
-            color: var(--mint);
-        }
     }
 }
 
@@ -112,8 +94,7 @@ dl {
 }
 
 .atlas-clock-pair,
-.orbit-stats,
-.station-metrics {
+.orbit-stats {
     & b {
         font-family: var(--font-mono);
     }
@@ -162,10 +143,6 @@ dl {
     }
 
     theme-switch {
-        & label>small {
-            display: none;
-        }
-
         & select {
             inline-size: 5.5em;
         }
@@ -190,16 +167,11 @@ dl {
         }
     }
 
-    .atlas-time-controls {
-        flex-wrap: wrap;
-    }
-
     .atlas-map-caption {
         flex-wrap: wrap;
     }
 }
 
-.station-metrics,
 .atlas-clock-pair,
 .orbit-stats,
 .delta-budget {

@@ -2,6 +2,7 @@
     position: relative;
     height: 100%;
     min-height: 34.375rem;
+    padding-top: 3.5rem;
     display: flex;
     flex-direction: column;
 }
@@ -186,6 +187,7 @@ orbit-view {
 @media (max-width: 56.25rem) {
     .flight-workspace {
         min-height: 0;
+        padding-top: 0;
     }
 
     orbit-view {

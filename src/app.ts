@@ -2,37 +2,45 @@ import './styles/styles.css'
 import './render/space-scene.ts'
 import './render/orbit-view.ts'
 import './maps/atlas-view.ts'
-import { html, nothing } from 'lit'
-import { AppElement } from './components/element.ts'
-import { button } from './components/controls.ts'
-import { icon } from './icons.ts'
-import { credits, countdown } from './util.ts'
+
+import { html, nothing          } from 'lit'
+import { AppElement             } from './components/element.ts'
+import { button, iconButton     } from './components/controls.ts'
+import { icon                   } from './icons.ts'
+import { credits, countdown     } from './util.ts'
+import { speak, sound           } from './util.speak.ts'
 import { DEFAULT_HULL, hullById } from './model.ts'
-import type { View, HullId } from './model.ts'
-import type { Navigation } from './screens/base.ts'
-import { ThemeController } from './theme.ts'
-import { GameClient, type ClientStatus } from './client.ts'
-import { emptySession, cargoLoad, stationName, docked, etaMs } from './session.ts'
-import type { Session } from './session.ts'
+import type { View, HullId      } from './model.ts'
+import type { Navigation        } from './screens/base.ts'
+import type { Session           } from './session.ts'
+import { type ClientStatus, GameClient } from './client.ts'
+import { emptySession, cargoLoad, stationName, systemName, station, docked, etaMs } from './session.ts'
+import { ThemeController, type Theme   } from './theme.ts'
+
 import './components/panel.ts'
 import './components/fleet.ts'
-import './components/theme-switch.ts'
+import './components/arrival.ts'
+import './components/settings.ts'
+
+import './screens/rig.ts'
 import './screens/auth.ts'
 import './screens/port.ts'
-import './screens/rig.ts'
-import './screens/market.ts'
+import './screens/cargo.ts'
 import './screens/comms.ts'
+import './screens/market.ts'
 import './screens/flight.ts'
 
 const HULL_KEY = 'theseus.hull'
+const SPEECH_KEY = 'theseus.speech'
 
-const views: { id: View, name: string, title: string, sub: string }[] = [
-    { id: 'port', name: 'port', title: 'port authority', sub: 'who is here, and where the routes go.' },
-    { id: 'rig', name: 'rigging', title: 'ship operations', sub: 'every attachment changes the equation.' },
-    { id: 'market', name: 'exchange', title: 'market operations', sub: 'something to carry. somewhere to go.' },
-    { id: 'comms', name: 'comms', title: 'the quiet between', sub: 'a signal is a kind of company.' },
-    { id: 'map', name: 'map', title: 'navigation atlas', sub: 'a preview. departures leave from the port.' },
-    { id: 'orbit', name: 'flight', title: 'transfer planning', sub: 'a preview. the server flies the ship.' },
+const views: { id: View, name: string, title: string }[] = [
+    { id: 'port'  , name: 'port'    , title: 'port authority'    },
+    { id: 'rig'   , name: 'rigging' , title: 'ship operations'   },
+    { id: 'market', name: 'exchange', title: 'market operations' },
+    { id: 'cargo' , name: 'cargo'   , title: 'the hold'          },
+    { id: 'comms' , name: 'comms'   , title: 'the quiet between' },
+    { id: 'map'   , name: 'map'     , title: 'navigation atlas'  },
+    { id: 'orbit' , name: 'flight'  , title: 'transfer planning' },
 ]
 
 /**
@@ -41,60 +49,89 @@ const views: { id: View, name: string, title: string, sub: string }[] = [
  */
 class TheseusApp extends AppElement {
     static properties = {
-        view   : { state: true },
-        session: { state: true },
-        status : { state: true },
-        authed : { state: true },
-        hull   : { state: true },
-        slotId : { state: true },
-        fleet  : { state: true },
-        toast  : { state: true },
-        now    : { state: true },
+        view    : { state: true },
+        session : { state: true },
+        status  : { state: true },
+        authed  : { state: true },
+        hull    : { state: true },
+        navSlot : { state: true },
+        fleet   : { state: true },
+        toast   : { state: true },
+        now     : { state: true },
+        arrival : { state: true },
+        speech  : { state: true },
+        settings: { state: true },
+        railCollapsed: { state: true },
     }
 
     declare view: View
     declare session: Session
     declare status: ClientStatus
-    declare authed: boolean
     declare hull: HullId
-    declare slotId?: string
-    declare fleet: boolean
-    declare toast: string
     declare now: number
+    declare toast: string
+    declare navSlot?: string
+    declare authed: boolean
+    declare fleet: boolean
+    declare speech: boolean
+    declare settings: boolean
+    declare railCollapsed: boolean
+    declare arrival?: { system: string, name: string }
 
     readonly client = new GameClient
     readonly theme = new ThemeController(this)
-    private toastTimer?: ReturnType<typeof setTimeout>
+
     private clock?: ReturnType<typeof setInterval>
+    private toastTimer?: ReturnType<typeof setTimeout>
     private previousFocus?: HTMLElement
 
     constructor() {
         super()
-        this.view = 'port'
-        this.session = emptySession()
-        this.status = 'offline'
-        this.authed = false
-        this.hull = readHull()
-        this.fleet = false
-        this.toast = ''
-        this.now = Date.now()
+        this.toast    = ''
+        this.view     = 'port'
+        this.status   = 'offline'
+        this.authed   = false
+        this.fleet    = false
+        this.settings = false
+        this.railCollapsed = false
+        this.now      = Date.now()
+        this.session  = emptySession()
+        this.hull     = readHull()
+        this.speech   = readSpeech()
     }
 
     override connectedCallback() {
         super.connectedCallback()
-        this.client.onChange = s => { this.session = s }
-        this.client.onStatus = st => { this.status = st }
-        this.client.onNotify = text => this.notify(text)
-        this.client.onAuth = authed => { this.authed = authed; if (!authed) this.view = 'port' }
+        this.client.onNotify = x => this.notify(x)
+        this.client.onChange = x => { this.checkArrival(x); this.session = x }
+        this.client.onStatus = x => { this.status = x }
+        this.client.onAuth   = x => { this.authed = x; if (!x) this.view = 'port' }
         this.clock = setInterval(() => { this.now = Date.now() }, 1000)
         this.client.boot()
     }
 
     override disconnectedCallback() {
         super.disconnectedCallback()
+
         clearTimeout(this.toastTimer)
         clearInterval(this.clock)
+
         this.client.logout()
+    }
+
+    // a fresh dock, not just a docked ship on the first frame. the overlay is the strong cue; the view swap follows it.
+    private checkArrival(next: Session) {
+        if (this.session.ship?.status !== 'transit' || next.ship?.status !== 'docked') return
+
+        const here = station(next, next.ship.stid)
+        if (!here) return
+
+        this.arrival = { system: systemName(next, here.system), name: here.name }
+        if (this.speech) {
+            sound.currentTime = 0
+            void sound.play().catch(() => { /* autoplay blocked, the visual overlay still lands */ })
+            speak(`arrived at ${ here.name }`)
+        }
     }
 
     private notify(message: string) {
@@ -104,12 +141,20 @@ class TheseusApp extends AppElement {
     }
 
     private navigate(view: View, slot?: string) {
-        if (slot) this.slotId = slot
+        if (slot) this.navSlot = slot
         this.view = view
     }
 
     private openFleet() { this.previousFocus = document.activeElement as HTMLElement; this.fleet = true }
     private closeFleet() { this.fleet = false; this.previousFocus?.focus() }
+
+    private openSettings() { this.previousFocus = document.activeElement as HTMLElement; this.settings = true }
+    private closeSettings() { this.settings = false; this.previousFocus?.focus() }
+
+    private setSpeech(on: boolean) {
+        this.speech = on
+        writeSpeech(on)
+    }
 
     private selectHull(id: HullId) {
         this.hull = id
@@ -138,10 +183,9 @@ class TheseusApp extends AppElement {
 
     private shell() {
         const active = views.find(v => v.id === this.view)!
-        const hull = hullById(this.hull)
-        const { me, ship, log } = this.session
+        const { me, ship } = this.session
         const where = this.location()
-        return html`<div class="app-shell"
+        return html`<div class="app-shell ${ this.railCollapsed ? 'rail-collapsed' : '' }"
             @notification=${ (e: CustomEvent<string>)     => this.notify(e.detail) }
             @navigate=${     (e: CustomEvent<Navigation>) => this.navigate(e.detail.view, e.detail.slot) }
         >
@@ -149,35 +193,43 @@ class TheseusApp extends AppElement {
                 <a class="wordmark" href="#port" @click=${ (e: Event) => { e.preventDefault(); this.navigate('port') } } aria-label="theseus home">${ icon('orbit') }<span>theseus<span class="wordmark-dot">.</span></span></a>
                 <p class="session"><span class="status-dot" data-status=${ this.status } aria-hidden="true"></span>${ this.status } <span aria-hidden="true">/</span> ${ me?.handle ?? '…' }</p>
                 <div class="account">
-                    <theme-switch .value=${ this.theme.preference } @theme-preference=${ (e: CustomEvent<'light' | 'dark' | 'system'>) => this.theme.set(e.detail) }></theme-switch>
                     <span class="account-stat"><small>credits</small><b data-testid="credits">${ me ? credits(me.balance) : '—' }</b></span>
                     <span class="account-stat"><small>hold</small><b data-testid="hold">${ cargoLoad(this.session) }<small> / ${ ship?.capacity ?? '—' }</small></b></span>
                     ${ button({ label: 'select hull preview', class: 'avatar', variant: 'text', click: () => this.openFleet() }, (me?.handle ?? 'rr').slice(0, 2)) }
-                    ${ button({ label: 'log out', variant: 'text', click: () => this.client.logout('logged out') }) }
+                    ${ iconButton('settings', 'settings', () => this.openSettings()) }
                 </div>
             </header>
-            <nav class="navrail" aria-label="operations">${ views.map(v => html`<button class="nav-item" aria-current=${ this.view === v.id ? 'page' : nothing } @click=${ () => this.navigate(v.id) } title=${ v.name }>${ icon(v.id) }<span>${ v.name }</span></button>`) }
+            <nav class="navrail ${ this.railCollapsed ? 'collapsed' : '' }" aria-label="operations">
+                <button class="rail-handle" aria-label=${ this.railCollapsed ? 'expand sidebar' : 'collapse sidebar' } @click=${ () => { this.railCollapsed = !this.railCollapsed } }>${ icon('arrow') }</button>
+                ${ views.map(v => html`<button class="nav-item" aria-current=${ this.view === v.id ? 'page' : nothing } @click=${ () => this.navigate(v.id) } title=${ v.name }>${ icon(v.id) }<span class="sr-only">${ v.name }</span></button>`) }
+                <span class="rail-divider" aria-hidden="true"></span>
+                <button class="nav-item" title="hull catalog" @click=${ () => this.openFleet() }>${ icon('rig') }<span class="sr-only">hull catalog</span></button>
                 <aside class="rail-bottom"><span>${ ship?.stid?.split('.')[ 0 ] ?? '—' }</span><span data-shape aria-hidden="true"></span><small>${ ship?.rig ?? '' }</small></aside>
             </nav>
             <main class="workspace view-${ this.view }">
-                <header class="page-heading"><hgroup><small data-kicker>${ String(views.indexOf(active) + 1).padStart(2, '0') } / ${ active.name }</small><h1>${ active.title }</h1><p>${ active.sub }</p></hgroup><p class="location"><span class="status-dot" aria-hidden="true"></span>${ where.text }<small>${ where.note }</small></p></header>
+                <header class="page-heading">
+                    <p class="page-title"><span class="page-index">${ String(views.indexOf(active) + 1).padStart(2, '0') } /</span> ${ active.title }</p>
+                    <p class="location"><span class="status-dot" aria-hidden="true"></span>${ where.text } · ${ where.note }</p>
+                </header>
                 <port-screen   .session=${ this.session } .client=${ this.client } .active=${ this.view === 'port' } ?hidden=${ this.view !== 'port' }></port-screen>
-                <rig-screen    .session=${ this.session } .client=${ this.client } .hull=${ this.hull } .slotId=${ this.slotId } .active=${ this.view === 'rig' } ?hidden=${ this.view !== 'rig' }></rig-screen>
+                <rig-screen    .session=${ this.session } .client=${ this.client } .hull=${ this.hull } .slotId=${ this.navSlot } .active=${ this.view === 'rig' } ?hidden=${ this.view !== 'rig' }></rig-screen>
                 <market-screen .session=${ this.session } .client=${ this.client } .hull=${ this.hull } .active=${ this.view === 'market' } ?hidden=${ this.view !== 'market' }></market-screen>
-                <comms-screen  .session=${ this.session } .client=${ this.client } .active=${ this.view === 'comms' } ?hidden=${ this.view !== 'comms' }></comms-screen>
+                <cargo-screen  .session=${ this.session } .client=${ this.client } .active=${ this.view === 'cargo' } ?hidden=${ this.view !== 'cargo' }></cargo-screen>
+                <comms-screen  .session=${ this.session } .client=${ this.client } .presetContact=${ this.navSlot } .active=${ this.view === 'comms' } ?hidden=${ this.view !== 'comms' }></comms-screen>
                 <flight-screen .session=${ this.session } .client=${ this.client } .active=${ this.view === 'orbit' } ?hidden=${ this.view !== 'orbit' }></flight-screen>
 
-                <atlas-view .active=${ this.view === 'map' } ?hidden=${ this.view !== 'map' }
-                    @local-orbit-focus=${ () => this.navigate('orbit') }
-                    @travel-example-complete=${ (e: CustomEvent<string>) => this.notify(`arrival preview complete · ${ e.detail }`) }></atlas-view>
-                <footer class="bottom-strip">
-                    <div class="ship-signature"><span class="category-mark ${ hull.category }">${ icon('rig') }</span><div><small>${ ship?.hull ?? 'hull' } / ${ hull.name } preview</small><button @click=${ () => this.openFleet() }>${ ship?.name ?? 'awaiting ship' } <span>↗</span></button></div></div>
-                    <aside class="recent-event"><small>ship log</small><p class=${ `log-${ log[ 0 ]?.kind ?? 'dim' }` }>${ log[ 0 ]?.text ?? 'terminal ready' }</p></aside>
-                    ${ button({ label: 'hull catalog', class: 'fleet-trigger', variant: 'text', icon: 'arrow', click: () => this.openFleet() }, html`hull catalog`) }
-                </footer>
+                <atlas-view    .session=${ this.session } .client=${ this.client } .active=${ this.view === 'map' } ?hidden=${ this.view !== 'map' }></atlas-view>
             </main>
             ${ this.toastOutput() }
             <fleet-catalog .open=${ this.fleet } .hull=${ this.hull } @catalog-close=${ () => this.closeFleet() } @hull-select=${ (e: CustomEvent<HullId>) => this.selectHull(e.detail) }></fleet-catalog>
+            <settings-dialog .open=${ this.settings } .speech=${ this.speech } .theme=${ this.theme.preference }
+                @settings-close=${ () => this.closeSettings() }
+                @speech-toggle=${ (e: CustomEvent<boolean>) => this.setSpeech(e.detail) }
+                @theme-preference=${ (e: CustomEvent<Theme>) => this.theme.set(e.detail) }
+                @logout=${ () => this.client.logout('logged out') }
+            ></settings-dialog>
+            <arrival-overlay .active=${ !!this.arrival } .system=${ this.arrival?.system ?? '' } .name=${ this.arrival?.name ?? '' }
+                @arrival-done=${ () => { this.arrival = void 0; this.navigate('port') } }></arrival-overlay>
         </div>`
     }
 }
@@ -194,5 +246,19 @@ function readHull(): HullId {
 
 function writeHull(id: HullId) {
     try { localStorage.setItem(HULL_KEY, id) }
+    catch { /* session only */ }
+}
+
+// arrival announcements default on. blocked storage falls back to that default.
+function readSpeech(): boolean {
+    try {
+        const value = localStorage.getItem(SPEECH_KEY)
+        return value === null ? true : value === '1'
+    }
+    catch { return true }
+}
+
+function writeSpeech(on: boolean) {
+    try { localStorage.setItem(SPEECH_KEY, on ? '1' : '0') }
     catch { /* session only */ }
 }

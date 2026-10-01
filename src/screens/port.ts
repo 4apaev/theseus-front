@@ -2,9 +2,9 @@ import { html, nothing } from 'lit'
 import { GameScreen } from './base.ts'
 import { button } from '../components/controls.ts'
 import { icon } from '../icons.ts'
-import { FACILITIES, type StationFacility } from '../render/lem-station.ts'
+import { stationModel, type StationFacility } from '../render/lem-station.ts'
 import '../render/lem-scene.ts'
-import { stationName, station, dockedAt, departures, docked, etaMs } from '../session.ts'
+import { stationName, systemName, station, dockedAt, departures, docked, etaMs } from '../session.ts'
 import type { Departure } from '../session.ts'
 import type { Ship } from '../transport/types.ts'
 import { fmtDist, fmtYears, countdown, span } from '../util.ts'
@@ -37,15 +37,16 @@ class PortScreen extends GameScreen {
         if (!this.active) return nothing
         const { ship } = this.session
         const here = station(this.session, ship?.stid)
+        const model = stationModel(ship?.stid)
+        const name = here ? `${ systemName(this.session, here.system) } - ${ here.name }` : void 0
         return html`<div class="operations lem-port">
             <section class="viewport lem-viewport" aria-label="station" data-motion=${ this.motion }>
                 <div class="celestial-ether" aria-hidden="true"></div>
-                <div class="port-planet" aria-hidden="true"></div>
-                <lem-scene .selected=${ this.selected } .motion=${ this.motion }
+                <lem-scene .selected=${ this.selected } .motion=${ this.motion } .model=${ model } .seed=${ ship?.stid ?? 'sol' }
                     @station-select=${ (e: CustomEvent<StationFacility>) => { this.selected = e.detail } }
                     @motion-toggle=${ () => { this.motion = !this.motion } }></lem-scene>
-                <header class="scene-title"><span class="tiny-rule" aria-hidden="true"></span><span>${ here?.name ?? 'open space' }<small>${ here ? `${ here.system } system / independent trading port` : 'between stations' }</small></span></header>
-                <aside class="station-drawing"><b>${ here?.name ?? '—' }</b><small>${ here ? 'trading port' : 'in transit' }</small><span>${ here?.system ?? '' }</span></aside>
+                <header class="scene-title"><span class="tiny-rule" aria-hidden="true"></span><span>${ name ?? 'open space' }<small>${ here ? model.kind : 'between stations' }</small></span></header>
+                <aside class="station-drawing"><b>${ name ?? '—' }</b><small>${ here ? model.kind : 'in transit' }</small><span>${ here?.system ?? '' }</span></aside>
             </section>
             <app-panel>${ this.panel() }</app-panel>
             ${ this.confirmDialog() }
@@ -67,8 +68,10 @@ class PortScreen extends GameScreen {
 
     private dockedPanel(ship: Ship) {
         const crew = dockedAt(this.session, ship.stid)
-        return html`${ this.panelHeader(stationName(this.session, ship.stid), ship.name, 'docked') }
-            <nav class="facility-list" aria-label="facility directory">${ FACILITIES.map((f, i) => html`
+        const here = station(this.session, ship.stid)
+        const name = here ? `${ systemName(this.session, here.system) } - ${ here.name }` : stationName(this.session, ship.stid)
+        return html`${ this.panelHeader(name, ship.name, 'docked') }
+            <nav class="facility-list" aria-label="facility directory">${ stationModel(ship.stid).facilities.map((f, i) => html`
                 <button class="facility-card" aria-pressed=${ this.selected === f.id } @click=${ () => { this.selected = f.id; this.navigate(f.id) } }>
                     <span class="facility-number">0${ i + 1 }</span><span><b>${ f.name }</b><small>${ f.note }</small></span>
                 </button>`) }

@@ -6,7 +6,7 @@
 export type Category = 'industrial' | 'civil'   | 'security'
 export type Facility = 'exchange'   | 'drydock' | 'relay'
 export type ModuleId = 'cargo'      | 'drive'   | 'ansible'
-export type View     = 'port'       | 'rig'     | 'market' | 'comms'  | 'orbit' | 'map'
+export type View     = 'port'       | 'rig'     | 'market' | 'cargo' | 'comms'  | 'orbit' | 'map'
 export type HullKind = 'freighter' | 'tanker' | 'tug' | 'colony' | 'liner' | 'transport' | 'yacht' | 'research' | 'battleship' | 'frigate' | 'corvette' | 'prison'
 
 export interface Hull {

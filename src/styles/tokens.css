@@ -1,5 +1,4 @@
 :root {
-    --font-place     : 'Georgia', 'Times New Roman', serif;
     --font-title     : 'SF Pro Rounded', ui-rounded, 'Avenir Next', system-ui, sans-serif;
     --font-mono      : 'SF Mono', ui-monospace, 'Cascadia Code', 'Liberation Mono', monospace;
 
@@ -30,7 +29,8 @@
     --radius         : .25rem;
     --control-size   : 2rem;
     --icon-size      : 1.25em;
-    --rail-width     : 5.4375rem;
+    --rail-width     : 4.5rem;
+    --rail-inset     : 1.25rem;
     --bar-height     : 4.75rem;
     --panel-width    : 22.1875rem;
     --speed          : 160ms;

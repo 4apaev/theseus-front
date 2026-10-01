@@ -1,6 +1,9 @@
-# theseus / frontend
+theseus frontend
+================
 
-an orbital trading game client built with typescript, lit, and three.js.
+## an orbital trading game
+
+game client built with ts, lit, and three.js.
 ships and port facilities are blender models and procedural geometry.
 no image assets, texture maps or external fonts load at runtime.
 
@@ -35,20 +38,29 @@ proxy in front of it, or same-origin serving.
 - rigging: the hull's slots, the fitted module in each, and the packaged
   modules in your hold. the gateway previews a fit before you commit.
   rename the ship here.
-- exchange: live quotes at the current station. buy and sell settle on
-  the server; the wallet and hold update from the feed.
+- exchange: live quotes at the current station, and the hold. buy and
+  sell settle on the server; the wallet and hold update from the feed. a
+  station buys back only the modules it stocks; the hold says where each
+  row sells.
 - comms: the station channel, and a private ansible channel to any ship
   in traffic. a private signal crosses the distance at ansible speed.
-- map and flight stay local previews. departures leave from the port.
+- map: the universe as a chart. systems at their catalogue positions,
+  stations on their orbits, every ship in transit on the server clock.
+  choose a station, read the shortest course for your drive, and depart.
+  see [maps](docs/maps.md).
+- flight stays a local preview of maneuver planning.
 - hull catalog: a visual preview of 36 blender hulls. the server knows
   one hull today; the choice is a browser preference.
 
 ## code style and dependency policy
 
-`npm run lint:fix` applies the garage/theseus code style through the local
-`eslint.config.js` and typescript-aware stylistic rules. no runtime dependency
-on the server repositories is needed. see [frontend foundations](docs/frontend.md)
-for component boundaries, nested styles, utilities, and light/dark themes.
+the lint rules are the backend's: `scripts/eslint.rules.js` is a copy of
+`theseus/backend/scripts/eslint.rules.js`, and `eslint.config.js` maps them
+onto typescript-eslint and the stylistic plugin. `npm run lint:fix` applies
+them. no runtime dependency on the server repositories is needed. see
+[frontend foundations](docs/frontend.md) for boundaries, styles, themes and
+the style conventions, and [architecture](docs/architecture.md) for the
+module layout.
 
 the lint tool is typescript-eslint (imported as `tslint`), not the retired tslint package. no prettier preset overrides the project style.
 
