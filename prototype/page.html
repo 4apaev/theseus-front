@@ -1,0 +1,315 @@
+<title>Theseus Painted</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Instrument+Sans:wght@400;500;600&family=Spectral:ital,wght@0,400;1,400&display=swap">
+<style>
+/* layout: one column of live 16:9 screens on the night of the art; notes under each */
+:root{
+  --ground:#0C131C; --panel:#121B26; --line:#223040; --text:#E8DFCB; --muted:#8E98A6; --dim:#9AA6B4;
+  --paper:#E8DFCB; --ink:#2A2620; --char:#1C1A17; --kmuted:#8A8173;
+  --orange:#E8612C; --teal:#3FB6A8; --red:#D9483B; --beam:#F2B134; --up:#7CE0A0; --down:#FF7A6A; --neon:#FF4FA0;
+  --glass:rgba(10,15,22,.76); --edge:rgba(232,223,203,.2);
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace; --body:"Instrument Sans","Helvetica Neue",Arial,sans-serif; --serif:Spectral,Georgia,serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--text);font:16px/1.55 var(--body);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1200px;margin:0 auto;padding-inline:28px;padding-block:44px 96px}
+@media (max-width:640px){.wrap{padding-inline:16px;padding-block:28px 64px}}
+a{color:var(--teal)}
+code{font:.86em var(--mono);background:var(--panel);border:1px solid var(--line);padding:0 5px;border-radius:2px}
+.eyebrow{font:600 12px/1 var(--mono);letter-spacing:.06em;color:var(--muted);margin:0 0 18px}
+h1{font:600 clamp(52px,8.5vw,112px)/.9 var(--mono);letter-spacing:-.04em;margin:0 0 20px;text-wrap:balance}
+h1 span{color:var(--orange)}
+h2{font:600 clamp(26px,3.4vw,40px)/1.05 var(--mono);letter-spacing:-.03em;margin:0 0 14px;text-wrap:balance}
+h3{font:600 12px/1 var(--mono);color:var(--muted);margin:0 0 8px;letter-spacing:.04em}
+.lede{max-width:62ch;font-size:19px;line-height:1.45;margin:0 0 22px}
+.prose{max-width:66ch}.prose p{margin:0 0 12px}
+section{margin:0 0 88px;scroll-margin-top:24px}
+.steps{list-style:none;padding:0;margin:18px 0 0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px 26px}
+.steps li{border-top:2px solid var(--text);padding-top:10px;font-size:14.5px;color:#CFC7B4}
+.steps b{display:block;font:600 13px var(--mono);margin-bottom:4px;color:var(--text)}
+@media (max-width:900px){.steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.steps{grid-template-columns:1fr}}
+.screen{margin:0 0 16px}
+.shead{display:flex;align-items:baseline;gap:14px;margin:0 0 12px}
+.shead span{font:12px var(--mono);color:var(--muted)}
+figcaption{font-size:14px;line-height:1.55;color:#C7C0AE;margin:12px 0 0;max-width:84ch}
+figcaption b{font:600 12px var(--mono);color:var(--text);margin-right:8px}
+.notes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 28px;margin:16px 0 0;font-size:14px;color:#C7C0AE}
+.notes div{border-top:1px solid var(--line);padding-top:8px;min-width:0}
+@media (max-width:760px){.notes{grid-template-columns:1fr}}
+.flats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:18px 0}
+.flat{margin:0}.flat canvas{width:100%;height:auto;display:block;border:1px solid var(--line)}
+.flat figcaption{font:12px var(--mono);color:var(--muted);margin-top:6px}
+@media (max-width:640px){.flats{grid-template-columns:1fr}}
+.kit{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:16px 0 8px}
+.sw{border:1px solid var(--line);background:var(--panel);font:12px/1.35 var(--mono)}
+.sw i{display:block;height:40px}.sw div{padding:6px 8px}.sw span{color:var(--muted)}
+.calls{list-style:none;padding:0;margin:0;display:grid;gap:14px;max-width:74ch}
+.calls li{border-left:2px solid var(--orange);padding:2px 0 2px 14px}
+.calls.open li{border-left-color:var(--teal)}
+
+/* ── a screen: the stage fills the bezel, the kit sits on top ──── */
+.bezel{position:relative;aspect-ratio:16/9;width:100%;max-width:100%;background:#070b14;border:1px solid var(--line);border-radius:6px;overflow:hidden;container-type:inline-size;user-select:none;-webkit-user-select:none}
+.bezel canvas.gl{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:pan-y}
+.fail{position:absolute;inset:0;display:grid;place-items:center;color:var(--dim);font:14px var(--mono)}
+.ui{position:absolute;inset:0;font:max(9px,1.12cqw)/1.35 var(--mono);text-transform:lowercase;color:var(--paper);pointer-events:none}
+.ui button,.ui a,.card,.tray,.holdp,.spec,.maptools{pointer-events:auto}
+.ui button{font:inherit;text-transform:lowercase}
+.ui :focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+.hud{position:absolute;left:1.4cqw;right:1.4cqw;top:1.2cqw;display:flex;justify-content:space-between;align-items:flex-start;gap:1cqw;pointer-events:none}
+.hud .where,.hud .read>span{background:var(--glass);border:1px solid var(--edge);padding:.4cqw .85cqw;backdrop-filter:blur(4px)}
+.hud .where{color:var(--dim)}.hud .where b{color:var(--paper);font-weight:600}
+.read{display:flex;gap:.5cqw;font-variant-numeric:tabular-nums}
+.wallet{position:relative}.wallet b{font-weight:600}
+.wallet.up b{animation:up 1.4s}.wallet.down b{animation:down 1.4s}
+@keyframes up{0%,45%{color:var(--up)}100%{color:var(--paper)}}
+@keyframes down{0%,45%{color:var(--down)}100%{color:var(--paper)}}
+.delta{position:absolute;right:0;top:115%;font-style:normal;font-weight:600;white-space:nowrap;animation:fall 1.5s forwards}
+.delta.up{color:var(--up)}.delta.down{color:var(--down)}
+@keyframes fall{0%{opacity:0;transform:translateY(-.4cqw)}15%{opacity:1}100%{opacity:0;transform:translateY(1.8cqw)}}
+.tabs{position:absolute;left:50%;top:1.2cqw;transform:translateX(-50%);display:flex;background:var(--glass);border:1px solid var(--edge);pointer-events:auto}
+.tabs a{color:var(--dim);text-decoration:none;padding:.4cqw .9cqw}.tabs a:hover{color:var(--paper)}
+.tabs a.on{color:var(--paper);box-shadow:inset 0 -.22cqw 0 var(--orange)}
+@container (max-width:700px){.tabs{display:none}}
+.tag{position:absolute;transform:translate(-50%,-100%);background:var(--paper);color:var(--ink);border:1px solid var(--ink);padding:.2cqw .7cqw;font-size:max(8px,1cqw);white-space:nowrap;text-decoration:none;cursor:pointer}
+.tag::after{content:"";position:absolute;left:50%;top:100%;width:1px;height:1.4cqw;background:var(--paper)}
+.tag:hover{background:#fff}
+.tag.hot{background:var(--orange);border-color:var(--orange);color:var(--char)}.tag.hot::after{background:var(--orange)}
+.tag .dot{display:inline-block;width:.55cqw;height:.55cqw;min-width:5px;min-height:5px;border-radius:50%;background:var(--orange);margin-left:.3cqw;vertical-align:middle;animation:blink 1.2s infinite}
+@keyframes blink{50%{opacity:.2}}
+.toast{position:absolute;left:50%;top:5cqw;transform:translateX(-50%);background:rgba(10,15,22,.9);border:1px solid var(--teal);color:var(--paper);padding:.5cqw 1cqw;max-width:86%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none;transition:opacity .5s;z-index:5}
+.toast.bad{border-color:var(--red)}.toast.out{opacity:0}
+.card{position:absolute;width:max(190px,23cqw);background:var(--paper);color:var(--ink);border:1px solid var(--ink);padding:.9cqw 1.1cqw;box-shadow:0 .6cqw 2cqw rgba(0,0,0,.55);animation:pop .18s ease-out;z-index:4}
+@keyframes pop{from{transform:translateY(.4cqw);opacity:0}}
+.card .h{font-weight:600;font-size:max(10px,1.3cqw);display:flex;justify-content:space-between;align-items:center;gap:.6cqw;margin-bottom:.45cqw}
+.chip{font-weight:400;font-size:max(8px,.88cqw);border:1px solid currentColor;padding:0 .4cqw;white-space:nowrap}
+.card .kv{display:flex;justify-content:space-between;gap:1cqw;padding:.16cqw 0;border-bottom:1px solid rgba(42,38,32,.12);font-variant-numeric:tabular-nums}
+.card .kv span:last-child{text-align:right}
+.card .mut{color:var(--kmuted)}.card .te{color:#1F7F72}.small{font-size:max(8px,.9cqw)}
+.card .warn{color:#B8352A;margin-top:.3cqw}
+.card .prose{font:italic max(11px,1.34cqw)/1.4 var(--serif);text-transform:none;margin:.3cqw 0 .5cqw;max-width:none}
+.card.center{width:max(220px,28cqw)}
+.btns{display:flex;gap:.5cqw;margin-top:.7cqw}
+.btns button{flex:1;padding:.45cqw .6cqw;border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer}
+.btns .go{background:var(--orange);border-color:var(--orange);color:var(--char);font-weight:600}
+.btns button:disabled{opacity:.45;cursor:not-allowed}
+.step{display:inline-flex;align-items:center;gap:.3cqw}
+.step button{width:1.8cqw;height:1.8cqw;min-width:18px;min-height:18px;border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;line-height:1;padding:0}
+.step b{min-width:2cqw;text-align:center}
+.card .sw{display:flex;gap:.5cqw;align-items:center;margin:.55cqw 0 .3cqw;cursor:pointer;border:0;background:none;font:inherit}
+.tray{position:absolute;left:1.4cqw;bottom:1.2cqw;background:var(--glass);border:1px solid var(--edge);padding:.55cqw .75cqw;backdrop-filter:blur(4px)}
+.tray.over{border-color:var(--orange);box-shadow:0 0 0 .2cqw rgba(232,97,44,.45)}
+.lbl{color:#B9B2A2;font-size:max(8px,.9cqw);margin-bottom:.4cqw}
+.tiles{display:flex;flex-wrap:wrap;gap:.35cqw;max-width:62cqw}
+.tile{position:relative;width:5.7cqw;min-width:40px;display:flex;flex-direction:column;align-items:center;background:rgba(232,223,203,.05);border:1px solid rgba(232,223,203,.16);color:var(--paper);font-size:max(7px,.8cqw);padding:.3cqw .15cqw;cursor:grab;touch-action:none}
+.tile:hover{border-color:var(--teal);background:rgba(63,182,168,.1)}
+.tile img{width:3.5cqw;height:3.5cqw;pointer-events:none}
+.tile .n{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile .px{color:var(--beam);font-variant-numeric:tabular-nums}
+.tile>i{position:absolute;left:.3cqw;top:.15cqw;font-style:normal}
+.made{color:var(--teal)}.want{color:var(--orange)}
+.tile.hold{border-color:rgba(63,182,168,.55)}
+.tile.plan{border-style:dashed}.tile.try .px,.tile.plan .px{color:var(--dim)}
+.card .why{color:var(--down);margin-top:.15cqw}
+.ghost-drag{position:fixed;left:0;top:0;width:60px;height:60px;pointer-events:none;z-index:1000;opacity:0;filter:drop-shadow(0 8px 10px rgba(0,0,0,.55))}
+.holdp{position:absolute;right:1.4cqw;top:5cqw;background:rgba(16,20,26,.86);border:1px solid var(--edge);padding:.75cqw}
+.holdp .lbl{display:flex;justify-content:space-between;gap:1cqw}.holdp .lbl b{color:var(--paper);font-variant-numeric:tabular-nums}
+.holdp .lbl.mut{margin:.5cqw 0 0}
+.grid{--c:4.3cqw;position:relative;width:calc(var(--c) * 5);height:calc(var(--c) * var(--rows))}
+.cell,.piece,.fit-ghost{position:absolute;left:calc(var(--c) * var(--x));top:calc(var(--c) * var(--y))}
+.cell{width:var(--c);height:var(--c);border:1px solid rgba(232,223,203,.12);background:rgba(232,223,203,.03)}
+.piece{margin:2px;width:calc(var(--c) * var(--w) - 4px);height:calc(var(--c) * var(--h) - 4px);background:rgba(63,182,168,.14);border:1px solid rgba(63,182,168,.7);display:grid;place-items:center;cursor:grab;touch-action:none}
+.piece img{max-width:86%;max-height:86%;pointer-events:none}
+.piece.pend{border:1px dashed var(--orange);background:rgba(232,97,44,.2)}
+.fit-ghost{width:calc(var(--c) * var(--w));height:calc(var(--c) * var(--h));pointer-events:none;z-index:2}
+.fit-ghost.ok{background:rgba(63,182,168,.28);outline:2px solid var(--teal)}.fit-ghost.bad{background:rgba(217,72,59,.3);outline:2px solid var(--red)}
+.marks,.labels,.ringlbl{position:absolute;inset:0;pointer-events:none}
+.mark{position:absolute;display:flex;align-items:center;gap:.4cqw;transform:translate(-1.1cqw,-50%);background:none;border:0;padding:0;color:var(--paper);cursor:grab;touch-action:none;pointer-events:auto}
+.mark i{width:2.2cqw;height:2.2cqw;min-width:14px;min-height:14px;border-radius:50%;border:2px solid var(--paper);background:rgba(10,15,22,.55);transition:transform .15s}
+.mark span{background:var(--glass);border:1px solid var(--edge);padding:.12cqw .5cqw;display:flex;flex-direction:column;align-items:flex-start;line-height:1.2}
+.mark em{font-style:normal;color:#B9B2A2;font-size:max(7px,.84cqw)}
+.models{position:absolute;left:1.4cqw;top:4.6cqw;display:flex;gap:.6cqw;align-items:flex-start}
+.mcol{display:flex;flex-direction:column;gap:.3cqw}
+.mh{color:#B9B2A2;font-size:max(8px,.8cqw);letter-spacing:.08em;text-transform:uppercase;padding:0 .2cqw}
+.models button{text-align:left;background:var(--glass);border:1px solid var(--edge);color:var(--dim);padding:.3cqw .75cqw;cursor:pointer}
+.models button.on{color:var(--paper);box-shadow:inset .25cqw 0 0 var(--orange)}
+.spec.slotsp{width:max(200px,27cqw)}
+.srow{margin:.3cqw 0}.sl{color:#B9B2A2;font-size:max(8px,.85cqw)}
+.chips{display:flex;flex-wrap:wrap;gap:.25cqw;margin-top:.12cqw}
+.chips button,.toggles button{background:transparent;border:1px solid var(--edge);color:var(--paper);padding:.1cqw .45cqw;cursor:pointer}
+.ui .chips button,.ui .toggles button{font-size:max(8px,.85cqw)}
+.chips button.on,.toggles button.on{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+.chips button.plan{border-style:dashed}
+.toggles{display:flex;gap:.35cqw;margin:.5cqw 0 .3cqw}
+.kvs .kv{display:flex;justify-content:space-between;padding:.1cqw 0;font-variant-numeric:tabular-nums}
+.warn2{color:var(--down);margin-top:.3cqw}.mut2{color:var(--dim);margin:.3cqw 0}
+.cap2{position:absolute;left:1.4cqw;bottom:1.2cqw;background:var(--glass);border:1px solid var(--edge);padding:.4cqw .85cqw;max-width:46cqw}
+.cap2 b{color:var(--paper);font-weight:600}.cap2 span{color:var(--dim)}
+.dims{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.dims line{stroke:rgba(200,210,255,.55);stroke-width:1;vector-effect:non-scaling-stroke}
+.dims .axis{stroke:rgba(150,170,255,.35);stroke-dasharray:10 6}
+.dims text{fill:rgba(220,226,255,.8);font:12px "IBM Plex Mono",ui-monospace,monospace;text-anchor:middle}
+.views{position:absolute;right:1.4cqw;bottom:10.6cqw;display:flex}
+.views button{background:rgba(10,14,28,.7);border:1px solid rgba(200,210,255,.35);color:#d8deff;padding:.3cqw .8cqw;cursor:pointer}
+.views button+button{border-left:0}.views button.on{background:#E8DFCB;color:#2A2620;border-color:#E8DFCB}
+.titleblock{position:absolute;right:1.4cqw;bottom:1.2cqw;width:max(170px,21cqw);border:1px solid rgba(200,210,255,.4);background:rgba(10,14,28,.72);color:#d8deff;padding:.6cqw .8cqw}
+.titleblock b{display:block;font-size:max(10px,1.3cqw);font-weight:600}.titleblock span{color:#9aa6c8;font-size:max(8px,.9cqw)}
+.titleblock dl{display:grid;grid-template-columns:1fr 1fr;margin:.5cqw 0 0;border-top:1px solid rgba(200,210,255,.25)}
+.titleblock dl div{padding:.25cqw 0}.titleblock dt{color:#8a96b8;font-size:max(7px,.8cqw)}.titleblock dd{margin:0}
+.mark.l{flex-direction:row-reverse;transform:translate(calc(-100% + 1.1cqw),-50%)}.mark.l span{align-items:flex-end}
+.yard .tile{width:7.2cqw}
+.ui .tile{font-size:max(7px,.8cqw)}.ui .tag{font-size:max(8px,1cqw)}
+.mark.fits i{border-color:var(--teal);background:rgba(63,182,168,.35)}.mark.over i{transform:scale(1.35);background:var(--teal)}
+.mark.bad i{border-color:var(--red);background:rgba(217,72,59,.55);animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.spec{position:absolute;right:1.4cqw;top:5cqw;width:max(170px,23cqw);background:var(--glass);border:1px solid var(--edge);padding:.65cqw .85cqw;backdrop-filter:blur(4px)}
+.spec .kv{display:flex;justify-content:space-between;gap:1cqw;padding:.14cqw 0;font-variant-numeric:tabular-nums}
+.spec .te{color:var(--teal)}
+.bar{display:block;height:.5cqw;min-height:4px;margin:.1cqw 0 .35cqw;background:linear-gradient(90deg,var(--teal) var(--a),rgba(232,223,203,.3) var(--a) var(--b),rgba(232,223,203,.06) var(--b))}
+.star{position:absolute;transform:translate(-.7cqw,-50%);display:flex;align-items:center;gap:.4cqw;background:none;border:0;padding:0;color:var(--paper);cursor:pointer;white-space:nowrap;pointer-events:auto}
+.star i{width:1.4cqw;height:1.4cqw;min-width:10px;min-height:10px;border-radius:50%;border:1px solid transparent}
+.star:hover i,.star:focus-visible i{border-color:var(--orange)}
+.star span{text-shadow:0 0 .5cqw #000,0 0 .2cqw #000}.star small{color:var(--dim);font-size:max(7px,.84cqw);text-shadow:0 0 .4cqw #000}
+.bgstar{position:absolute;transform:translate(.6cqw,-50%);color:#6F7C8C;font-size:max(7px,.78cqw);white-space:nowrap}
+.ringlbl span{position:absolute;color:rgba(63,182,168,.75);font-size:max(7px,.8cqw)}
+.maptools{position:absolute;left:1.4cqw;bottom:1.2cqw;display:flex;gap:.4cqw}
+.maptools button{background:var(--glass);border:1px solid var(--edge);color:var(--paper);padding:.35cqw .75cqw;cursor:pointer}
+.seg{display:flex}.seg button+button{border-left:0}.seg button.on{background:var(--paper);color:var(--ink)}
+.legend{position:absolute;right:1.4cqw;bottom:1.2cqw;display:flex;gap:1.2cqw;color:var(--dim);font-size:max(8px,.9cqw)}.bm{color:var(--beam)}
+.beacon{position:absolute;transform:translate(-50%,-50%);width:7cqw;height:7cqw;border-radius:50%;background:none;border:0;cursor:pointer;pointer-events:auto}
+.beacon i{position:absolute;inset:0;border-radius:50%;border:2px solid var(--neon);animation:ping 1.6s infinite}
+.beacon span{position:absolute;left:50%;top:92%;transform:translateX(-50%);white-space:nowrap;background:rgba(10,15,22,.85);padding:.1cqw .5cqw;border:1px solid var(--neon);color:#FFC2DD}
+@keyframes ping{0%{transform:scale(.55);opacity:1}100%{transform:scale(1.3);opacity:0}}
+.status{position:absolute;left:1.4cqw;bottom:1.2cqw;background:var(--glass);border:1px solid rgba(217,72,59,.6);padding:.4cqw .85cqw;color:var(--dim)}.status b{color:var(--down);font-weight:600}
+@media (prefers-reduced-motion:reduce){.ui *,.ui *::before{animation:none!important;transition:none!important}}
+</style>
+
+<main class="wrap">
+  <header>
+    <p class="eyebrow">theseus · the painted preview · 30 sep 2026</p>
+    <h1>painted<span>.</span></h1>
+    <p class="lede">The painted miniatures, a 3D Far Treasure and a live sky, in five screens you can play. Drag goods into the hold, fit modules to the hull, turn the star map, call the tug.</p>
+    <ol class="steps">
+      <li><b>1 · live space</b>One shader draws the ether and the stars. Each star blinks on its own clock. Planets turn under a fixed light.</li>
+      <li><b>2 · painted parts</b>Platforms, buildings, crates and robots from <code>painted-parts-v1</code>, layered in order. Robots walk and beacons pulse.</li>
+      <li><b>3 · the ship is 3D</b>Blender models after the painted art, with toon light, a grime map and an outline, lit like the sprites. Each of the 5 slots swaps its own module.</li>
+      <li><b>4 · the kit on top</b>You act on things in the scene. A card opens next to the thing, and you confirm there. ₢ runs up and down.</li>
+    </ol>
+  </header>
+
+  <section id="port">
+    <div class="shead"><h2>port</h2><span>sol outpost · home</span></div>
+    <figure class="screen"><div class="bezel" data-screen="port"></div>
+      <figcaption><b>port</b>Every layer is live: the ether and the stars, the ocean world that turns once in 4 minutes, the painted platform, the 3D ship on the pad, robots and beacons. A tug crosses the sky. The tags open the other screens, and comms opens a letter.</figcaption></figure>
+    <div class="notes">
+      <div><h3>touch</h3>the tags on the buildings, the ship, the comms hut. Move the pointer: the sky moves a little behind the station.</div>
+      <div><h3>reads</h3>the station, the ships docked here, your rig. The ship on the pad shows the modules it really has.</div>
+      <div><h3>server asks</h3>none in code. Art: a layout per station, as data: which sprites, where, in which order.</div>
+    </div>
+  </section>
+
+  <section id="exchange">
+    <div class="shead"><h2>exchange</h2><span>drag goods into the hold</span></div>
+    <figure class="screen"><div class="bezel" data-screen="exchange"></div>
+      <figcaption><b>exchange</b>Drag a good from the counter into the hold. The ghost shows its footprint: green fits, red does not. On drop, a card shows the quantity and the total, and + packs more units next to the first. Drag a piece back to the counter to sell it. Liquids, gas and livestock need their own hold module. Prices are the seed's quotes at equilibrium stock.</figcaption></figure>
+    <div class="notes">
+      <div><h3>touch</h3>drag a good in, drag a piece out, drag a piece to move it, r to rotate. A click on a good buys one into the first free space.</div>
+      <div><h3>reads</h3><code>GET /api/station/:stid/market</code>, the hold with a cell per piece.</div>
+      <div><h3>server asks</h3>a cell position on each cargo piece, auto-pack on load, a <code>cargo.arrange</code> command for a move.</div>
+    </div>
+  </section>
+
+  <section id="rigging">
+    <div class="shead"><h2>rigging</h2><span>ganymede yards · mk2 in stock</span></div>
+    <figure class="screen"><div class="bezel" data-screen="rigging"></div>
+      <figcaption><b>rigging</b>A blueprint, not a sky: a grid, the centreline, the length, a title block, and iso, side and top views. The tray holds every module: the yard's stock with a price, the rest of the catalogue to try, and the planned ones. Drag a module onto a slot. The ship changes at once, and a card asks you to pay. A module the yard would refuse still goes on, and its card says why. Cruise mk2 needs power rank 2, so fit reactor mk2 first. The old module goes back into the hold as a package, as <code>docs/modules.md</code> says. Drag a slot marker to the tray to strip it. Drag the ship to turn it.</figcaption></figure>
+    <div class="notes">
+      <div><h3>touch</h3>drag a module to a slot, drag a slot to the tray, fit, try or undo, turn the ship.</div>
+      <div><h3>reads</h3>the hull, the rig, the yard's stock, the power ranks and draw. The rules here are the domain's own.</div>
+      <div><h3>server asks</h3>none. <code>POST …/modules/preview</code> and <code>PUT …/modules/:slot</code> exist. The module-exchange saga moves the packages.</div>
+    </div>
+  </section>
+
+  <section id="chart">
+    <div class="shead"><h2>chart</h2><span>the neighbourhood in 3D</span></div>
+    <figure class="screen"><div class="bezel" data-screen="chart"></div>
+      <figcaption><b>chart</b>The ten stars at their catalogue positions, each with a drop line to the plane, and the other named stars within 18 ly for context. The gold ring is the Icarus beam, 7 ly round Sol. Switch to ship years: each star moves to the ship years of its route from Sol. Today every leg flies at 0.6c, so that map is the light-year map ×1.33, plus the detours. The beam will bend it.</figcaption></figure>
+    <div class="notes">
+      <div><h3>touch</h3>drag to turn, + and − to zoom, a star for its route, the units switch.</div>
+      <div><h3>reads</h3>star positions, the star links, <code>legTime()</code>. The positions come from <code>docs/hygdata_v42.csv</code> here.</div>
+      <div><h3>server asks</h3>x, y, z per system in <code>universeData</code>. Later: the beam in <code>legTime()</code>.</div>
+    </div>
+  </section>
+
+  <section id="adrift">
+    <div class="shead"><h2>adrift</h2><span>a flow, not a panel</span></div>
+    <figure class="screen"><div class="bezel" data-screen="adrift"></div>
+      <figcaption><b>adrift</b>No propellant. The ship tumbles, and shards orbit it. A buoy drifts in with a neon sign. Click it, check the insurance and call the tug. The tug takes a line and pulls the ship off screen, home. Clear "insured" to see ₢ run down.</figcaption></figure>
+    <div class="notes">
+      <div><h3>touch</h3>the buoy, insured, call the tug, drift again.</div>
+      <div><h3>reads</h3>the insurance flag, the wallet, the hold for payment in kind.</div>
+      <div><h3>server asks</h3>a tug service: a price, a tow timer, payment in kind in order. The price and the time here are examples.</div>
+    </div>
+  </section>
+
+  <section id="hangar">
+    <div class="shead"><h2>hangar</h2><span>every 3D model · turn it · swap its modules</span></div>
+    <figure class="screen"><div class="bezel" data-screen="hangar"></div>
+      <figcaption><b>hangar</b>The Far Treasure, the NPC ships, the hangar fleet, the robots and the containers on a turntable. Swap a module in each slot and the hull changes. The dashed ones are planned, not in the domain: the tank, reefer and pen for the hauling classes, the radar and the mass driver for the fight. Turn the drive on to see the plumes. The rig numbers are the domain's own, and a rig the yard would refuse says why.</figcaption></figure>
+    <div class="notes">
+      <div><h3>models</h3>the fleet: far treasure, tug 04, a container hauler, a raider called nobody, a patrol cutter, the tug buoy. the hangar: 14 ships after the hangar paintings, from a police van to a battleship. 4 robots.</div>
+      <div><h3>details</h3>hull names and stencils, red and green running lights, rcs quads, an airlock, propellant tanks, engine plumes.</div>
+      <div><h3>blender</h3>every model here is a glb. <code>assets/blender/scripts/build-painted-fleet.py</code> makes the fleet: the far treasure and its 19 modules, the npc ships, 2 robots and 7 containers. <code>build-hangar.py</code> makes the hangar fleet and 2 police robots.</div>
+    </div>
+  </section>
+
+  <section id="planets" aria-labelledby="planets-h">
+    <h2 id="planets-h">how a planet turns</h2>
+    <div class="prose">
+      <p>Paint the planet flat, at 2:1. The three maps below come from noise in this page. The image model paints the real ones.</p>
+      <p>A shader draws a disc. For each pixel it finds the latitude and longitude on the sphere, adds time to the longitude and reads the map there. The light, the day line and the rim stay fixed, so only the surface moves under them. Clouds are a second map that turns 1.35 times faster.</p>
+    </div>
+    <div class="flats" id="maps"></div>
+  </section>
+
+  <section aria-labelledby="kit-h">
+    <h2 id="kit-h">the kit</h2>
+    <div class="prose"><p>The tokens from the brief, plus the colours this preview adds: the two ₢ signs and the neon of an advert.</p></div>
+    <div class="kit">
+      <div class="sw"><i style="background:#E8DFCB"></i><div><b>paper</b> #E8DFCB<br><span>cards, tags</span></div></div>
+      <div class="sw"><i style="background:#2A2620"></i><div><b>ink</b> #2A2620<br><span>text on paper</span></div></div>
+      <div class="sw"><i style="background:#0A0F16"></i><div><b>glass</b> 76% #0A0F16<br><span>chips on the sky</span></div></div>
+      <div class="sw"><i style="background:#E8612C"></i><div><b>orange</b> #E8612C<br><span>the one action</span></div></div>
+      <div class="sw"><i style="background:#3FB6A8"></i><div><b>teal</b> #3FB6A8<br><span>fits, your ship</span></div></div>
+      <div class="sw"><i style="background:#D9483B"></i><div><b>red</b> #D9483B<br><span>does not fit, danger</span></div></div>
+      <div class="sw"><i style="background:#F2B134"></i><div><b>beam</b> #F2B134<br><span>icarus, prices</span></div></div>
+      <div class="sw"><i style="background:#7CE0A0"></i><div><b>₢ up</b> #7CE0A0<br><span>money in</span></div></div>
+      <div class="sw"><i style="background:#FF7A6A"></i><div><b>₢ down</b> #FF7A6A<br><span>money out</span></div></div>
+      <div class="sw"><i style="background:#FF4FA0"></i><div><b>neon</b> #FF4FA0<br><span>adverts only</span></div></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="calls-h">
+    <h2 id="calls-h">calls i made</h2>
+    <ul class="calls">
+      <li><b>The ship is 3D and modular.</b> Everything that stands still is painted.</li>
+      <li><b>One light for both.</b> A warm key from the upper left and a cool rim from the right, on the sprites and on the ship.</li>
+      <li><b>A module is a package.</b> A fit swaps the package into the slot and puts the old one in the hold. A strip needs room in the hold.</li>
+      <li><b>A card next to the thing,</b> not a panel. The only panels left are the hold grid and the ship's numbers.</li>
+      <li><b>₢ is the only currency sign.</b> Galaxy years and ship years are the only names for time.</li>
+      <li><b>The demo wallet starts at 2,400 ₢,</b> so the rigging flow can pay for mk2. The domain starts a player at 1,000.</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="open-h">
+    <h2 id="open-h">open</h2>
+    <ul class="calls open">
+      <li>The 3D ship sits on the painted platform through an orthographic camera at 42° azimuth and 29° elevation. Lock that angle for every new sprite?</li>
+      <li>Scale: a robot is 44 px and the platform 820 px here. Take the crate as the unit, one crate per hold cell?</li>
+      <li>Star positions are not in <code>universeData</code> yet. Add x, y, z to the systems seed?</li>
+      <li>The code says "common years" in places and "galaxy years" in others. Pick one.</li>
+    </ul>
+  </section>
+</main>
