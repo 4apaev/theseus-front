@@ -43,12 +43,17 @@ class MarketScreen extends GameScreen {
             return html`${ this.panelHeader(stationName(this.session, ship.stid), 'no goods quoted', 'open') }<p class="panel-intro">the exchange has posted no prices yet.</p>${ this.hold() }`
 
         const q = this.quote(row)
+
+        const market = (this.side === 'sell'
+            ? this.session.cargo.map(c => this.session.market.find(g => g.gid === c.gid))
+            : this.session.market) as MarketRow[]
+
         return html`${ this.panelHeader(`${ stationName(this.session, ship.stid) } exchange`, 'a fair exchange', 'open') }
-            <div class="commodity-list">${ this.session.market.map(m => this.commodity(m, m.gid === row.gid)) }</div>
             <div class="segmented">
-                <button class=${ this.side === 'buy' ? 'active' : '' } @click=${ () => { this.side = 'buy' } }>buy cargo</button>
+                <button class=${ this.side === 'buy'  ? 'active' : '' } @click=${ () => { this.side = 'buy'  } }>buy cargo</button>
                 <button class=${ this.side === 'sell' ? 'active' : '' } @click=${ () => { this.side = 'sell' } }>sell cargo</button>
             </div>
+            <div class="commodity-list">${ market.map((m: MarketRow) => this.commodity(m, m.gid === row.gid)) }</div>
             ${ fieldLabel('quantity', 'quantity', `${ volumeOf(this.session, row.gid) } hold ${ volumeOf(this.session, row.gid) === 1 ? 'unit' : 'units' } each`) }
             <div class="stepper">
                 <button aria-label="decrease quantity" ?disabled=${ this.quantity <= 1 } @click=${ () => { this.quantity = Math.max(1, this.quantity - 1) } }>−</button>
