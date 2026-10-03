@@ -10,7 +10,7 @@ releases its rendered scenes. a screen renders one immutable session
 snapshot and calls commands on the client. it never computes the next
 state: the server does, and `events.ts` folds the result in from the
 feed. the map is its own screen under `src/maps/`. see
-[architecture](architecture.md) for the full layout.
+[architecture](../../docs/architecture.client.md) for the full layout.
 
 `src/components/` provides native-control template components, shared
 ship viewport composition, a panel surface, theme selection, and the hull

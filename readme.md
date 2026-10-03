@@ -59,7 +59,7 @@ the lint rules are the backend's: `scripts/eslint.rules.js` is a copy of
 onto typescript-eslint and the stylistic plugin. `npm run lint:fix` applies
 them. no runtime dependency on the server repositories is needed. see
 [frontend foundations](docs/frontend.md) for boundaries, styles, themes and
-the style conventions, and [architecture](docs/architecture.md) for the
+the style conventions, and [architecture](../docs/architecture.client.md) for the
 module layout.
 
 the lint tool is typescript-eslint (imported as `tslint`), not the retired tslint package. no prettier preset overrides the project style.
