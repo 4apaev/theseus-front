@@ -2,10 +2,10 @@ import { html, nothing } from 'lit'
 import { GameScreen } from './base.ts'
 import { button, fieldLabel } from '../components/controls.ts'
 import { stationView } from '../components/station.ts'
-import { swatch } from '../model.ts'
-import { docked, stationName, goodName, good, aboard, cargoLoad, volumeOf, visualFitted, sellersOf, quoted } from '../session.ts'
-import type { Side, MarketRow, CargoRow } from '../transport/types.ts'
-import { number, credits } from '../util.ts'
+import { swatch } from '../content/catalogue.ts'
+import { docked, stationName, goodName, good, aboard, cargoLoad, volumeOf, visualFitted, sellersOf, quoted } from '../core/session.ts'
+import type { Side, MarketRow, CargoRow } from '../core/transport/types.ts'
+import { number, credits } from '../core/util.ts'
 
 /** the exchange: real quotes, real hold, one command per trade. */
 class MarketScreen extends GameScreen {

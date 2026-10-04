@@ -1,4 +1,4 @@
-import { raise } from '../util.ts'
+import { raise } from './util.ts'
 
 /**
  * idealized planar two-body motion for the flight preview. kilometres,

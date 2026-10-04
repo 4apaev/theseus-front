@@ -1,6 +1,6 @@
 import { html } from 'lit'
-import type { View, ModuleId, Facility } from '../model.ts'
-import { hullById } from '../model.ts'
+import type { View, ModuleId, Facility } from '../content/catalogue.ts'
+import { hullById } from '../content/catalogue.ts'
 import type { SpaceScene, SceneMode } from '../render/space-scene.ts'
 import { iconButton } from './controls.ts'
 

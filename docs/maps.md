@@ -34,10 +34,10 @@ docked there, and the course from your ship: the shortest travel time for
 your drive, hop by hop, with the distance and real arrival time of each
 leg, and the years you and the galaxy age.
 
-the course uses the server's own model. `legTime()` in `src/session.ts`
+the course uses the server's own model. `legTime()` in `src/core/session.ts`
 repeats the domain's leg model: a route between stars holds one speed, an
 in-system route accelerates to the midpoint, flips and brakes. the search
-in `src/maps/chart.ts` weighs each edge by that time, as `universe.path()`
+in `src/core/chart.ts` weighs each edge by that time, as `universe.path()`
 does. a fast route does not help a slow ship, so the course depends on the
 ship.
 
@@ -64,7 +64,7 @@ station the table does not know gets the next ring out.
 
 ## implementation
 
-- `src/maps/chart.ts`: pure. positions, nodes, edges, rings, mover
+- `src/core/chart.ts`: pure. positions, nodes, edges, rings, mover
   positions and headings, the shortest-time course. no renderer.
 - `src/maps/atlas-scene.ts`: orthographic scene, picking, projected
   labels, trackball camera, frame fitting, marker updates each frame.

@@ -1,0 +1,1277 @@
+{
+  "systems": [
+    {
+      "sysid": "sol",
+      "name": "Sol",
+      "star": "G2V yellow dwarf"
+    },
+    {
+      "sysid": "alpha.centauri",
+      "name": "Alpha Centauri",
+      "star": "G2V + K1V binary"
+    },
+    {
+      "sysid": "barnards.star",
+      "name": "Barnards Star",
+      "star": "M4V red dwarf"
+    },
+    {
+      "sysid": "wolf.359",
+      "name": "Wolf 359",
+      "star": "M6V red dwarf"
+    },
+    {
+      "sysid": "sirius",
+      "name": "Sirius",
+      "star": "A1V + white dwarf"
+    },
+    {
+      "sysid": "ran",
+      "name": "Ran",
+      "star": "K2V orange dwarf"
+    },
+    {
+      "sysid": "procyon",
+      "name": "Procyon",
+      "star": "F5IV-V + white dwarf"
+    },
+    {
+      "sysid": "lalande",
+      "name": "Lalande 21185",
+      "star": "M2V red dwarf"
+    },
+    {
+      "sysid": "ross.154",
+      "name": "Ross 154",
+      "star": "M3.5Ve flare star"
+    },
+    {
+      "sysid": "lacaille.9352",
+      "name": "Lacaille 9352",
+      "star": "M2/M3V red dwarf"
+    }
+  ],
+  "stations": [
+    {
+      "stid": "sol.mercury",
+      "system": "sol",
+      "name": "Mercury Deep",
+      "produces": {
+        "ore": 10,
+        "titanium": 6
+      },
+      "consumes": {
+        "grain": 6,
+        "water": 8
+      }
+    },
+    {
+      "stid": "sol.venus",
+      "system": "sol",
+      "name": "Venus Lab",
+      "produces": {
+        "polymer": 8,
+        "reagents": 5
+      },
+      "consumes": {
+        "ore": 4,
+        "protein": 5
+      }
+    },
+    {
+      "stid": "sol.outpost",
+      "system": "sol",
+      "name": "Sol Outpost",
+      "produces": {
+        "ore": 8,
+        "electronics": 6
+      },
+      "consumes": {
+        "grain": 5,
+        "hydrogen": 6
+      },
+      "stocks": [
+        "reactor.mk1",
+        "cruise.mk1",
+        "maneuver.mk1",
+        "cargo.mk1"
+      ]
+    },
+    {
+      "stid": "sol.mars",
+      "system": "sol",
+      "name": "Mars Hub",
+      "produces": {
+        "grain": 7,
+        "protein": 6
+      },
+      "consumes": {
+        "spice": 5,
+        "chinesium": 7
+      }
+    },
+    {
+      "stid": "sol.ganymede",
+      "system": "sol",
+      "name": "Ganymede Yards",
+      "produces": {
+        "titanium": 7,
+        "chips": 4
+      },
+      "consumes": {
+        "rare.earth": 3,
+        "hydrogen": 8
+      },
+      "stocks": [
+        "reactor.mk2",
+        "cruise.mk2",
+        "maneuver.mk2",
+        "cargo.mk2"
+      ]
+    },
+    {
+      "stid": "sol.titan",
+      "system": "sol",
+      "name": "Titan Ring",
+      "produces": {
+        "hydrogen": 9,
+        "polymer": 6
+      },
+      "consumes": {
+        "grain": 5,
+        "electronics": 4
+      }
+    },
+    {
+      "stid": "alpha.exchange",
+      "system": "alpha.centauri",
+      "name": "Alpha Exchange",
+      "produces": {
+        "grain": 8,
+        "trinkets": 9
+      },
+      "consumes": {
+        "spice": 5,
+        "livestock": 3
+      }
+    },
+    {
+      "stid": "barnards.rama",
+      "system": "barnards.star",
+      "name": "Rama Dock",
+      "produces": {
+        "ore": 7,
+        "chinesium": 9
+      },
+      "consumes": {
+        "spice": 5,
+        "water": 6
+      },
+      "stocks": [
+        "maneuver.mk1",
+        "maneuver.mk2"
+      ]
+    },
+    {
+      "stid": "barnards.port",
+      "system": "barnards.star",
+      "name": "Barnards Port",
+      "produces": {
+        "spice": 8,
+        "liquor": 5
+      },
+      "consumes": {
+        "ore": 5,
+        "chips": 3
+      }
+    },
+    {
+      "stid": "wolf.reach",
+      "system": "wolf.359",
+      "name": "Wolf Reach",
+      "produces": {
+        "grain": 9,
+        "water": 7
+      },
+      "consumes": {
+        "ore": 6,
+        "optics": 3
+      }
+    },
+    {
+      "stid": "wolf.solaris",
+      "system": "wolf.359",
+      "name": "Solaris Lab",
+      "produces": {
+        "optics": 5,
+        "reagents": 4
+      },
+      "consumes": {
+        "grain": 5,
+        "chinesium": 6
+      },
+      "stocks": [
+        "reactor.mk1"
+      ]
+    },
+    {
+      "stid": "sirius.gate",
+      "system": "sirius",
+      "name": "Sirius Gate",
+      "produces": {
+        "ore": 9,
+        "chips": 5
+      },
+      "consumes": {
+        "spice": 6,
+        "protein": 5
+      },
+      "stocks": [
+        "ansible.mk1"
+      ]
+    },
+    {
+      "stid": "sirius.technora",
+      "system": "sirius",
+      "name": "Technora Corp",
+      "produces": {
+        "chinesium": 10,
+        "titanium": 6
+      },
+      "consumes": {
+        "ore": 5,
+        "liquor": 4
+      },
+      "stocks": [
+        "cruise.mk2"
+      ]
+    },
+    {
+      "stid": "ran.gate",
+      "system": "ran",
+      "name": "Ran Gate",
+      "produces": {
+        "grain": 7,
+        "textiles": 8
+      },
+      "consumes": {
+        "ore": 5,
+        "mainframe": 2
+      }
+    },
+    {
+      "stid": "ran.aegir",
+      "system": "ran",
+      "name": "Aegir Drift",
+      "produces": {
+        "hydrogen": 10,
+        "ore": 9
+      },
+      "consumes": {
+        "grain": 6,
+        "electronics": 5
+      },
+      "stocks": [
+        "cargo.mk1",
+        "cargo.mk2"
+      ]
+    },
+    {
+      "stid": "ran.rorschach",
+      "system": "ran",
+      "name": "Rorschach Watch",
+      "produces": {
+        "artifacts": 3,
+        "spice": 9
+      },
+      "consumes": {
+        "grain": 6,
+        "water": 7
+      }
+    },
+    {
+      "stid": "procyon.gate",
+      "system": "procyon",
+      "name": "Procyon Gate",
+      "produces": {
+        "ore": 8,
+        "textiles": 6
+      },
+      "consumes": {
+        "spice": 5,
+        "reagents": 4
+      }
+    },
+    {
+      "stid": "procyon.bebop",
+      "system": "procyon",
+      "name": "Bebop Docks",
+      "produces": {
+        "electronics": 8,
+        "trinkets": 7
+      },
+      "consumes": {
+        "titanium": 5,
+        "chinesium": 6
+      },
+      "stocks": [
+        "cruise.mk1",
+        "maneuver.mk1",
+        "cargo.mk1"
+      ]
+    },
+    {
+      "stid": "procyon.ember",
+      "system": "procyon",
+      "name": "Ember Station",
+      "produces": {
+        "rare.earth": 4,
+        "spice": 10
+      },
+      "consumes": {
+        "grain": 7,
+        "water": 6
+      },
+      "stocks": [
+        "reactor.mk2"
+      ]
+    },
+    {
+      "stid": "lalande.qeng",
+      "system": "lalande",
+      "name": "Qeng Ho Depot",
+      "produces": {
+        "mainframe": 2,
+        "liquor": 6
+      },
+      "consumes": {
+        "artifacts": 2,
+        "chinesium": 5
+      },
+      "stocks": [
+        "ansible.mk1"
+      ]
+    },
+    {
+      "stid": "lalande.gate",
+      "system": "lalande",
+      "name": "Lalande Gate",
+      "produces": {
+        "spice": 7,
+        "protein": 6
+      },
+      "consumes": {
+        "ore": 4,
+        "trinkets": 5
+      }
+    },
+    {
+      "stid": "ross.beacon",
+      "system": "ross.154",
+      "name": "Ross Beacon",
+      "produces": {
+        "ore": 7,
+        "rare.earth": 3
+      },
+      "consumes": {
+        "grain": 5,
+        "textiles": 5
+      }
+    },
+    {
+      "stid": "lacaille.relay",
+      "system": "lacaille.9352",
+      "name": "Lacaille Relay",
+      "produces": {
+        "grain": 6,
+        "livestock": 3
+      },
+      "consumes": {
+        "spice": 4,
+        "polymer": 5
+      }
+    }
+  ],
+  "routes": [
+    {
+      "from": "sol.outpost",
+      "to": "sol.mercury",
+      "ly": 0.000009693067055135699,
+      "c": 0.00008
+    },
+    {
+      "from": "sol.outpost",
+      "to": "sol.mars",
+      "ly": 0.000008285753893786472,
+      "c": 0.00008
+    },
+    {
+      "from": "sol.outpost",
+      "to": "sol.titan",
+      "ly": 0.00013499137593750974,
+      "c": 0.00008
+    },
+    {
+      "from": "sol.outpost",
+      "to": "alpha.exchange",
+      "ly": 4.32,
+      "c": 1
+    },
+    {
+      "from": "sol.outpost",
+      "to": "barnards.port",
+      "ly": 5.95,
+      "c": 1
+    },
+    {
+      "from": "sol.mercury",
+      "to": "sol.outpost",
+      "ly": 0.000009693067055135699,
+      "c": 0.00008
+    },
+    {
+      "from": "sol.mercury",
+      "to": "sol.venus",
+      "ly": 0.000005313002496779111,
+      "c": 0.00008
+    },
+    {
+      "from": "sol.venus",
+      "to": "sol.mercury",
+      "ly": 0.000005313002496779111,
+      "c": 0.00008
+    },
+    {
+      "from": "sol.venus",
+      "to": "sol.mars",
+      "ly": 0.000012665818452143059,
+      "c": 0.00008
+    },
+    {
+      "from": "sol.mars",
+      "to": "sol.venus",
+      "ly": 0.000012665818452143059,
+      "c": 0.00008
+    },
+    {
+      "from": "sol.mars",
+      "to": "sol.ganymede",
+      "ly": 0.00005817421483824509,
+      "c": 0.00008
+    },
+    {
+      "from": "sol.mars",
+      "to": "sol.titan",
+      "ly": 0.0001267056220437233,
+      "c": 0.00008
+    },
+    {
+      "from": "sol.mars",
+      "to": "sol.outpost",
+      "ly": 0.000008285753893786472,
+      "c": 0.00008
+    },
+    {
+      "from": "sol.ganymede",
+      "to": "sol.mars",
+      "ly": 0.00005817421483824509,
+      "c": 0.00008
+    },
+    {
+      "from": "sol.ganymede",
+      "to": "sol.titan",
+      "ly": 0.00006853140720547818,
+      "c": 0.00008
+    },
+    {
+      "from": "sol.titan",
+      "to": "sol.mars",
+      "ly": 0.0001267056220437233,
+      "c": 0.00008
+    },
+    {
+      "from": "sol.titan",
+      "to": "sol.outpost",
+      "ly": 0.00013499137593750974,
+      "c": 0.00008
+    },
+    {
+      "from": "sol.titan",
+      "to": "sol.ganymede",
+      "ly": 0.00006853140720547818,
+      "c": 0.00008
+    },
+    {
+      "from": "barnards.port",
+      "to": "barnards.rama",
+      "ly": 0.000012175630721785463,
+      "c": 0.00008
+    },
+    {
+      "from": "barnards.port",
+      "to": "sol.outpost",
+      "ly": 5.95,
+      "c": 1
+    },
+    {
+      "from": "barnards.port",
+      "to": "alpha.exchange",
+      "ly": 6.44,
+      "c": 1
+    },
+    {
+      "from": "barnards.port",
+      "to": "wolf.reach",
+      "ly": 10.93,
+      "c": 1
+    },
+    {
+      "from": "barnards.port",
+      "to": "ross.beacon",
+      "ly": 5.54,
+      "c": 1
+    },
+    {
+      "from": "barnards.rama",
+      "to": "barnards.port",
+      "ly": 0.000012175630721785463,
+      "c": 0.00008
+    },
+    {
+      "from": "wolf.reach",
+      "to": "wolf.solaris",
+      "ly": 0.00001344063131625668,
+      "c": 0.00008
+    },
+    {
+      "from": "wolf.reach",
+      "to": "barnards.port",
+      "ly": 10.93,
+      "c": 1
+    },
+    {
+      "from": "wolf.reach",
+      "to": "alpha.exchange",
+      "ly": 8.27,
+      "c": 1
+    },
+    {
+      "from": "wolf.reach",
+      "to": "sirius.gate",
+      "ly": 9.02,
+      "c": 1
+    },
+    {
+      "from": "wolf.reach",
+      "to": "lalande.gate",
+      "ly": 4.06,
+      "c": 1
+    },
+    {
+      "from": "wolf.reach",
+      "to": "procyon.gate",
+      "ly": 8.66,
+      "c": 1
+    },
+    {
+      "from": "wolf.solaris",
+      "to": "wolf.reach",
+      "ly": 0.00001344063131625668,
+      "c": 0.00008
+    },
+    {
+      "from": "sirius.gate",
+      "to": "sirius.technora",
+      "ly": 0.000297275139700736,
+      "c": 0.00008
+    },
+    {
+      "from": "sirius.gate",
+      "to": "alpha.exchange",
+      "ly": 9.52,
+      "c": 1
+    },
+    {
+      "from": "sirius.gate",
+      "to": "wolf.reach",
+      "ly": 9.02,
+      "c": 1
+    },
+    {
+      "from": "sirius.gate",
+      "to": "procyon.gate",
+      "ly": 5.26,
+      "c": 1
+    },
+    {
+      "from": "sirius.gate",
+      "to": "ran.gate",
+      "ly": 7.84,
+      "c": 1
+    },
+    {
+      "from": "sirius.technora",
+      "to": "sirius.gate",
+      "ly": 0.000297275139700736,
+      "c": 0.00008
+    },
+    {
+      "from": "ran.gate",
+      "to": "ran.aegir",
+      "ly": 0.000039215018428607723,
+      "c": 0.00008
+    },
+    {
+      "from": "ran.gate",
+      "to": "ran.rorschach",
+      "ly": 0.000300437641186914,
+      "c": 0.00008
+    },
+    {
+      "from": "ran.gate",
+      "to": "sirius.gate",
+      "ly": 7.84,
+      "c": 1
+    },
+    {
+      "from": "ran.gate",
+      "to": "lacaille.relay",
+      "ly": 11.49,
+      "c": 1
+    },
+    {
+      "from": "ran.aegir",
+      "to": "ran.gate",
+      "ly": 0.000039215018428607723,
+      "c": 0.00008
+    },
+    {
+      "from": "ran.aegir",
+      "to": "ran.rorschach",
+      "ly": 0.00026122262275830627,
+      "c": 0.00008
+    },
+    {
+      "from": "ran.rorschach",
+      "to": "ran.aegir",
+      "ly": 0.00026122262275830627,
+      "c": 0.00008
+    },
+    {
+      "from": "ran.rorschach",
+      "to": "ran.gate",
+      "ly": 0.000300437641186914,
+      "c": 0.00008
+    },
+    {
+      "from": "procyon.gate",
+      "to": "procyon.bebop",
+      "ly": 0.00005060002377884868,
+      "c": 0.00008
+    },
+    {
+      "from": "procyon.gate",
+      "to": "procyon.ember",
+      "ly": 0.00022137510403246296,
+      "c": 0.00008
+    },
+    {
+      "from": "procyon.gate",
+      "to": "lalande.gate",
+      "ly": 9.68,
+      "c": 1
+    },
+    {
+      "from": "procyon.gate",
+      "to": "sirius.gate",
+      "ly": 5.26,
+      "c": 1
+    },
+    {
+      "from": "procyon.gate",
+      "to": "wolf.reach",
+      "ly": 8.66,
+      "c": 1
+    },
+    {
+      "from": "procyon.bebop",
+      "to": "procyon.gate",
+      "ly": 0.00005060002377884868,
+      "c": 0.00008
+    },
+    {
+      "from": "procyon.bebop",
+      "to": "procyon.ember",
+      "ly": 0.0001707750802536143,
+      "c": 0.00008
+    },
+    {
+      "from": "procyon.ember",
+      "to": "procyon.bebop",
+      "ly": 0.0001707750802536143,
+      "c": 0.00008
+    },
+    {
+      "from": "procyon.ember",
+      "to": "procyon.gate",
+      "ly": 0.00022137510403246296,
+      "c": 0.00008
+    },
+    {
+      "from": "lalande.gate",
+      "to": "lalande.qeng",
+      "ly": 0.000011068755201623147,
+      "c": 0.00008
+    },
+    {
+      "from": "lalande.gate",
+      "to": "wolf.reach",
+      "ly": 4.06,
+      "c": 1
+    },
+    {
+      "from": "lalande.gate",
+      "to": "procyon.gate",
+      "ly": 9.68,
+      "c": 1
+    },
+    {
+      "from": "lalande.qeng",
+      "to": "lalande.gate",
+      "ly": 0.000011068755201623147,
+      "c": 0.00008
+    },
+    {
+      "from": "alpha.exchange",
+      "to": "sol.outpost",
+      "ly": 4.32,
+      "c": 1
+    },
+    {
+      "from": "alpha.exchange",
+      "to": "barnards.port",
+      "ly": 6.44,
+      "c": 1
+    },
+    {
+      "from": "alpha.exchange",
+      "to": "sirius.gate",
+      "ly": 9.52,
+      "c": 1
+    },
+    {
+      "from": "alpha.exchange",
+      "to": "wolf.reach",
+      "ly": 8.27,
+      "c": 1
+    },
+    {
+      "from": "alpha.exchange",
+      "to": "ross.beacon",
+      "ly": 8.11,
+      "c": 1
+    },
+    {
+      "from": "alpha.exchange",
+      "to": "lacaille.relay",
+      "ly": 10.36,
+      "c": 1
+    },
+    {
+      "from": "lacaille.relay",
+      "to": "ran.gate",
+      "ly": 11.49,
+      "c": 1
+    },
+    {
+      "from": "lacaille.relay",
+      "to": "ross.beacon",
+      "ly": 9.58,
+      "c": 1
+    },
+    {
+      "from": "lacaille.relay",
+      "to": "alpha.exchange",
+      "ly": 10.36,
+      "c": 1
+    },
+    {
+      "from": "ross.beacon",
+      "to": "barnards.port",
+      "ly": 5.54,
+      "c": 1
+    },
+    {
+      "from": "ross.beacon",
+      "to": "alpha.exchange",
+      "ly": 8.11,
+      "c": 1
+    },
+    {
+      "from": "ross.beacon",
+      "to": "lacaille.relay",
+      "ly": 9.58,
+      "c": 1
+    }
+  ],
+  "goods": {
+    "water": {
+      "name": "potable water",
+      "price_base": 12,
+      "elasticity": 0.8,
+      "kind": "commodity",
+      "volume": 1,
+      "form": "liquid",
+      "category": "food"
+    },
+    "trinkets": {
+      "name": "mass trinkets",
+      "price_base": 15,
+      "elasticity": 0.9,
+      "kind": "commodity",
+      "volume": 1,
+      "form": "dry",
+      "category": "consumer"
+    },
+    "chinesium": {
+      "name": "chinesium alloy",
+      "price_base": 18,
+      "elasticity": 1.8,
+      "kind": "commodity",
+      "volume": 1,
+      "form": "dry",
+      "category": "metal"
+    },
+    "textiles": {
+      "name": "bulk textiles",
+      "price_base": 22,
+      "elasticity": 1,
+      "kind": "commodity",
+      "volume": 1,
+      "form": "dry",
+      "category": "consumer"
+    },
+    "grain": {
+      "name": "hydro grain",
+      "price_base": 25,
+      "elasticity": 1,
+      "kind": "commodity",
+      "volume": 1,
+      "form": "dry",
+      "category": "food"
+    },
+    "hydrogen": {
+      "name": "slush hydrogen",
+      "price_base": 30,
+      "elasticity": 1.2,
+      "kind": "commodity",
+      "volume": 2,
+      "form": "gas",
+      "category": "chemical"
+    },
+    "protein": {
+      "name": "vat protein",
+      "price_base": 35,
+      "elasticity": 1.1,
+      "kind": "commodity",
+      "volume": 1,
+      "form": "chilled",
+      "category": "food"
+    },
+    "ore": {
+      "name": "iron ore",
+      "price_base": 40,
+      "elasticity": 1.2,
+      "kind": "commodity",
+      "volume": 1,
+      "form": "dry",
+      "category": "metal"
+    },
+    "polymer": {
+      "name": "feedstock polymer",
+      "price_base": 45,
+      "elasticity": 1,
+      "kind": "commodity",
+      "volume": 2,
+      "form": "liquid",
+      "category": "chemical"
+    },
+    "spice": {
+      "name": "void spice",
+      "price_base": 90,
+      "elasticity": 1.5,
+      "kind": "commodity",
+      "volume": 1,
+      "form": "dry",
+      "category": "luxury"
+    },
+    "electronics": {
+      "name": "cheap electronics",
+      "price_base": 95,
+      "elasticity": 1.1,
+      "kind": "commodity",
+      "volume": 2,
+      "form": "dry",
+      "category": "consumer"
+    },
+    "liquor": {
+      "name": "station liquor",
+      "price_base": 130,
+      "elasticity": 1.3,
+      "kind": "commodity",
+      "volume": 2,
+      "form": "liquid",
+      "category": "luxury"
+    },
+    "livestock": {
+      "name": "gene stock",
+      "price_base": 140,
+      "elasticity": 1.4,
+      "kind": "commodity",
+      "volume": 4,
+      "form": "live",
+      "category": "food"
+    },
+    "titanium": {
+      "name": "hull titanium",
+      "price_base": 180,
+      "elasticity": 1.1,
+      "kind": "commodity",
+      "volume": 2,
+      "form": "dry",
+      "category": "metal"
+    },
+    "chips": {
+      "name": "logic chips",
+      "price_base": 220,
+      "elasticity": 1.2,
+      "kind": "commodity",
+      "volume": 1,
+      "form": "dry",
+      "category": "tech"
+    },
+    "reagents": {
+      "name": "reactor reagents",
+      "price_base": 260,
+      "elasticity": 1.3,
+      "kind": "commodity",
+      "volume": 2,
+      "form": "liquid",
+      "category": "chemical"
+    },
+    "optics": {
+      "name": "sensor optics",
+      "price_base": 320,
+      "elasticity": 1.2,
+      "kind": "commodity",
+      "volume": 2,
+      "form": "dry",
+      "category": "tech"
+    },
+    "rare.earth": {
+      "name": "rare earths",
+      "price_base": 400,
+      "elasticity": 1.6,
+      "kind": "commodity",
+      "volume": 1,
+      "form": "dry",
+      "category": "metal"
+    },
+    "artifacts": {
+      "name": "relic artifacts",
+      "price_base": 600,
+      "elasticity": 1.9,
+      "kind": "commodity",
+      "volume": 2,
+      "form": "dry",
+      "category": "luxury"
+    },
+    "mainframe": {
+      "name": "colony mainframe",
+      "price_base": 900,
+      "elasticity": 1.1,
+      "kind": "commodity",
+      "volume": 8,
+      "form": "dry",
+      "category": "tech"
+    },
+    "reactor.mk1": {
+      "name": "reactor mk1",
+      "price_base": 200,
+      "elasticity": 1,
+      "kind": "module",
+      "volume": 4,
+      "form": "dry",
+      "category": "tech"
+    },
+    "reactor.mk2": {
+      "name": "reactor mk2",
+      "price_base": 900,
+      "elasticity": 1,
+      "kind": "module",
+      "volume": 4,
+      "form": "dry",
+      "category": "tech"
+    },
+    "cruise.mk1": {
+      "name": "cruise drive mk1",
+      "price_base": 150,
+      "elasticity": 1,
+      "kind": "module",
+      "volume": 6,
+      "form": "dry",
+      "category": "tech"
+    },
+    "cruise.mk2": {
+      "name": "cruise drive mk2",
+      "price_base": 1200,
+      "elasticity": 1,
+      "kind": "module",
+      "volume": 6,
+      "form": "dry",
+      "category": "tech"
+    },
+    "maneuver.mk1": {
+      "name": "maneuver drive mk1",
+      "price_base": 120,
+      "elasticity": 1,
+      "kind": "module",
+      "volume": 6,
+      "form": "dry",
+      "category": "tech"
+    },
+    "maneuver.mk2": {
+      "name": "maneuver drive mk2",
+      "price_base": 900,
+      "elasticity": 1,
+      "kind": "module",
+      "volume": 6,
+      "form": "dry",
+      "category": "tech"
+    },
+    "cargo.mk1": {
+      "name": "cargo module mk1",
+      "price_base": 100,
+      "elasticity": 1,
+      "kind": "module",
+      "volume": 8,
+      "form": "dry",
+      "category": "tech"
+    },
+    "cargo.mk2": {
+      "name": "cargo module mk2",
+      "price_base": 500,
+      "elasticity": 1,
+      "kind": "module",
+      "volume": 8,
+      "form": "dry",
+      "category": "tech"
+    },
+    "ansible.mk1": {
+      "name": "ansible transceiver",
+      "price_base": 80,
+      "elasticity": 1,
+      "kind": "module",
+      "volume": 2,
+      "form": "dry",
+      "category": "tech"
+    }
+  },
+  "hulls": {
+    "starter": {
+      "id": "starter",
+      "power_base": 3,
+      "capacity_base": 20,
+      "velocity_base": 0.6,
+      "acceleration_base": 0.002,
+      "velocity_max": 0.85,
+      "acceleration_max": 0.01,
+      "rates": [],
+      "slots": [
+        {
+          "id": "power1",
+          "family": "power",
+          "size": "light"
+        },
+        {
+          "id": "cruise1",
+          "family": "cruise",
+          "size": "light"
+        },
+        {
+          "id": "maneuver1",
+          "family": "maneuver",
+          "size": "light"
+        },
+        {
+          "id": "cargo1",
+          "family": "cargo",
+          "size": "light"
+        },
+        {
+          "id": "utility1",
+          "family": "utility",
+          "size": "light"
+        }
+      ]
+    }
+  },
+  "modules": {
+    "reactor.mk1": {
+      "family": "power",
+      "mount": "light",
+      "power": 1,
+      "context": "port",
+      "requires": [],
+      "conflicts": [],
+      "provides": [
+        {
+          "rate": "power",
+          "rank": 1
+        }
+      ],
+      "effects": [
+        {
+          "stat": "power",
+          "kind": "flat",
+          "value": 5
+        }
+      ]
+    },
+    "reactor.mk2": {
+      "family": "power",
+      "mount": "light",
+      "power": 2,
+      "context": "port",
+      "requires": [],
+      "conflicts": [],
+      "provides": [
+        {
+          "rate": "power",
+          "rank": 2
+        }
+      ],
+      "effects": [
+        {
+          "stat": "power",
+          "kind": "flat",
+          "value": 9
+        }
+      ]
+    },
+    "cruise.mk1": {
+      "family": "cruise",
+      "mount": "light",
+      "power": 1,
+      "context": "port",
+      "requires": [],
+      "conflicts": [],
+      "provides": [],
+      "effects": []
+    },
+    "cruise.mk2": {
+      "family": "cruise",
+      "mount": "light",
+      "power": 2,
+      "context": "port",
+      "requires": [
+        {
+          "rate": "power",
+          "rank": 2
+        }
+      ],
+      "conflicts": [],
+      "provides": [],
+      "effects": [
+        {
+          "stat": "velocity",
+          "kind": "percent",
+          "value": 0.08
+        }
+      ]
+    },
+    "maneuver.mk1": {
+      "family": "maneuver",
+      "mount": "light",
+      "power": 1,
+      "context": "port",
+      "requires": [],
+      "conflicts": [],
+      "provides": [],
+      "effects": []
+    },
+    "maneuver.mk2": {
+      "family": "maneuver",
+      "mount": "light",
+      "power": 2,
+      "context": "port",
+      "requires": [
+        {
+          "rate": "power",
+          "rank": 2
+        }
+      ],
+      "conflicts": [],
+      "provides": [],
+      "effects": [
+        {
+          "stat": "acceleration",
+          "kind": "flat",
+          "value": 0.004
+        }
+      ]
+    },
+    "cargo.mk1": {
+      "family": "cargo",
+      "mount": "light",
+      "power": 0,
+      "context": "port",
+      "requires": [],
+      "conflicts": [],
+      "provides": [],
+      "effects": []
+    },
+    "cargo.mk2": {
+      "family": "cargo",
+      "mount": "light",
+      "power": 1,
+      "context": "port",
+      "requires": [],
+      "conflicts": [],
+      "provides": [],
+      "effects": [
+        {
+          "stat": "capacity",
+          "kind": "flat",
+          "value": 10
+        }
+      ]
+    },
+    "ansible.mk1": {
+      "family": "utility",
+      "mount": "light",
+      "power": 1,
+      "context": "field",
+      "requires": [],
+      "conflicts": [],
+      "provides": [],
+      "effects": []
+    }
+  },
+  "starter": {
+    "name": "the sentimental legend",
+    "stid": "sol.outpost",
+    "velocity": 0.6,
+    "acceleration": 0.002,
+    "capacity": 20
+  },
+  "constants": {
+    "time_scale": 20,
+    "ansible_speed": 100,
+    "interest_rate": 0.05,
+    "starter_credits": 1000,
+    "light_speed": 299792458,
+    "year_seconds": 31557600,
+    "currency": "₢"
+  }
+}

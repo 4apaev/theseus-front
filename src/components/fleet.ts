@@ -12,9 +12,9 @@ import {
     DEFAULT_HULL,
     type HullId,
     type Hull,
-} from '../model.ts'
+} from '../content/catalogue.ts'
 
-import { emit } from '../util.ts'
+import { emit } from '../core/util.ts'
 import { icon } from '../icons.ts'
 
 /** the hull catalogue is a visual preview. the server knows one hull today. */

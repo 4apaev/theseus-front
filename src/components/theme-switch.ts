@@ -1,6 +1,6 @@
 import { html       } from 'lit'
 import { AppElement } from './element.ts'
-import { emit       } from '../util.ts'
+import { emit       } from '../core/util.ts'
 import type { Theme } from '../theme.ts'
 
 class ThemeSwitch extends AppElement {

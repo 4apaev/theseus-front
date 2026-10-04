@@ -1,8 +1,8 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { legTime, realMs, departures, cargoLoad, visualFitted, emptySession, dockedAt, withLog, sellersOf, quoted } from '../src/session.ts'
-import type { Session } from '../src/session.ts'
-import type { Ship, Constants } from '../src/transport/types.ts'
+import { legTime, realMs, departures, cargoLoad, visualFitted, emptySession, dockedAt, withLog, sellersOf, quoted } from '../src/core/session.ts'
+import type { Session } from '../src/core/session.ts'
+import type { Ship, Constants } from '../src/core/transport/types.ts'
 
 const LIGHT = 299792458
 const YEAR = 31557600

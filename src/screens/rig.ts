@@ -2,9 +2,9 @@ import { html, nothing } from 'lit'
 import { GameScreen } from './base.ts'
 import { button } from '../components/controls.ts'
 import { stationView } from '../components/station.ts'
-import { hullSpec, fittedAt, goodName, good, cargoLoad, visualFitted, visualModule } from '../session.ts'
-import type { Preview, Slot, Design } from '../transport/types.ts'
-import { fmtVel, fmtAccel } from '../util.ts'
+import { hullSpec, fittedAt, goodName, good, cargoLoad, visualFitted, visualModule } from '../core/session.ts'
+import type { Preview, Slot, Design } from '../core/transport/types.ts'
+import { fmtVel, fmtAccel } from '../core/util.ts'
 
 // the same rule as the contract's field.shipName. a bad name gets an answer with no round trip.
 const SHIP_NAME = /^[\p{L}\p{N} '.-]{1,24}$/u

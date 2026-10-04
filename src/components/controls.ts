@@ -5,7 +5,7 @@ import {
 } from 'lit'
 
 import { icon } from '../icons.ts'
-import { number } from '../util.ts'
+import { number } from '../core/util.ts'
 
 type Content = TemplateResult | string | number
 

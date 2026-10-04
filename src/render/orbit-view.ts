@@ -1,8 +1,8 @@
 import { html } from 'lit'
 import { AppElement } from '../components/element.ts'
 import { themeColor } from '../theme.ts'
-import { EARTH_RADIUS, INITIAL_RADIUS, TARGET_RADIUS, solveOrbit, positionAt, targetAt, closestApproach } from '../simulation/orbit.ts'
-import type { Orbit, Vec } from '../simulation/orbit.ts'
+import { EARTH_RADIUS, INITIAL_RADIUS, TARGET_RADIUS, solveOrbit, positionAt, targetAt, closestApproach } from '../core/orbit.ts'
+import type { Orbit, Vec } from '../core/orbit.ts'
 
 type Palette = Record<string, string>
 

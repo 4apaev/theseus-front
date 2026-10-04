@@ -7,14 +7,16 @@ import { html, nothing          } from 'lit'
 import { AppElement             } from './components/element.ts'
 import { button, iconButton     } from './components/controls.ts'
 import { icon                   } from './icons.ts'
-import { credits, countdown     } from './util.ts'
+import { credits, countdown     } from './core/util.ts'
 import { speak, sound           } from './util.speak.ts'
-import { DEFAULT_HULL, hullById } from './model.ts'
-import type { View, HullId      } from './model.ts'
+import { DEFAULT_HULL, hullById } from './content/catalogue.ts'
+import type { View, HullId      } from './content/catalogue.ts'
 import type { Navigation        } from './screens/base.ts'
-import type { Session           } from './session.ts'
-import { type ClientStatus, GameClient } from './client.ts'
-import { emptySession, cargoLoad, stationName, systemName, station, docked, etaMs } from './session.ts'
+import type { Session           } from './core/session.ts'
+import { type ClientStatus, GameClient } from './core/client.ts'
+import { FixtureClient          } from './core/fixture.ts'
+import { fixture                } from './content/fixtures.ts'
+import { emptySession, cargoLoad, stationName, systemName, station, docked, etaMs } from './core/session.ts'
 import { ThemeController, type Theme   } from './theme.ts'
 
 import './components/panel.ts'
@@ -32,6 +34,9 @@ import './screens/flight.ts'
 
 const HULL_KEY = 'theseus.hull'
 const SPEECH_KEY = 'theseus.speech'
+
+// `?fixture=docked` boots on a recorded session, with no gateway
+const FIXTURE = new URLSearchParams(location.search).get('fixture')
 
 const views: { id: View, name: string, title: string }[] = [
     { id: 'port'  , name: 'port'    , title: 'port authority'    },
@@ -78,7 +83,7 @@ class TheseusApp extends AppElement {
     declare railCollapsed: boolean
     declare arrival?: { system: string, name: string }
 
-    readonly client = new GameClient
+    readonly client = FIXTURE ? new FixtureClient(() => fixture(FIXTURE)) : new GameClient
     readonly theme = new ThemeController(this)
 
     private clock?: ReturnType<typeof setInterval>

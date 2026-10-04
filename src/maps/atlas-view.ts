@@ -8,10 +8,10 @@ import {
     sectorNodes, systemNodes, routeEdges, courseEdges, orbitRings,
     moverPoint, heading, progress, shortestPath, gatewayOf,
     type MapMode, type ChartView, type Marker, type ChartEdge, type Plan,
-} from './chart.ts'
-import { station, stationName, docked, dockedAt, etaMs } from '../session.ts'
-import type { Universe, Ship, TrafficRow } from '../transport/types.ts'
-import { fmtDist, fmtYears, span, countdown, decimal } from '../util.ts'
+} from '../core/chart.ts'
+import { station, stationName, docked, dockedAt, etaMs } from '../core/session.ts'
+import type { Universe, Ship, TrafficRow } from '../core/transport/types.ts'
+import { fmtDist, fmtYears, span, countdown, decimal } from '../core/util.ts'
 import '../components/panel.ts'
 
 /**

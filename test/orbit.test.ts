@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { solveOrbit, positionAt, velocityAt, closestApproach, brachistochrone, MU, INITIAL_RADIUS, CIRCULAR_SPEED } from '../src/simulation/orbit.ts'
+import { solveOrbit, positionAt, velocityAt, closestApproach, brachistochrone, MU, INITIAL_RADIUS, CIRCULAR_SPEED } from '../src/core/orbit.ts'
 
 function near(a: number, b: number, tolerance = 1e-7) { assert.ok(Math.abs(a - b) < tolerance, `${ a } is not near ${ b }`) }
 

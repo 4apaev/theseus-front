@@ -3,9 +3,9 @@ import * as T from 'three'
 import { AppElement } from './element.ts'
 import { disposeGroup } from '../render/geometry.ts'
 import { loadHullModel } from '../render/hull-model.ts'
-import { Fail } from '../util.ts'
+import { Fail } from '../core/util.ts'
 import { configureShipRenderer, shipLighting } from '../render/ship-lighting.ts'
-import { HULLS, type HullId, type Category } from '../model.ts'
+import { HULLS, type HullId, type Category } from '../content/catalogue.ts'
 
 /**
  * one webgl renderer for every thumbnail. a browser keeps about 16 live

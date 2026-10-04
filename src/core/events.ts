@@ -1,12 +1,29 @@
-import type { Frame, CargoRow, MarketRow, Ship, TrafficRow, MessageRow } from './transport/types.ts'
-import { text, maybe, num, numOr, side, fitted as parseFitted, message as parseMessage, texts } from './transport/validate.ts'
-import type { Row } from './transport/validate.ts'
-import { credits, fmtYears, fmtVel } from './util.ts'
+import type {
+    Frame,
+    CargoRow,
+    MarketRow,
+    Ship,
+    TrafficRow,
+    MessageRow,
+} from './transport/types.ts'
+import {
+    text,
+    maybe,
+    num,
+    numOr,
+    side,
+    fitted as parseFitted,
+    message as parseMessage,
+    texts,
+} from './transport/validate.ts'
+
+import type { Row                            } from './transport/validate.ts'
+import { credits, fmtYears, fmtVel           } from './util.ts'
 import { goodName, stationName, mine, peerOf } from './session.ts'
-import type { Session, LogKind } from './session.ts'
+import type { Session, LogKind               } from './session.ts'
 
 export type Refresh = 'rig' | 'market' | 'traffic'
-export interface Fold { session: Session, refresh: Refresh[] }
+export interface Fold   { session: Session, refresh: Refresh[] }
 export interface Flavor { kind: LogKind, text: string }
 
 /**

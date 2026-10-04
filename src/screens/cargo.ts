@@ -1,10 +1,10 @@
 import { html, nothing } from 'lit'
 import { GameScreen } from './base.ts'
 import { button } from '../components/controls.ts'
-import { swatch } from '../model.ts'
-import { docked, goodName, good, volumeOf, cargoLoad, sellersOf, quoted } from '../session.ts'
-import type { CargoRow } from '../transport/types.ts'
-import { credits } from '../util.ts'
+import { swatch } from '../content/catalogue.ts'
+import { docked, goodName, good, volumeOf, cargoLoad, sellersOf, quoted } from '../core/session.ts'
+import type { CargoRow } from '../core/transport/types.ts'
+import { credits } from '../core/util.ts'
 
 /** the hold, docked or under way. sell where the station quotes; a module without one names where it does. */
 class CargoScreen extends GameScreen {

@@ -4,10 +4,10 @@ import { button } from '../components/controls.ts'
 import { icon } from '../icons.ts'
 import { stationModel, type StationFacility } from '../render/lem-station.ts'
 import '../render/lem-scene.ts'
-import { stationName, systemName, station, dockedAt, departures, docked, etaMs } from '../session.ts'
-import type { Departure } from '../session.ts'
-import type { Ship } from '../transport/types.ts'
-import { fmtDist, fmtYears, countdown, span } from '../util.ts'
+import { stationName, systemName, station, dockedAt, departures, docked, etaMs } from '../core/session.ts'
+import type { Departure } from '../core/session.ts'
+import type { Ship } from '../core/transport/types.ts'
+import { fmtDist, fmtYears, countdown, span } from '../core/util.ts'
 
 /** the port: who is here, where the routes go, and the one command that moves the ship. */
 class PortScreen extends GameScreen {

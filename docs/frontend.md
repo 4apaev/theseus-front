@@ -2,15 +2,21 @@
 
 ## boundaries
 
-`client.ts` owns the session: auth, hydration, commands, and the feed.
+`core/client.ts` owns the session: auth, hydration, commands, and the feed.
 `app.ts` owns navigation, the hull preview choice, and notifications.
 `src/screens/` contains lit components for auth, port, rigging, exchange,
 comms, and flight. each keeps its own input state when hidden and
 releases its rendered scenes. a screen renders one immutable session
 snapshot and calls commands on the client. it never computes the next
-state: the server does, and `events.ts` folds the result in from the
+state: the server does, and `core/events.ts` folds the result in from the
 feed. the map is its own screen under `src/maps/`. see
 [architecture](../../docs/architecture.client.md) for the full layout.
+
+the painted client grows beside it, from `shell.html` and `src/shell.ts`:
+`src/world/` (the stage and its orbit camera, the 360° sky, the paint,
+the loader, the ship, the robots), `src/places/` (the port) and
+`src/content/` (the station views, the fixtures). it replaces `src/screens/`, `src/render/` and
+`src/components/` place by place.
 
 `src/components/` provides native-control template components, shared
 ship viewport composition, a panel surface, theme selection, and the hull
@@ -19,7 +25,7 @@ selects and inputs: disabled behavior, keyboard activation, label
 association and form submission stay native. `icons.ts` is the shared
 svg icon component and path catalog.
 
-`src/util.ts` contains browser-safe `Fail`, `ValidationError`, `assert`,
+`src/core/util.ts` contains browser-safe `Fail`, `ValidationError`, `assert`,
 `raise`, number, credit, distance and time formatting, clamping, and
 typed event emission. errors carry a stable code and an optional cause,
 as garage's do.

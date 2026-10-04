@@ -4,7 +4,7 @@ import { html, type PropertyValues } from 'lit'
 import * as T from 'three'
 import { TrackballControls } from 'three/addons/controls/TrackballControls.js'
 import { solid, disposeGroup } from '../render/geometry.ts'
-import type { MapMode, Point3, ChartNode, ChartEdge, Marker } from './chart.ts'
+import type { MapMode, Point3, ChartNode, ChartEdge, Marker } from '../core/chart.ts'
 
 /**
  * the chart renderer. it draws whatever nodes, edges, rings and markers

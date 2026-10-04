@@ -1,6 +1,6 @@
 import * as T from 'three'
-import type { View } from '../model.ts'
-import { assert } from '../util.ts'
+import type { View } from '../content/catalogue.ts'
+import { assert } from '../core/util.ts'
 
 /**
  * the station models and their runtime contract. every export carries

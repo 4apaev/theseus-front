@@ -1,10 +1,10 @@
 import { html, svg, nothing, type PropertyValues } from 'lit'
 import { GameScreen } from './base.ts'
 import { icon } from '../icons.ts'
-import { solveOrbit, closestApproach, brachistochrone, EARTH_RADIUS } from '../simulation/orbit.ts'
+import { solveOrbit, closestApproach, brachistochrone, EARTH_RADIUS } from '../core/orbit.ts'
 import { rangeField, selectField } from '../components/controls.ts'
-import { stationName } from '../session.ts'
-import { number, duration } from '../util.ts'
+import { stationName } from '../core/session.ts'
+import { number, duration } from '../core/util.ts'
 import '../render/orbit-view.ts'
 
 type FlightMode = 'orbital' | 'brachistochrone'

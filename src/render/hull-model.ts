@@ -1,7 +1,7 @@
 import * as T from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
-import type { Hull, ModuleId } from '../model.ts'
-import { Fail } from '../util.ts'
+import type { Hull, ModuleId } from '../content/catalogue.ts'
+import { Fail } from '../core/util.ts'
 import { themeColor } from '../theme.ts'
 
 const loader = new GLTFLoader

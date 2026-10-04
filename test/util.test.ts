@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import strict from 'node:assert/strict'
-import { assert, raise, Fail, ValidationError, number, decimal, credits, duration, clamp, countdown, span, fmtDist } from '../src/util.ts'
+import { assert, raise, Fail, ValidationError, number, decimal, credits, duration, clamp, countdown, span, fmtDist } from '../src/core/util.ts'
 import { themePreference } from '../src/theme.ts'
 
 test('assert and raise preserve typed failures, codes and causes', () => {

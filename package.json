@@ -13,7 +13,8 @@
         "tsc"     : "tsc --noEmit",
         "lint"    : "eslint . --fix",
         "test"    : "node --test test/*.test.ts",
-        "check"   : "npm run lint && npm run test && npm run build"
+        "check"   : "npm run lint && npm run test && npm run build",
+        "sync"    : "sh scripts/sync.sh"
     },
     "dependencies": {
         "lit"   : "^3.3.3",

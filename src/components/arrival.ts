@@ -1,6 +1,6 @@
 import { html, nothing, type PropertyValues } from 'lit'
 import { AppElement } from './element.ts'
-import { emit } from '../util.ts'
+import { emit } from '../core/util.ts'
 
 const HOLD_MS = 2200
 const STREAKS = 18

@@ -198,7 +198,7 @@ export class GameClient {
         return this.command('post', '/api/comms/messages', { body, to }, { label, tag: to })
     }
 
-    private async command(method: 'post' | 'put' | 'del', path: string, body: unknown, c: Command) {
+    protected async command(method: 'post' | 'put' | 'del', path: string, body: unknown, c: Command) {
         this.log('cmd', `→ ${ c.label } …`)
         const reply = method === 'del' ? await this.api.del(path) : await this.api[ method ](path, body)
         this.pending.track(parse.correlation(reply.body), c.label, c.tag)
@@ -246,17 +246,17 @@ export class GameClient {
 
     // ── state ────────────────────────────────────────────────
 
-    private commit(patch: Partial<Session>) {
+    protected commit(patch: Partial<Session>) {
         this.session = { ...this.session, ...patch }
         this.onChange?.(this.session)
     }
 
-    private log(kind: LogKind, text: string) {
+    protected log(kind: LogKind, text: string) {
         this.session = withLog(this.session, kind, text)
         this.onChange?.(this.session)
     }
 
-    private setStatus(status: ClientStatus) {
+    protected setStatus(status: ClientStatus) {
         this.status = status
         this.onStatus?.(status)
     }

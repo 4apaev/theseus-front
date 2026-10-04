@@ -5,8 +5,8 @@ import { AppElement } from '../components/element.ts'
 import { configureShipRenderer, shipLighting } from './ship-lighting.ts'
 import { loadHullModel } from './hull-model.ts'
 import { buildPort, buildShip, disposeGroup } from './geometry.ts'
-import { hullById, type HullId, type ModuleId, type Facility } from '../model.ts'
-import { Fail } from '../util.ts'
+import { hullById, type HullId, type ModuleId, type Facility } from '../content/catalogue.ts'
+import { Fail } from '../core/util.ts'
 
 export type SceneMode = 'rig' | 'market'
 

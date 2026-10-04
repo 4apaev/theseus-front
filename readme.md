@@ -28,6 +28,10 @@ the proxy elsewhere. `npm run check` runs lint, tests, type checking, and
 a production build. `npm run preview` serves that build; it still needs a
 proxy in front of it, or same-origin serving.
 
+`?fixture=docked`, `transit` or `full` boots on a recorded session, with
+no backend. `shell.html` is the painted client in progress: the port on
+the stage. `npm run sync` copies the art of `../assets` into `public/`.
+
 ## play
 
 - docking clearance: register a handle to commission a starter ship, or

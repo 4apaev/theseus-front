@@ -1,6 +1,6 @@
-import type { Universe, Ship, Route, Constants, Station } from '../transport/types.ts'
-import { legTime, realMs } from '../session.ts'
-import { clamp } from '../util.ts'
+import type { Universe, Ship, Route, Constants, Station } from './transport/types.ts'
+import { legTime, realMs } from './session.ts'
+import { clamp } from './util.ts'
 
 /**
  * the chart model, pure. it turns the server's universe into points,

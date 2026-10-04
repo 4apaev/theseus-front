@@ -1,4 +1,4 @@
-import type { ModuleId } from './model.ts'
+import type { ModuleId } from '../content/catalogue.ts'
 import type {
     Player, Ship, CargoRow, FittedSlot, MarketRow, TradeRow, MessageRow,
     TrafficRow, Universe, Route, Station, Good, HullSpec, Constants,

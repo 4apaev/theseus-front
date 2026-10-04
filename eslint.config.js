@@ -35,7 +35,7 @@ for (const name of extensions) {
 
 export default defineConfig([
     {
-        ignores: [ 'dist/**', 'node_modules/**', 'scripts/eslint.rules.js' ],
+        ignores: [ 'dist/**', 'node_modules/**', 'prototype/**', 'scripts/eslint.rules.js' ],
     },
     {
         files: [ '**/*.{js,ts}' ],

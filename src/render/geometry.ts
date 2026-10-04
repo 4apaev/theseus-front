@@ -1,5 +1,5 @@
 import * as T from 'three'
-import type { Category, HullKind, ModuleId } from '../model.ts'
+import type { Category, HullKind, ModuleId } from '../content/catalogue.ts'
 
 /**
  * faceted vertex-color geometry: the schematic reserve for a hull whose

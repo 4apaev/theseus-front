@@ -1,10 +1,10 @@
 import type { PropertyDeclarations } from 'lit'
 import { AppElement } from '../components/element.ts'
-import { emit, Fail } from '../util.ts'
-import { emptySession } from '../session.ts'
-import type { Session } from '../session.ts'
-import type { GameClient } from '../client.ts'
-import type { View } from '../model.ts'
+import { emit, Fail } from '../core/util.ts'
+import { emptySession } from '../core/session.ts'
+import type { Session } from '../core/session.ts'
+import type { GameClient } from '../core/client.ts'
+import type { View } from '../content/catalogue.ts'
 import { panelHeader } from '../components/controls.ts'
 
 export interface Navigation { view: View, slot?: string }

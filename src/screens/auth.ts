@@ -2,8 +2,8 @@ import { html } from 'lit'
 import { AppElement } from '../components/element.ts'
 import { button } from '../components/controls.ts'
 import { icon } from '../icons.ts'
-import { Fail } from '../util.ts'
-import type { GameClient } from '../client.ts'
+import { Fail } from '../core/util.ts'
+import type { GameClient } from '../core/client.ts'
 
 type Kind = 'login' | 'register'
 

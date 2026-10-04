@@ -1,9 +1,9 @@
 import { html, nothing, type PropertyValues } from 'lit'
 import { GameScreen } from './base.ts'
 import { icon } from '../icons.ts'
-import { docked, stationName, hasAnsible, pidOf, peerOf } from '../session.ts'
-import type { MessageRow, TrafficRow } from '../transport/types.ts'
-import { span } from '../util.ts'
+import { docked, stationName, hasAnsible, pidOf, peerOf } from '../core/session.ts'
+import type { MessageRow, TrafficRow } from '../core/transport/types.ts'
+import { span } from '../core/util.ts'
 
 interface Contact { id: string, name: string, note: string, pid?: string, sid?: string }
 

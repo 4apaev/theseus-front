@@ -1,6 +1,6 @@
 import { html, nothing, type PropertyValues } from 'lit'
 import { AppElement } from './element.ts'
-import { emit } from '../util.ts'
+import { emit } from '../core/util.ts'
 import { icon } from '../icons.ts'
 import { button } from './controls.ts'
 import type { Theme } from '../theme.ts'
