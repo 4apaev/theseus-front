@@ -7,7 +7,7 @@ import { model } from '../world/loader.ts'
 import { liven } from '../world/paint.ts'
 import { Robot } from '../world/robot.ts'
 import { Ship } from '../world/ship.ts'
-import { face, inbound } from '../world/visitor.ts'
+import { type Berth, face, inbound } from '../world/visitor.ts'
 import type { Effect } from '../core/effects.ts'
 import { html } from 'lit'
 import { type Kit, shipRows, visitorRows } from '../kit/index.ts'
@@ -85,7 +85,7 @@ export class Port {
         this.made.push(hull, ...groups)
 
         const box  = (new T.Box3).setFromObject(hull)
-        const yard = this.yard = new Anchorage(box, seedOf(at?.stid ?? ''))
+        const yard = this.yard = new Anchorage(box, seedOf(at?.stid ?? ''), pads(hull))
 
         this.stid = at?.stid
         yard.sync(dockedAt(s, this.stid), false)
@@ -222,6 +222,19 @@ export class Port {
 function isIn(o: T.Object3D | null, root: T.Object3D) {
     while (o && o !== root) o = o.parent
     return !!o
+}
+
+// the station's other pads: `berth_b`, `berth_c`… with the extra `size`
+const SIZES: Record<string, number> = { small: 60, medium: 150, large: 260 }
+
+function pads(hull: T.Object3D) {
+    const found: Berth[] = []
+    hull.traverse(o => {
+        if (!/^berth_[a-z]$/.test(o.name)) return
+        const q = o.getWorldQuaternion(new T.Quaternion)
+        found.push({ at: o.getWorldPosition(new T.Vector3), bow: new T.Vector3(1, 0, 0).applyQuaternion(q), fits: SIZES[ o.userData.size ] ?? SIZES.medium })
+    })
+    return found
 }
 
 // a deckhand walks the first half

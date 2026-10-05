@@ -2,8 +2,8 @@ import * as T from 'three'
 import { HULLS } from '../content/fleet.ts'
 import { Ship } from './ship.ts'
 
-/** where a visitor waits: a point, and the way its bow points. */
-export interface Berth { at: T.Vector3, bow: T.Vector3 }
+/** where a visitor waits: a point, the way its bow points, the longest hull it takes. */
+export interface Berth { at: T.Vector3, bow: T.Vector3, fits?: number }
 
 const UP = new T.Vector3(0, 1, 0)
 const BASIS = new T.Matrix4

@@ -1,12 +1,13 @@
 import * as T from 'three'
 import type { TrafficRow } from '../core/transport/types.ts'
-import { NPC, seedOf } from '../content/fleet.ts'
+import { HULLS, NPC, seedOf } from '../content/fleet.ts'
 import { rng } from '../world/paint.ts'
 import { type Berth, Visitor } from '../world/visitor.ts'
 
 /**
- * the anchorage: a ring of berths round the station, where other ships
- * wait. the players' ships come and go with the traffic; they all fly a
+ * the anchorage: the station's pads, then a ring of berths round it,
+ * where other ships wait. a ship takes a free pad its length fits, else
+ * the ring. the players' ships come and go with the traffic; they all fly a
  * far treasure, each with its own rig. npc ships fill the free berths:
  * every half minute or so one arrives or one leaves.
  */
@@ -20,12 +21,12 @@ export class Anchorage {
     private next = 0
     private npc = 0
 
-    constructor(box: T.Box3, seed: number) {
+    constructor(box: T.Box3, seed: number, pads: Berth[]) {
         const c = box.getCenter(new T.Vector3)
         const s = box.getSize(new T.Vector3)
         const radius = Math.hypot(s.x, s.z) / 2 + 160
         this.r = rng(seed)
-        this.berths = Array.from({ length: 7 }, (_, i) => ring(c, radius, (i + .5) / 7 * Math.PI * 2, (this.r() - .5) * 80))
+        this.berths = [ ...pads, ...Array.from({ length: 7 }, (_, i) => ring(c, radius, (i + .5) / 7 * Math.PI * 2, (this.r() - .5) * 80)) ]
     }
 
     /** the players' ships docked here. `fly` false parks them at once. */
@@ -76,10 +77,13 @@ export class Anchorage {
         npcs[ Math.floor(this.r() * npcs.length) ]?.[ 1 ].depart(this.t)
     }
 
+    // a free pad the hull fits, else a free place on the ring
     private dock(id: string, hull: string, fly: boolean) {
-        const free = this.open()
-        if (!free.length) return
-        const v = new Visitor(hull, seedOf(id), free[ Math.floor(this.r() * free.length) ])
+        const free = this.open().filter(b => (b.fits ?? Infinity) >= HULLS[ hull ])
+        const pads = free.filter(b => b.fits)
+        const pick = pads.length ? pads : free
+        if (!pick.length) return
+        const v = new Visitor(hull, seedOf(id), pick[ Math.floor(this.r() * pick.length) ])
         if (fly) v.arrive(this.t)
         this.ships.set(id, v)
         this.group.add(v.ship.group)
