@@ -30,29 +30,29 @@ steps
 
 | step | stage   | what                                       | size | needs | status |
 |------|---------|--------------------------------------------|------|-------|--------|
-| A1   | frame   | fixture commands answer                    | S    | -     |
-| A2   | frame   | the kit: card, chip, toast, ₢ counter, hud | M    | -     |
-| A3   | frame   | the place router                           | S    | A2    |
-| A4   | frame   | hotspots and the ship focus                | M    | A3, sam: spots |
-| A5   | frame   | login and register                         | S    | A2    |
-| B1   | trade   | the exchange                               | M    | A1-A4 |
-| B2   | trade   | the hold                                   | M    | B1    |
-| B3   | trade   | effects                                    | S    | B1    |
-| C1   | travel  | the chart                                  | L    | A4    |
-| C2   | travel  | the system map                             | M    | C1    |
-| C3   | travel  | transit                                    | M    | C1, server 3.7 |
-| D1   | ship    | rigging                                    | L    | A4, the hull call |
-| D2   | ship    | traffic at the station                     | S    | A4    |
-| E1   | comms   | letters and the channel                    | M    | A4    |
-| E2   | comms   | the feed line and the console              | S    | E1    |
-| F1   | parity  | settings, voices, reduced motion           | S    | A2    |
-| F2   | parity  | sounds                                     | S    | B3    |
-| F3   | parity  | load and size                              | M    | -     |
-| F4   | parity  | screenshot checks                          | M    | all places |
-| G1   | switch  | `index.html` boots the shell               | S    | F     |
-| G2   | switch  | remove the old code                        | S    | G1    |
-| G3   | switch  | the docs                                   | S    | G2    |
-| H    | server  | fuel, holds, crew, the well, the fight     | -     | phase 4, 5 |
+| A1   | frame   | fixture commands answer                    | S    | -     | done ✔ |
+| A2   | frame   | the kit: card, chip, toast, ₢ counter, hud | M    | -     | done ✔ |
+| A3   | frame   | the place router                           | S    | A2    | done ✔ |
+| A4   | frame   | hotspots and the ship focus                | M    | A3, sam: spots | done ✔ |
+| A5   | frame   | login and register                         | S    | A2    | done ✔ |
+| B1   | trade   | the exchange                               | M    | A1-A4 |        |
+| B2   | trade   | the hold                                   | M    | B1    |        |
+| B3   | trade   | effects                                    | S    | B1    |        |
+| C1   | travel  | the chart                                  | L    | A4    |        |
+| C2   | travel  | the system map                             | M    | C1    |        |
+| C3   | travel  | transit                                    | M    | C1, server 3.7 |        |
+| D1   | ship    | rigging                                    | L    | A4, the hull call |        |
+| D2   | ship    | traffic at the station                     | S    | A4    |        |
+| E1   | comms   | letters and the channel                    | M    | A4    |        |
+| E2   | comms   | the feed line and the console              | S    | E1    |        |
+| F1   | parity  | settings, voices, reduced motion           | S    | A2    |        |
+| F2   | parity  | sounds                                     | S    | B3    |        |
+| F3   | parity  | load and size                              | M    | -     |        |
+| F4   | parity  | screenshot checks                          | M    | all places |        |
+| G1   | switch  | `index.html` boots the shell               | S    | F     |        |
+| G2   | switch  | remove the old code                        | S    | G1    |        |
+| G3   | switch  | the docs                                   | S    | G2    |        |
+| H    | server  | fuel, holds, crew, the well, the fight     | -     | phase 4, 5 |        |
 
 
 A · the frame
