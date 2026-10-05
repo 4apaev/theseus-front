@@ -9,3 +9,6 @@ dist/
 
 # python build helpers
 __pycache__/
+
+# the painted models come from ../assets/exports/painted: npm run sync
+public/models/painted/

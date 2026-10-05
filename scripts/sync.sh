@@ -6,6 +6,7 @@ opt="-a --itemize-changes $1"
 
 mkdir -p public/art public/models/painted/stations
 
-rsync $opt --include='*.glb' --exclude='*' $a/exports/painted/stations/ public/models/painted/stations/
+# every painted model, the stations, the hulls and the modules. icarus waits: the client shows none yet
+rsync $opt -m --exclude='icarus/' --include='*/' --include='*.glb' --exclude='*' $a/exports/painted/ public/models/painted/
 rsync $opt --include='*.webp' --exclude='*' $a/planets/ public/art/planets/
 rsync $opt --include='*.webp' --exclude='*' $a/suns/ public/art/suns/
