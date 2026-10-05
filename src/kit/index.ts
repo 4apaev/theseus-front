@@ -1,5 +1,6 @@
 import type { KitAuth } from './auth.ts'
 import type { KitCard } from './card.ts'
+import type { KitComms } from './comms.ts'
 import type { KitHold } from './hold.ts'
 import type { KitSpot } from './spot.ts'
 import type { KitHud } from './hud.ts'
@@ -8,6 +9,7 @@ import type { KitToast } from './toast.ts'
 import type { KitTray } from './tray.ts'
 import './auth.ts'
 import './card.ts'
+import './comms.ts'
 import './hold.ts'
 import './hud.ts'
 import './mark.ts'
@@ -18,8 +20,8 @@ import './kit.css'
 
 export { shipRows, visitorRows, voyageRows } from './ship.ts'
 
-/** the kit over one stage: the top line, one card, the toasts, the way in, a tray of goods, the hold, labels for places. */
-export interface Kit { hud: KitHud, card: KitCard, toast: KitToast, auth: KitAuth, tray: KitTray, hold: KitHold, spot: (place: string) => KitSpot, mark: (name: string, value: string) => KitMark }
+/** the kit over one stage: the top line, one card, the toasts, the way in, a tray of goods, the hold, comms, labels for places. */
+export interface Kit { hud: KitHud, card: KitCard, toast: KitToast, auth: KitAuth, tray: KitTray, hold: KitHold, comms: KitComms, spot: (place: string) => KitSpot, mark: (name: string, value: string) => KitMark }
 
 export function mount(host: HTMLElement): Kit {
     const kit = {
@@ -29,9 +31,10 @@ export function mount(host: HTMLElement): Kit {
         auth : Object.assign(document.createElement('kit-auth') as KitAuth, { hidden: true }),
         tray : Object.assign(document.createElement('kit-tray') as KitTray, { hidden: true }),
         hold : Object.assign(document.createElement('kit-hold') as KitHold, { hidden: true }),
+        comms: Object.assign(document.createElement('kit-comms') as KitComms, { hidden: true }),
         spot : (place: string) => host.appendChild(Object.assign(document.createElement('kit-spot') as KitSpot, { place })),
         mark : (name: string, value: string) => host.appendChild(Object.assign(document.createElement('kit-mark') as KitMark, { name, value })),
     }
-    host.append(kit.hud, kit.tray, kit.hold, kit.card, kit.toast, kit.auth)
+    host.append(kit.hud, kit.tray, kit.hold, kit.comms, kit.card, kit.toast, kit.auth)
     return kit
 }

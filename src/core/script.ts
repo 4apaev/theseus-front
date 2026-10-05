@@ -104,7 +104,7 @@ function rig(s: Session, fitted: FittedSlot[], slot: string, incoming?: string):
 function send(s: Session, b: Body): Beat[] {
     const to = b.to ? String(b.to) : void 0
     const now = Date.now()
-    const message = { mid: id('m'), from: s.ship?.sid, to, stid: to ? void 0 : s.ship?.stid, body: String(b.body), sent: iso(now), deliver: iso(now + ANSIBLE) }
+    const message = { mid: id('m'), from: s.me?.pid, to, stid: to ? void 0 : s.ship?.stid, body: String(b.body), sent: iso(now), deliver: iso(now + ANSIBLE) }
     return [
         beat('comms.sent.v1', own(s, message)),
         beat('comms.delivered.v1', { ...message, delivered: iso(now + ANSIBLE) }, ANSIBLE),
