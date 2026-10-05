@@ -53,14 +53,31 @@ const STARS: Record<string, Point3> = {
     'lacaille.9352' : [ 8.42, -2.027, -6.258 ],
 }
 
-/** mean orbit radii in au. the domain measures in-system routes between these. */
+/** mean orbit radii in au, as `systems.js` declares them. the universe does not send them yet (phase 4 step 4.1). */
 const ORBITS: Record<string, number> = {
-    'sol.mercury' : 0.387,
-    'sol.venus'   : 0.723,
-    'sol.outpost' : 1.0,
-    'sol.mars'    : 1.524,
-    'sol.ganymede': 5.203,
-    'sol.titan'   : 9.537,
+    'sol.mercury'    : 0.387,
+    'sol.venus'      : 0.723,
+    'sol.outpost'    : 1.0,
+    'sol.mars'       : 1.524,
+    'sol.ganymede'   : 5.203,
+    'sol.titan'      : 9.537,
+    'alpha.exchange' : 1.0,
+    'barnards.rama'  : 0.23,
+    'barnards.port'  : 1.0,
+    'wolf.reach'     : 1.0,
+    'wolf.solaris'   : 1.85,
+    'sirius.gate'    : 1.0,
+    'sirius.technora': 19.8,
+    'ran.gate'       : 1.0,
+    'ran.aegir'      : 3.48,
+    'ran.rorschach'  : 20,
+    'procyon.gate'   : 1.0,
+    'procyon.bebop'  : 4.2,
+    'procyon.ember'  : 15,
+    'lalande.qeng'   : 0.30,
+    'lalande.gate'   : 1.0,
+    'ross.beacon'    : 1.0,
+    'lacaille.relay' : 1.0,
 }
 
 // every station of a system sits on one radial line, as the domain says
