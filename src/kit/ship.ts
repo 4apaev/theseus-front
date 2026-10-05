@@ -1,5 +1,5 @@
 import { html } from 'lit'
-import type { FittedSlot, TrafficRow } from '../core/transport/types.ts'
+import type { FittedSlot, Preview, TrafficRow } from '../core/transport/types.ts'
 import { progress } from '../core/chart.ts'
 import { type Session, cargoLoad, goodName, stationName } from '../core/session.ts'
 import { fmtVel, fmtYears, span } from '../core/util.ts'
@@ -49,4 +49,20 @@ export function voyageRows(s: Session, now: number) {
             <dt>arrives in</dt>  <dd>${ left > 0 ? span(left) : 'docking…' }</dd>
         </dl>
         <progress value=${ progress(ship, k, now) } max="1"></progress>`
+}
+
+/** a fit, before and after: the stats the server computed, and why it would fail. */
+export function previewRows(s: Session, p: Preview) {
+    const ship = s.ship
+    if (!ship) return html``
+    const row = (name: string, a: number, b: number, f = (n: number) => String(n)) => html`
+        <dt>${ name }</dt><dd ?data-up=${ b > a } ?data-down=${ b < a }>${ f(a) }${ a === b ? '' : html` → ${ f(b) }` }</dd>`
+    return html`
+        <dl>
+            ${ row('hold', ship.capacity, p.capacity) }
+            ${ row('speed', ship.velocity, p.velocity, fmtVel) }
+            ${ row('thrust', ship.acceleration, p.acceleration) }
+            ${ row('power', ship.power_pool, p.power_pool) }
+        </dl>
+        ${ p.errors.map(e => html`<p data-error>${ e }</p>`) }`
 }

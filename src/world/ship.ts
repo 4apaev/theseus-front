@@ -14,7 +14,7 @@ export class Ship {
     readonly group = new T.Group
     readonly ready: Promise<void>
     worn: FittedSlot[] = []
-    private readonly sockets = new Map<string, T.Object3D>
+    readonly sockets = new Map<string, T.Object3D>
     private readonly shown = new Map<string, string>
     private flame?: T.Sprite
 

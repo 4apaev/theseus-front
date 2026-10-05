@@ -1,7 +1,7 @@
 import { GameClient } from './client.ts'
 import { answer } from './script.ts'
 import { docked } from './session.ts'
-import type { MarketRow } from './transport/types.ts'
+import type { MarketRow, Preview } from './transport/types.ts'
 import type { Command } from './transport/pending.ts'
 import * as parse from './transport/validate.ts'
 import { Fail } from './util.ts'
@@ -39,6 +39,17 @@ export class FixtureClient extends GameClient {
     }
 
     override async refreshRig() { /* the rig event carries the rig */ }
+
+    // the stats stay: the real server computes them. a module of the wrong family is an error
+    override async preview(slot: string, gid?: string): Promise<Preview> {
+        const s = this.session, ship = s.ship ?? Fail.raise('no ship', 'ship')
+        const family = s.universe?.hulls[ ship.hull ]?.slots.find(x => x.id === slot)?.family
+        const wrong = gid && s.universe?.modules[ gid ]?.family !== family
+        const proposed = [ ...s.fitted.filter(f => f.slot !== slot), ...gid ? [{ slot, gid }] : [] ]
+        const stats = { capacity: ship.capacity, velocity: ship.velocity, acceleration: ship.acceleration, power: ship.power, power_pool: ship.power_pool }
+        return { proposed, ...stats, load: 0, errors: wrong ? [ `${ gid } does not fit ${ slot }` ] : []}
+    }
+
     override async refreshTraffic() { /* the record holds the traffic */ }
     override async refreshMessages() { /* the comms events carry the letters */ }
     override async refreshTrades() { /* the trade events carry the trades */ }
