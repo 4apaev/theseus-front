@@ -8,7 +8,7 @@ import { AppElement             } from './components/element.ts'
 import { button, iconButton     } from './components/controls.ts'
 import { icon                   } from './icons.ts'
 import { credits, countdown     } from './core/util.ts'
-import { speak, sound           } from './util.speak.ts'
+import speak, { sound           } from './util.speak.ts'
 import { DEFAULT_HULL, hullById } from './content/catalogue.ts'
 import type { View, HullId      } from './content/catalogue.ts'
 import type { Navigation        } from './screens/base.ts'
@@ -135,7 +135,7 @@ class TheseusApp extends AppElement {
         if (this.speech) {
             sound.currentTime = 0
             void sound.play().catch(() => { /* autoplay blocked, the visual overlay still lands */ })
-            speak(`arrived at ${ here.name }`)
+            speak.kate`arrived at ${ here.name }`
         }
     }
 
