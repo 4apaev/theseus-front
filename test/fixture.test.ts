@@ -45,8 +45,25 @@ test('a recorded arrival counts from boot', async () => {
     assert.ok(Object.values(s.traffic).some(t => t.arrives && Date.parse(t.arrives) > before))
 })
 
-test('a fixture command logs and sends nothing', async () => {
+const settle = (ms = 700) => new Promise(done => setTimeout(done, ms))
+
+test('a fixture buy folds in: the wallet pays, the hold fills', async () => {
+    const client = await boot('docked')
+    const before = client.session
+    const quote = before.market[ 0 ]
+    await client.trade('buy', quote.gid, 1)
+    await settle()
+    const s = client.session
+    assert.equal(s.me?.balance, +((before.me?.balance ?? 0) - quote.price_buy).toFixed(2))
+    assert.equal(s.cargo.find(c => c.gid === quote.gid)?.quantity, (before.cargo.find(c => c.gid === quote.gid)?.quantity ?? 0) + 1)
+    assert.match(s.log.map(l => l.text).join('\n'), /\[buy 1 ×/)
+})
+
+test('a fixture rename and a refused sell', async () => {
     const client = await boot('docked')
     await client.rename('test pattern')
-    assert.match(client.session.log[ 0 ]?.text ?? '', /rename → test pattern · fixture/)
+    await client.trade('sell', client.session.market[ 0 ].gid, 999)
+    await settle()
+    assert.equal(client.session.ship?.name, 'test pattern')
+    assert.match(client.session.log.map(l => l.text).join('\n'), /sell rejected: not enough in the hold/)
 })

@@ -33,7 +33,7 @@ export class GameClient {
 
     readonly api = new Api
     private readonly feed = new Feed
-    private readonly pending = new Pending
+    protected readonly pending = new Pending
     private alive = false
 
     constructor() {
@@ -206,7 +206,7 @@ export class GameClient {
 
     // ── feed ─────────────────────────────────────────────────
 
-    private receive(raw: unknown) {
+    protected receive(raw: unknown) {
         let frame
         try {
             frame = parse.frame(raw)
