@@ -271,3 +271,43 @@ kit-comms {
     & textarea { font: inherit; text-transform: none; color: var(--paper); background: none; border: 1px solid var(--edge); resize: none; padding: .25rem }
     & button { font: inherit; padding: .5rem 1rem; background: var(--orange); border: 1px solid var(--orange); font-weight: 600; cursor: pointer; align-self: end }
 }
+
+kit-log {
+    top     : 2.75rem;
+    left    : 1.25cqw;
+    position: absolute;
+    z-index : 2;
+    width   : 28rem;
+
+    & > button {
+        color        : var(--kmuted);
+        background   : none;
+        border       : 0;
+        font         : .625rem/1.5 var(--mono);
+        text-transform: inherit;
+        text-align   : left;
+        white-space  : nowrap;
+        overflow     : hidden;
+        text-overflow: ellipsis;
+        max-width    : 100%;
+        padding      : 0 .75rem;
+        cursor       : pointer;
+    }
+
+    & ol {
+        background : var(--glass);
+        border     : 1px solid var(--edge);
+        max-height : 60cqh;
+        overflow-y : auto;
+        margin     : .25rem 0 0;
+        padding    : .5rem .75rem;
+        list-style : none;
+        font-size  : .625rem;
+    }
+
+    & li   { padding: .125rem 0; border-bottom: 1px solid rgb(232 223 203 / .08) }
+    & time { color: var(--kmuted); font-variant: tabular-nums }
+    & b    { font-weight: 400; color: var(--teal) }
+    & [data-kind='err'], & [data-kind='err'] b { color: var(--down) }
+    & [data-kind='ok'] b { color: var(--up) }
+}

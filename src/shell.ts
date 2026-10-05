@@ -53,6 +53,7 @@ kit.auth.addEventListener('auth', async e => {
 })
 client.onChange  = s => {
     kit.hud.session = s
+    kit.log.lines   = s.log
     router.sync(s)
 }
 client.boot()
