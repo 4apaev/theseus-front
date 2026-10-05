@@ -37,6 +37,8 @@ export class Stage {
     private readonly ticks = new Set<Tick>
     private readonly sizer = new ResizeObserver(() => this.resize())
     private frame = 0
+    /** calm: ambient motion stops, as with the system's reduced motion. flights keep their time. */
+    calm = false
     private last = 0
     private t = 0
     private flight?: { from: T.Vector3[], to: T.Vector3[], t0: number, size: number }
@@ -145,7 +147,7 @@ export class Stage {
     }
 
     private readonly loop = (now: number) => {
-        const dt = this.last && !still.matches ? Math.min(.05, (now - this.last) / 1000) : 0
+        const dt = this.last && !still.matches && !this.calm ? Math.min(.05, (now - this.last) / 1000) : 0
         this.last = now
         this.t += dt
         this.fly(now)

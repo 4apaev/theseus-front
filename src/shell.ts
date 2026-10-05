@@ -12,6 +12,10 @@ import { Router } from './places/router.ts'
 import { Transit } from './places/transit.ts'
 import { mount } from './kit/index.ts'
 import { Fail } from './core/util.ts'
+import { stationName } from './core/session.ts'
+import { html } from 'lit'
+import { save, settings } from './settings.ts'
+import { sound, speak, voices } from './util.speak.ts'
 
 /**
  * the new shell, beside the old app until it replaces it: boot the
@@ -37,7 +41,6 @@ const router = new Router({ port, exchange: new Exchange(stage, kit, client), ho
 router.onPlace   = place => kit.hud.place = place
 client.onNotify  = (text, kind) => kit.toast.say(text, kind === 'err')
 client.onAuth    = authed => kit.auth.hidden = authed
-client.onEffect  = e => router.effect(e)
 
 kit.hud.addEventListener('logout', () => client.logout())
 kit.auth.addEventListener('auth', async e => {
@@ -57,3 +60,29 @@ client.onChange  = s => {
     router.sync(s)
 }
 client.boot()
+
+// ── settings and arrivals ────────────────────────────────────
+
+stage.calm = settings.calm
+
+kit.hud.addEventListener('settings', () => {
+    const pick = (patch: Partial<typeof settings>) => {
+        save(patch)
+        stage.calm = settings.calm
+    }
+    kit.card.show('settings', html`
+        <form @change=${ (e: Event) => { const f = e.currentTarget as HTMLFormElement; pick({ voice: f.voice.value, sound: f.sound.checked, calm: f.calm.checked }) } }>
+            <label>voice <select name="voice">${ [ '', ...Object.keys(voices).sort() ].map(v => html`<option value=${ v } ?selected=${ v === settings.voice }>${ v || 'off' }</option>`) }</select></label>
+            <label>chime <input type="checkbox" name="sound" ?checked=${ settings.sound }></label>
+            <label>calm motion <input type="checkbox" name="calm" ?checked=${ settings.calm }></label>
+        </form>`)
+    void kit.card.updateComplete.then(() => kit.card.at = [ main.clientWidth, 60 ])
+})
+
+// our ship lands: the chime, and a voice says where
+client.onEffect = e => {
+    router.effect(e)
+    if (e.kind !== 'arrive' || !e.mine) return
+    if (settings.sound) void sound.play().catch(() => { /* autoplay blocked */ })
+    if (settings.voice) speak(`arrived at ${ stationName(client.session, e.stid) }`, voices[ settings.voice ])
+}
