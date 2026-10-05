@@ -13,7 +13,7 @@ this file is the order of the work, step by step.
 - `index.html` boots the shell. the old code is gone.
 - `npm run check` is green, with a screenshot check of each place.
 
-**where we are** (2026-10-05):
+**where we are** (2026-10-05, stage A done):
 - `src/core/`: the wire and the truth, moved unchanged. 44 tests.
 - fixture mode: `?fixture=docked|transit|full`. a command only logs.
 - `src/world/`: the stage, the sky (ether, stars, sun, planet), the paint
@@ -28,8 +28,8 @@ size: **S** is one session, **M** is 2, **L** is 3 or more.
 steps
 ------------------------------------------------
 
-| step | stage   | what                                       | size | needs |
-|------|---------|--------------------------------------------|------|-------|
+| step | stage   | what                                       | size | needs | status |
+|------|---------|--------------------------------------------|------|-------|--------|
 | A1   | frame   | fixture commands answer                    | S    | -     |
 | A2   | frame   | the kit: card, chip, toast, ₢ counter, hud | M    | -     |
 | A3   | frame   | the place router                           | S    | A2    |
