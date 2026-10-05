@@ -152,3 +152,57 @@ kit-auth {
     & button { font: inherit; color: inherit; cursor: pointer; background: none; border: 0 }
     & label button { grid-column: 2; grid-row: 2 }
 }
+
+kit-tray {
+    left    : 1.25cqw;
+    right   : 1.25cqw;
+    bottom  : 1.25cqw;
+    position: absolute;
+    z-index : 1;
+
+    &[hidden] { display: none }
+
+    & ul {
+        background: var(--glass);
+        border    : 1px solid var(--edge);
+        display   : grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap       : .25rem;
+        margin    : 0;
+        padding   : .5rem;
+        list-style: none;
+    }
+
+    & button {
+        color         : var(--paper);
+        background    : rgb(232 223 203 / .05);
+        border        : 1px solid rgb(232 223 203 / .16);
+        font          : inherit;
+        text-transform: inherit;
+        display       : grid;
+        justify-items : center;
+        width         : 100%;
+        padding       : .25rem;
+        cursor        : pointer;
+
+        &:hover       { border-color: var(--orange) }
+        &[data-busy]  { opacity: .5; border-style: dashed }
+    }
+
+    & img   { width: 2.5rem; aspect-ratio: 1 }
+    & b     { font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100% }
+    & small { font-size: .625rem; color: var(--teal) }
+}
+
+kit-card form {
+    display: grid;
+    gap    : .5rem;
+
+    & menu   { display: flex; gap: .25rem; margin: 0; padding: 0 }
+    & menu button { flex: 1; padding: .25rem; border: 1px solid var(--ink) }
+    & menu button[data-on] { background: var(--ink); color: var(--paper) }
+    & label  { display: flex; justify-content: space-between; align-items: center; color: var(--kmuted) }
+    & input  { width: 5rem; font: inherit; text-align: right; color: var(--ink); background: none; border: 0; border-bottom: 1px solid var(--ink) }
+    & > button { padding: .5rem; background: var(--orange); border: 1px solid var(--orange); font-weight: 600 }
+    & > button:disabled { opacity: .4; cursor: default }
+}

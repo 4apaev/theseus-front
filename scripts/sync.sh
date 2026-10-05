@@ -10,3 +10,6 @@ mkdir -p public/art public/models/painted/stations
 rsync $opt -m --exclude='icarus/' --include='*/' --include='*.glb' --exclude='*' $a/exports/painted/ public/models/painted/
 rsync $opt --include='*.webp' --exclude='*' $a/planets/ public/art/planets/
 rsync $opt --include='*.webp' --exclude='*' $a/suns/ public/art/suns/
+# the places: the plate, the parts and the kit, no sources
+rsync $opt -m --include='*/' --include='plate.webp' --include='parts/*.webp' --include='kit.json' --exclude='*' $a/places/ public/art/places/
+[ "$1" = -n ] || python3 scripts/icons.py
