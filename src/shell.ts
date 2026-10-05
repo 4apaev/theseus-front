@@ -8,6 +8,7 @@ import { Hold } from './places/hold.ts'
 import { Port } from './places/port.ts'
 import { Room } from './places/room.ts'
 import { Router } from './places/router.ts'
+import { Transit } from './places/transit.ts'
 import { mount } from './kit/index.ts'
 import { Fail } from './core/util.ts'
 
@@ -24,12 +25,13 @@ const hull   = query.get('ship')
 const main   = document.querySelector('main') as HTMLElement
 const stage  = new Stage(main)
 const kit    = mount(main)
-const port   = new Port(stage, kit, hull ? `far-treasure-${ hull }` : void 0)
+const variant = hull ? `far-treasure-${ hull }` : void 0
+const port   = new Port(stage, kit, variant)
 const client = name
     ? new FixtureClient(() => fixture(name))
     : new GameClient
 
-const router = new Router({ port, exchange: new Exchange(stage, kit, client), hold: new Hold(stage, kit), chart: new Chart(stage, kit, client), rigging: new Room(stage), comms: new Room(stage) })
+const router = new Router({ port, exchange: new Exchange(stage, kit, client), hold: new Hold(stage, kit), chart: new Chart(stage, kit, client), transit: new Transit(stage, kit, variant), rigging: new Room(stage), comms: new Room(stage) })
 
 router.onPlace   = place => kit.hud.place = place
 client.onNotify  = (text, kind) => kit.toast.say(text, kind === 'err')

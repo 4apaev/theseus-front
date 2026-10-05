@@ -7,6 +7,8 @@ import { model } from '../world/loader.ts'
 import { liven } from '../world/paint.ts'
 import { Robot } from '../world/robot.ts'
 import { Ship } from '../world/ship.ts'
+import { face, inbound } from '../world/visitor.ts'
+import type { Effect } from '../core/effects.ts'
 import { type Kit, shipRows, visitorRows } from '../kit/index.ts'
 import { Anchorage } from './anchorage.ts'
 import { spots } from './spots.ts'
@@ -40,6 +42,8 @@ export class Port {
     private home?: [ T.Vector3, number ]
     private marks: { at: T.Vector3, el: HTMLElement & { at: number[] }}[] = []
     private down = [ 0, 0 ]
+    private landing = false
+    private land?: { path: T.CubicBezierCurve3, t0: number, end: T.Quaternion }
     private visit = 0
 
     /** `hull`: a far treasure variant to compare, `far-treasure-b`. */
@@ -70,6 +74,8 @@ export class Port {
                 new T.Vector3,
             )
 
+        if (this.landing) this.approach(ship.group)
+
         const actors = [ ship, ...robots(hull) ]
         const groups = actors.map(a => a.group)
 
@@ -95,6 +101,7 @@ export class Port {
             actors.forEach(a => a.tick(t, dt))
             yard.tick(t, dt)
             liven(hull, t, dt)
+            this.glide(t)
             this.follow()
             this.marks.forEach(m => m.el.at = st.anchor(m.at))
         })
@@ -125,6 +132,32 @@ export class Port {
         this.ship = void 0
         this.yard = void 0
         this.stage.sky.show()
+    }
+
+    // our ship just arrived: it lands on its berth, from 10 km out
+    effect(e: Effect) {
+        if (e.kind === 'arrive' && e.mine) this.landing = true
+    }
+
+    private approach(g: T.Object3D) {
+        this.landing = false
+        const bow = new T.Vector3(1, 0, 0).applyQuaternion(g.quaternion)
+        const path = inbound({ at: g.position.clone(), bow })
+        this.land = { path, t0: -1, end: g.quaternion.clone() }
+        g.position.copy(path.getPoint(0))
+        face(g, path.getTangent(0))
+    }
+
+    private glide(t: number) {
+        const l = this.land, g = this.ship?.group
+        if (!l || !g) return
+        if (l.t0 < 0) l.t0 = t
+        const k = Math.min(1, (t - l.t0) / 12), u = 1 - (1 - k) ** 2
+        g.position.copy(l.path.getPoint(u))
+        face(g, l.path.getTangent(u))
+        if (k < 1) return
+        g.quaternion.copy(l.end)
+        this.land = void 0
     }
 
     // the card stays next to its ship. a ship that left takes its card along

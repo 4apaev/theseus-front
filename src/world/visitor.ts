@@ -30,8 +30,7 @@ export class Visitor {
     }
 
     arrive(t: number) {
-        const p = along(this.berth)
-        this.move = { path: new T.CubicBezierCurve3(p(-10000, 2500, 1500), p(-2500, 600, 300), p(-400, 0, 0), p(0, 0, 0)), t0: t, time: 45, out: false }
+        this.move = { path: inbound(this.berth), t0: t, time: 45, out: false }
         this.tick(t, 0)
     }
 
@@ -53,13 +52,23 @@ export class Visitor {
         this.gone = m.out
     }
 
-    // the bow along `dir`, the deck kept level
     private place(at: T.Vector3, dir: T.Vector3) {
-        const x = dir.clone().normalize()
-        const z = x.clone().cross(UP).normalize()
         this.ship.group.position.copy(at)
-        this.ship.group.quaternion.setFromRotationMatrix(BASIS.makeBasis(x, z.clone().cross(x), z))
+        face(this.ship.group, dir)
     }
+}
+
+/** turns `o` so its bow, +x, points along `dir`, its deck kept level. */
+export function face(o: T.Object3D, dir: T.Vector3) {
+    const x = dir.clone().normalize()
+    const z = x.clone().cross(UP).normalize()
+    o.quaternion.setFromRotationMatrix(BASIS.makeBasis(x, z.clone().cross(x), z))
+}
+
+/** the way in to a berth: from 10 km out, it ends moving along the bow. */
+export function inbound(berth: Berth) {
+    const p = along(berth)
+    return new T.CubicBezierCurve3(p(-10000, 2500, 1500), p(-2500, 600, 300), p(-400, 0, 0), p(0, 0, 0))
 }
 
 // a point of the berth's frame: metres ahead of the bow, to starboard, up

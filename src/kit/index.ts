@@ -16,7 +16,7 @@ import './toast.ts'
 import './tray.ts'
 import './kit.css'
 
-export { shipRows, visitorRows } from './ship.ts'
+export { shipRows, visitorRows, voyageRows } from './ship.ts'
 
 /** the kit over one stage: the top line, one card, the toasts, the way in, a tray of goods, the hold, labels for places. */
 export interface Kit { hud: KitHud, card: KitCard, toast: KitToast, auth: KitAuth, tray: KitTray, hold: KitHold, spot: (place: string) => KitSpot, mark: (name: string, value: string) => KitMark }

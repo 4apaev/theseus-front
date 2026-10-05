@@ -11,7 +11,7 @@ export interface Place {
 /**
  * one place at a time on the stage. the url hash names it, `#port` or
  * `#exchange`, so a reload keeps it. a place needs the ship docked: in
- * transit only the sky shows. escape goes back to the port.
+ * transit the `transit` place shows. escape goes back to the port.
  */
 export class Router {
     onPlace?: (name: string) => void
@@ -36,7 +36,7 @@ export class Router {
         if (`${ name } ${ stid }` === this.shown) return this.current?.sync(s)
         this.current?.leave()
         this.shown = `${ name } ${ stid }`
-        this.current = stid ? this.places[ name ] : void 0
+        this.current = this.places[ name ]
         void this.current?.enter(s)
         this.onPlace?.(name)
     }

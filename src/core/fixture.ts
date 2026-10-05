@@ -66,6 +66,17 @@ export class FixtureClient extends GameClient {
             trades  : parse.trades(r.trades),
         })
         this.setStatus('online')
+        this.land()
+    }
+
+    // a recorded ship in transit lands at its time, as the server would land it
+    private land() {
+        const ship = this.session.ship
+        if (ship?.status !== 'transit' || !ship.arrives || !ship.to) return
+        const frame = { event_type: 'ship.arrived.v1', occurred: ship.arrives, payload: { pid: this.session.me?.pid, sid: ship.sid, stid: ship.to }}
+        const timer = setTimeout(() => this.receive(frame), Math.max(0, Date.parse(ship.arrives) - Date.now()))
+        // in node a test run must not wait for the landing
+        ;(timer as unknown as { unref?: () => void }).unref?.()
     }
 }
 
