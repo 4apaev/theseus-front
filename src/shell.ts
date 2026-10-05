@@ -6,13 +6,14 @@ import { Port } from './places/port.ts'
 import { Room } from './places/room.ts'
 import { Router } from './places/router.ts'
 import { mount } from './kit/index.ts'
+import { Fail } from './core/util.ts'
 
 /**
  * the new shell, beside the old app until it replaces it: boot the
  * client, mount the stage and the kit, and let the router show one
  * place. in transit only the sky shows, until the flight place exists.
- * `?fixture=docked` needs no gateway; without it the shell reuses the
- * old app's login token. `&ship=b` shows a hull variant to compare.
+ * `?fixture=docked` needs no gateway. without it the shell logs in on
+ * the gateway, or reuses a saved token. `&ship=b` shows a hull variant.
  */
 const query  = new URLSearchParams(location.search)
 const name   = query.get('fixture')
@@ -29,6 +30,20 @@ const router = new Router({ port, exchange: new Room(stage), rigging: new Room(s
 
 router.onPlace   = place => kit.hud.place = place
 client.onNotify  = (text, kind) => kit.toast.say(text, kind === 'err')
+client.onAuth    = authed => kit.auth.hidden = authed
+
+kit.hud.addEventListener('logout', () => client.logout())
+kit.auth.addEventListener('auth', async e => {
+    const { act, handle, password } = (e as CustomEvent<Record<string, string>>).detail
+    Object.assign(kit.auth, { busy: true, error: void 0 })
+    try {
+        await (act === 'register' ? client.register(handle, password) : client.login(handle, password))
+    }
+    catch (x) {
+        kit.auth.error = Fail.from(x).message
+    }
+    kit.auth.busy = false
+})
 client.onChange  = s => {
     kit.hud.session = s
     router.sync(s)
