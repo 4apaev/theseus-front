@@ -9,6 +9,7 @@ import { Robot } from '../world/robot.ts'
 import { Ship } from '../world/ship.ts'
 import { type Kit, shipRows, visitorRows } from '../kit/index.ts'
 import { Anchorage } from './anchorage.ts'
+import { spots } from './spots.ts'
 
 type Found = NonNullable<ReturnType<Anchorage[ 'find' ]>>
 
@@ -36,6 +37,8 @@ export class Port {
     private session?: Session
     private focus?: T.Object3D
     private shows?: () => void
+    private home?: [ T.Vector3, number ]
+    private marks: { at: T.Vector3, el: HTMLElement & { at: number[] }}[] = []
     private down = [ 0, 0 ]
     private visit = 0
 
@@ -82,17 +85,18 @@ export class Port {
         st.scene.add(yard.group)
         this.made.push(yard.group)
 
+        this.home  = [ box.getCenter(new T.Vector3), box.getSize(new T.Vector3).length() / 2 ]
+        this.marks = spots(hull, ship.group.position).map(s => ({ at: s.at, el: this.kit.spot(s.place) }))
+
         st.sky.show(v.planet, v.sun)
-        st.view(
-            box.getCenter(new T.Vector3),
-            box.getSize(new T.Vector3).length() / 2,
-        )
+        st.view(...this.home)
 
         this.untick = st.tick((t, dt) => {
             actors.forEach(a => a.tick(t, dt))
             yard.tick(t, dt)
             liven(hull, t, dt)
             this.follow()
+            this.marks.forEach(m => m.el.at = st.anchor(m.at))
         })
         st.host.addEventListener('pointerdown', this.press)
         st.host.addEventListener('pointerup', this.release)
@@ -114,6 +118,8 @@ export class Port {
         this.stage.host.removeEventListener('pointerup', this.release)
         removeEventListener('keydown', this.key)
         this.kit.card.close()
+        this.marks.forEach(m => m.el.remove())
+        this.marks = []
         this.made.forEach(o => o.removeFromParent())
         this.made.length = 0
         this.ship = void 0
@@ -141,13 +147,17 @@ export class Port {
         this.kit.card.close()
     }
 
+    // s: our ship. escape, with no card open: back to the whole station
     private readonly key = (e: KeyboardEvent) => {
-        if (e.key === 's' && !e.metaKey && !e.ctrlKey && !(e.target instanceof HTMLInputElement)) this.showShip()
+        if (e.target instanceof HTMLInputElement || e.metaKey || e.ctrlKey) return
+        if (e.key === 's') this.showShip()
+        if (e.key === 'Escape' && !e.defaultPrevented && this.home) this.stage.focus(...this.home)
     }
 
     private showShip() {
         if (!this.ship) return
         this.focus = this.ship.group
+        this.stage.focus(this.ship.group.position, 70)
         this.shows = () => {
             const s = this.session
             if (s?.ship) this.kit.card.show(s.ship.name, shipRows(s)!, s.ship.status)

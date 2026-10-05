@@ -39,6 +39,7 @@ export class Stage {
     private frame = 0
     private last = 0
     private t = 0
+    private flight?: { from: T.Vector3[], to: T.Vector3[], t0: number, size: number }
 
     constructor(host: HTMLElement) {
         this.host = host
@@ -59,10 +60,38 @@ export class Stage {
         const el = 22 * Math.PI / 180
         const d = size * 2.4
         this.orbit.target.copy(target)
-        this.orbit.minDistance = size * 1.2
-        this.orbit.maxDistance = size * 5
+        this.limit(size * 1.2, size * 5)
         this.camera.position.set(Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el)).multiplyScalar(d).add(target)
         this.orbit.update()
+    }
+
+    /** fly in 0.8 s to orbit `target`, `size` metres across, from the same side. */
+    focus(target: T.Vector3, size: number) {
+        const side = this.camera.position.clone().sub(this.orbit.target).normalize()
+        this.flight = {
+            from: [ this.orbit.target.clone(), this.camera.position.clone() ],
+            to  : [ target.clone(), target.clone().addScaledVector(side, size * 2.4) ],
+            t0  : performance.now(),
+            size,
+        }
+        this.limit(0, Infinity)
+    }
+
+    private limit(min: number, max: number) {
+        this.orbit.minDistance = min
+        this.orbit.maxDistance = max
+    }
+
+    // real time, so reduced motion still lands the flight
+    private fly(now: number) {
+        const f = this.flight
+        if (!f) return
+        const k = Math.min(1, (now - f.t0) / 800), e = k * k * (3 - 2 * k)
+        this.orbit.target.lerpVectors(f.from[ 0 ], f.to[ 0 ], e)
+        this.camera.position.lerpVectors(f.from[ 1 ], f.to[ 1 ], e)
+        if (k < 1) return
+        this.flight = void 0
+        this.limit(f.size * 1.2, f.size * 5)
     }
 
     /** a painted sprite from `art/`. `foot` is the fraction where it stands. */
@@ -90,7 +119,7 @@ export class Stage {
     /** a world point on screen, in css px of the host. */
     anchor(v: T.Vector3) {
         const p = v.clone().project(this.camera)
-        return [ (p.x + 1) / 2 * this.host.clientWidth, (1 - p.y) / 2 * this.host.clientHeight ]
+        return [ (p.x + 1) / 2 * this.host.clientWidth, (1 - p.y) / 2 * this.host.clientHeight, p.z ]
     }
 
     tick(f: Tick) {
@@ -119,6 +148,7 @@ export class Stage {
         const dt = this.last && !still.matches ? Math.min(.05, (now - this.last) / 1000) : 0
         this.last = now
         this.t += dt
+        this.fly(now)
         this.orbit.update()
         this.sky.tick(this.t, this.camera)
         this.ticks.forEach(f => f(this.t, dt))
