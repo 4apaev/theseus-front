@@ -1,9 +1,11 @@
+import type { Effect } from '../core/effects.ts'
 import { type Session, docked } from '../core/session.ts'
 
 export interface Place {
     enter(s: Session): void | Promise<void>
     sync(s: Session): void
     leave(): void
+    effect?(e: Effect): void
 }
 
 /**
@@ -37,6 +39,11 @@ export class Router {
         this.current = stid ? this.places[ name ] : void 0
         void this.current?.enter(s)
         this.onPlace?.(name)
+    }
+
+    /** an effect goes to the place on stage. */
+    effect(e: Effect) {
+        this.current?.effect?.(e)
     }
 
     private name() {

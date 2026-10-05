@@ -4,6 +4,7 @@ import { Pending, type Command } from './transport/pending.ts'
 import * as parse from './transport/validate.ts'
 import type { Preview, Side } from './transport/types.ts'
 import { fold, flavor } from './events.ts'
+import { type Effect, effects } from './effects.ts'
 import { emptySession, withLog, goodName, stationName, docked } from './session.ts'
 import type { Session, LogKind } from './session.ts'
 import { Fail } from './util.ts'
@@ -30,6 +31,7 @@ export class GameClient {
     onStatus?: (status: ClientStatus) => void
     onNotify?: (text: string, kind?: LogKind) => void
     onAuth?  : (authed: boolean) => void
+    onEffect?: (effect: Effect) => void
 
     readonly api = new Api
     private readonly feed = new Feed
@@ -227,9 +229,11 @@ export class GameClient {
 
     private apply(frame: ReturnType<typeof parse.frame>, text: string, kind: LogKind) {
         try {
+            const fx = effects(this.session, frame)
             const { session, refresh } = fold(withLog(this.session, kind, text), frame)
             this.session = session
             this.onChange?.(session)
+            fx.forEach(f => this.onEffect?.(f))
             if (refresh.includes('rig')) void this.refreshRig().then(() => this.refreshMarket())
             else if (refresh.includes('market')) void this.refreshMarket()
             if (refresh.includes('traffic')) void this.refreshTraffic()

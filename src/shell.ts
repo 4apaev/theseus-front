@@ -33,6 +33,7 @@ const router = new Router({ port, exchange: new Exchange(stage, kit, client), ho
 router.onPlace   = place => kit.hud.place = place
 client.onNotify  = (text, kind) => kit.toast.say(text, kind === 'err')
 client.onAuth    = authed => kit.auth.hidden = authed
+client.onEffect  = e => router.effect(e)
 
 kit.hud.addEventListener('logout', () => client.logout())
 kit.auth.addEventListener('auth', async e => {

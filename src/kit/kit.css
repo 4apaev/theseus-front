@@ -226,3 +226,12 @@ kit-hold {
     & img    { width: 80% }
     & small  { position: absolute; right: .25rem; bottom: 0; font-size: .625rem }
 }
+
+main img[data-fly] {
+    top           : 0;
+    left          : 0;
+    position      : absolute;
+    width         : 3rem;
+    z-index       : 6;
+    pointer-events: none;
+}

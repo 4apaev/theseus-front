@@ -2,9 +2,11 @@ import { html } from 'lit'
 import type { GameClient } from '../core/client.ts'
 import { type Session, aboard, cargoLoad, goodName, volumeOf } from '../core/session.ts'
 import type { MarketRow, Side } from '../core/transport/types.ts'
+import type { Effect } from '../core/effects.ts'
 import { Fail, credits } from '../core/util.ts'
 import { iconOf } from '../content/places.ts'
 import type { Kit } from '../kit/index.ts'
+import { fly } from '../kit/fly.ts'
 import { piecesOf } from '../kit/hold.ts'
 import type { Stage } from '../world/stage.ts'
 import { Painted } from './painted.ts'
@@ -45,6 +47,18 @@ export class Exchange extends Painted {
         }))
         Object.assign(this.kit.hold, { pieces: piecesOf(s), capacity: s.ship?.capacity ?? 0 })
         if (!this.kit.card.hidden && this.gid) this.open()
+    }
+
+    // cargo in flies from its tile into the hold, cargo out flies back
+    async effect(e: Effect) {
+        const s = this.session
+        if (e.kind !== 'cargo' || !s) return
+        await this.kit.hold.updateComplete
+        const tile = this.kit.tray.querySelectorAll('button')[ s.market.findIndex(m => m.gid === e.gid) ]
+        const cell = this.kit.hold.querySelector(`li[data-gid='${ e.gid }']`) ?? this.kit.hold.querySelector('li:not([data-gid])')
+        if (!tile || !cell) return
+        const [ a, b ] = [ tile.getBoundingClientRect(), cell.getBoundingClientRect() ]
+        fly(this.stage.host, iconOf(e.gid, s.universe?.goods[ e.gid ]?.kind), e.delta > 0 ? a : b, e.delta > 0 ? b : a)
     }
 
     protected reveal(on: boolean) {
