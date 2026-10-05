@@ -46,6 +46,11 @@ const STARS: Record<string, Point3> = {
     'barnards.star' : [ -0.057, -5.925, 0.486 ],
     'wolf.359'      : [ -7.446, 2.118, 0.953 ],
     sirius        : [ -1.612, 8.078, -2.474 ],
+    ran           : [ 6.194, 8.289, -1.724 ],
+    procyon       : [ -4.792, 10.359, 1.044 ],
+    lalande       : [ -6.517, 1.645, 4.878 ],
+    'ross.154'      : [ 1.911, -8.651, -3.914 ],
+    'lacaille.9352' : [ 8.42, -2.027, -6.258 ],
 }
 
 /** mean orbit radii in au. the domain measures in-system routes between these. */

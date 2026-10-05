@@ -115,6 +115,7 @@ export interface Constants {
     light_speed : number
     year_seconds: number
     currency    : string
+    interest?   : number
 }
 
 export interface Universe {

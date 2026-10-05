@@ -4,7 +4,7 @@ import { AppElement } from '../components/element.ts'
 /**
  * a paper card next to a thing in the scene. the place sets `at`, the
  * thing's screen point, each frame; the card sits right of it, or left
- * near the edge. escape or the × closes it.
+ * near the edge, and always inside the frame. escape or the × closes it.
  */
 export class KitCard extends AppElement {
     static properties = { heading: {}, chip: {}, body: { attribute: false }}
@@ -22,8 +22,9 @@ export class KitCard extends AppElement {
     }
 
     set at([ x, y ]: number[]) {
-        const room = (this.parentElement?.clientWidth ?? 0) - x > this.offsetWidth + 24
-        this.style.translate = `${ room ? x + 24 : x - this.offsetWidth - 24 }px ${ y - this.offsetHeight / 2 }px`
+        const host = this.parentElement, room = (host?.clientWidth ?? 0) - x > this.offsetWidth + 24
+        const top = Math.min(Math.max(8, y - this.offsetHeight / 2), (host?.clientHeight ?? 0) - this.offsetHeight - 8)
+        this.style.translate = `${ room ? x + 24 : x - this.offsetWidth - 24 }px ${ top }px`
     }
 
     override connectedCallback() {

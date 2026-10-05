@@ -2,6 +2,7 @@ import { fixture } from './content/fixtures.ts'
 import { FixtureClient } from './core/fixture.ts'
 import { GameClient } from './core/client.ts'
 import { Stage } from './world/stage.ts'
+import { Chart } from './places/chart.ts'
 import { Exchange } from './places/exchange.ts'
 import { Hold } from './places/hold.ts'
 import { Port } from './places/port.ts'
@@ -28,7 +29,7 @@ const client = name
     ? new FixtureClient(() => fixture(name))
     : new GameClient
 
-const router = new Router({ port, exchange: new Exchange(stage, kit, client), hold: new Hold(stage, kit), rigging: new Room(stage), comms: new Room(stage) })
+const router = new Router({ port, exchange: new Exchange(stage, kit, client), hold: new Hold(stage, kit), chart: new Chart(stage, kit, client), rigging: new Room(stage), comms: new Room(stage) })
 
 router.onPlace   = place => kit.hud.place = place
 client.onNotify  = (text, kind) => kit.toast.say(text, kind === 'err')

@@ -220,6 +220,7 @@ export function universe(x: unknown): Universe {
             light_speed : num(constants, 'light_speed'),
             year_seconds: num(constants, 'year_seconds'),
             currency    : text(constants, 'currency'),
+            interest    : numOr(constants, 'interest_rate'),
         },
     }
 }
