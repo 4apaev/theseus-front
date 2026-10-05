@@ -206,3 +206,23 @@ kit-card form {
     & > button { padding: .5rem; background: var(--orange); border: 1px solid var(--orange); font-weight: 600 }
     & > button:disabled { opacity: .4; cursor: default }
 }
+
+kit-hold {
+    color     : var(--paper);
+    background: var(--glass);
+    border    : 1px solid var(--edge);
+    position  : absolute;
+    z-index   : 1;
+    padding   : .5rem;
+
+    &[hidden] { display: none }
+    &[data-place='exchange'] { top: 4cqw; right: 1.25cqw; width: 16rem }
+    &[data-place='hold']     { top: 50%; left: 50%; translate: -50% -50%; width: 32rem }
+
+    & header { display: flex; justify-content: space-between; margin-bottom: .5rem }
+    & ol     { display: grid; grid-template-columns: repeat(5, 1fr); gap: .25rem; margin: 0; padding: 0; list-style: none }
+    & li     { aspect-ratio: 1; border: 1px dashed var(--edge); display: grid; place-items: center; position: relative }
+    & li[data-gid] { background: rgb(63 182 168 / .18); border: 1px solid var(--teal); cursor: grab }
+    & img    { width: 80% }
+    & small  { position: absolute; right: .25rem; bottom: 0; font-size: .625rem }
+}

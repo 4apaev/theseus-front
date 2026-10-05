@@ -4,7 +4,7 @@ import { type Session, station } from '../core/session.ts'
 import { emit } from '../core/util.ts'
 import './credits.ts'
 
-const PLACES = [ 'port', 'exchange', 'rigging', 'comms' ]
+const PLACES = [ 'port', 'exchange', 'hold', 'rigging', 'comms' ]
 
 /** the top line: where the ship is, the places, the ship, the wallet. */
 export class KitHud extends AppElement {

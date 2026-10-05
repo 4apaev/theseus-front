@@ -1,47 +1,34 @@
 import { html } from 'lit'
-import type * as T from 'three'
 import type { GameClient } from '../core/client.ts'
 import { type Session, aboard, cargoLoad, goodName, volumeOf } from '../core/session.ts'
 import type { MarketRow, Side } from '../core/transport/types.ts'
 import { Fail, credits } from '../core/util.ts'
-import { PLATE, type PlaceKit, iconOf, placeKit } from '../content/places.ts'
+import { iconOf } from '../content/places.ts'
 import type { Kit } from '../kit/index.ts'
-import { type Stage, VH, VW } from '../world/stage.ts'
-import type { Place } from './router.ts'
+import { piecesOf } from '../kit/hold.ts'
+import type { Stage } from '../world/stage.ts'
+import { Painted } from './painted.ts'
 
 /**
- * the exchange: the painted room, and a tray of what the station quotes.
- * a pick opens a card to buy or sell. a trade in flight keeps its tile
- * busy until the hold changes, or a refusal lands.
+ * the exchange: the painted room, a tray of what the station quotes,
+ * and the hold beside it. a pick opens a card to buy or sell; so does a
+ * good dragged into the hold, or a piece dragged onto the tray. a trade
+ * in flight keeps its tile busy until the hold changes, or a refusal lands.
  */
-export class Exchange implements Place {
-    private readonly stage: Stage
-    private readonly kit: Kit
+export class Exchange extends Painted {
     private readonly client: GameClient
-    private readonly made: T.Mesh[] = []
     private readonly busy = new Map<string, number>
-    private session?: Session
     private gid?: string
     private side: Side = 'buy'
     private n = 1
-    private visit = 0
 
     constructor(stage: Stage, kit: Kit, client: GameClient) {
-        this.stage  = stage
-        this.kit    = kit
+        super(stage, kit, [ 'exchange', 'outpost' ])
         this.client = client
-        kit.tray.addEventListener('pick', e => void this.pick((e as CustomEvent<string>).detail))
-    }
-
-    async enter(s: Session) {
-        const visit = ++this.visit
-        this.session = s
-        this.stage.sky.show()
-        const k = await placeKit('exchange')
-        if (visit !== this.visit) return
-        this.paint(k)
-        this.kit.tray.hidden = false
-        this.sync(s)
+        const on = (el: HTMLElement, type: string, side: Side) => el.addEventListener(type, e => void this.pick((e as CustomEvent<string>).detail, side))
+        on(kit.tray, 'pick', 'buy')
+        on(kit.hold, 'buy', 'buy')
+        on(kit.tray, 'sell', 'sell')
     }
 
     sync(s: Session) {
@@ -56,43 +43,29 @@ export class Exchange implements Place {
             aboard: aboard(s, m.gid),
             busy  : this.busy.has(m.gid),
         }))
-        if (!this.kit.card.hidden && this.gid) this.show()
+        Object.assign(this.kit.hold, { pieces: piecesOf(s), capacity: s.ship?.capacity ?? 0 })
+        if (!this.kit.card.hidden && this.gid) this.open()
     }
 
-    leave() {
-        this.visit++
-        this.kit.tray.hidden = true
-        this.kit.card.close()
-        for (const m of this.made.splice(0)) {
-            m.removeFromParent()
-            ;(m.material as T.MeshBasicMaterial).map?.dispose()
-        }
+    protected reveal(on: boolean) {
+        this.kit.tray.hidden = !on
+        this.kit.hold.hidden = !on
+        this.kit.hold.dataset.place = 'exchange'
     }
 
-    // the plate fills the frame; each part stands on its foot, the lower ones in front
-    private paint(k: PlaceKit) {
-        const st = this.stage, f = VW / PLATE
-        this.made.push(st.sprite(st.back, `${ k.base }/${ k.plate }`, { x: VW / 2, y: VH / 2, w: VW }))
-        for (const p of k.placements) {
-            const part = k.parts.find(q => q.name === p.name)
-            if (part) this.made.push(st.sprite(st.back, `${ k.base }/${ part.file }`, { x: p.x * f, y: p.y * f, w: p.width * f, foot: [ part.foot[ 0 ] / part.w, part.foot[ 1 ] / part.h ], z: 1 + p.y / PLATE }))
-        }
-    }
-
-    // the card sits above the picked tile
-    private async pick(gid: string) {
-        this.gid  = gid
-        this.side = 'buy'
-        this.n    = 1
-        this.show()
+    // the card sits above the good's tile. a sell opens with all that is aboard
+    private async pick(gid: string, side: Side) {
+        const s = this.session
+        if (!s?.market.some(m => m.gid === gid)) return this.kit.toast.say(`${ goodName(s!, gid) } is not quoted here`, true)
+        Object.assign(this, { gid, side, n: side === 'sell' ? aboard(s, gid) : 1 })
+        this.open()
         await this.kit.card.updateComplete
-        const i = this.session?.market.findIndex(m => m.gid === gid) ?? -1
-        const tile = this.kit.tray.querySelectorAll('button')[ i ]?.getBoundingClientRect()
+        const tile = this.kit.tray.querySelectorAll('button')[ s.market.findIndex(m => m.gid === gid) ]?.getBoundingClientRect()
         const host = this.stage.host.getBoundingClientRect()
         if (tile) this.kit.card.at = [ tile.left + tile.width / 2 - host.left, tile.top - host.top - 12 - this.kit.card.offsetHeight / 2 ]
     }
 
-    private show() {
+    private open() {
         const s = this.session, m = s?.market.find(r => r.gid === this.gid)
         if (!s || !m) return this.kit.card.close()
         this.kit.card.show(goodName(s, m.gid), this.form(s, m), s.universe?.goods[ m.gid ]?.kind)
@@ -107,8 +80,8 @@ export class Exchange implements Place {
                 </menu>
                 <label>quantity <input type="number" min="1" max=${ Math.max(1, most) } .value=${ String(this.n) } @input=${ (e: Event) => this.count(+(e.target as HTMLInputElement).value) }></label>
                 <dl>
-                    <dt>total</dt> <dd>${ credits(price * this.n) }</dd>
-                    <dt>aboard</dt><dd>${ aboard(s, m.gid) }</dd>
+                    <dt>total</dt>  <dd>${ credits(price * this.n) }</dd>
+                    <dt>aboard</dt> <dd>${ aboard(s, m.gid) }</dd>
                     <dt>at most</dt><dd>${ most }</dd>
                 </dl>
                 <button ?disabled=${ this.n < 1 || this.n > most }>${ this.side } ${ this.n }</button>
@@ -124,12 +97,12 @@ export class Exchange implements Place {
 
     private flip(side: Side) {
         this.side = side
-        this.show()
+        this.open()
     }
 
     private count(n: number) {
         this.n = n
-        this.show()
+        this.open()
     }
 
     private readonly send = (e: SubmitEvent) => {
