@@ -24,7 +24,8 @@ export class KitCard extends AppElement {
     set at([ x, y ]: number[]) {
         const host = this.parentElement, room = (host?.clientWidth ?? 0) - x > this.offsetWidth + 24
         const top = Math.min(Math.max(8, y - this.offsetHeight / 2), (host?.clientHeight ?? 0) - this.offsetHeight - 8)
-        this.style.translate = `${ room ? x + 24 : x - this.offsetWidth - 24 }px ${ top }px`
+        const left = Math.min(Math.max(8, room ? x + 24 : x - this.offsetWidth - 24), (host?.clientWidth ?? 0) - this.offsetWidth - 8)
+        this.style.translate = `${ left }px ${ top }px`
     }
 
     override connectedCallback() {

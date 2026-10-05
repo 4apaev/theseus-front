@@ -47,6 +47,11 @@ export class Anchorage {
         }
     }
 
+    /** every ship here: the players' with their traffic row, then the npc ships. */
+    list() {
+        return [ ...this.ships ].map(([ id, visitor ]) => ({ visitor, row: this.rows.get(id) })).sort((a, b) => +!a.row - +!b.row)
+    }
+
     /** `n` npc ships, parked. */
     fill(n: number) {
         for (let i = 0; i < n; i++) this.dock(`npc${ this.npc++ }`, NPC[ Math.floor(this.r() * NPC.length) ], false)

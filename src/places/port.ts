@@ -9,6 +9,7 @@ import { Robot } from '../world/robot.ts'
 import { Ship } from '../world/ship.ts'
 import { face, inbound } from '../world/visitor.ts'
 import type { Effect } from '../core/effects.ts'
+import { html } from 'lit'
 import { type Kit, shipRows, visitorRows } from '../kit/index.ts'
 import { Anchorage } from './anchorage.ts'
 import { spots } from './spots.ts'
@@ -21,7 +22,8 @@ type Found = NonNullable<ReturnType<Anchorage[ 'find' ]>>
     other ships at anchor round the station,
     the planet below, the sun of the system.
     the camera orbits the station. a click on a ship,
-    or the s key for ours, opens its card.
+    or the s key for ours, opens its card. the t key
+    lists the traffic: the players docked here, the npc ships.
     `enter` builds it, `sync` follows the session,
     `leave` takes it down.
 */
@@ -184,6 +186,7 @@ export class Port {
     private readonly key = (e: KeyboardEvent) => {
         if (e.target instanceof HTMLInputElement || e.metaKey || e.ctrlKey) return
         if (e.key === 's') this.showShip()
+        if (e.key === 't') this.traffic()
         if (e.key === 'Escape' && !e.defaultPrevented && this.home) this.stage.focus(...this.home)
     }
 
@@ -196,6 +199,17 @@ export class Port {
             if (s?.ship) this.kit.card.show(s.ship.name, shipRows(s)!, s.ship.status)
         }
         this.shows()
+    }
+
+    private traffic() {
+        const all = this.yard?.list() ?? []
+        if (!this.home) return
+        this.focus = void 0
+        this.shows = void 0
+        this.kit.card.show('traffic', html`<ul>${ all.map(f => html`
+            <li><button @click=${ () => this.showVisitor(f) }><b>${ f.row?.handle ?? 'npc' }</b> ${ f.row?.name ?? f.visitor.hull.replace(/^.*\//, '') }</button></li>`) }
+        </ul>`, `${ all.length } here`)
+        void this.kit.card.updateComplete.then(() => this.home && (this.kit.card.at = this.stage.anchor(this.home[ 0 ])))
     }
 
     private showVisitor({ visitor, row }: Found) {
