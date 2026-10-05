@@ -27,7 +27,7 @@ export class Stage {
     readonly scene  = new T.Scene
     readonly front  = new T.Scene
     readonly flat   = new T.OrthographicCamera(0, VW, 0, -VH, -10, 10)
-    readonly camera = new T.PerspectiveCamera(30, 16 / 9, .1, 2000)
+    readonly camera = new T.PerspectiveCamera(30, 16 / 9, 1, 20000)
     readonly host: HTMLElement
 
     private readonly gl  = new T.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' })
@@ -46,6 +46,7 @@ export class Stage {
         this.gl.setClearColor(0x070b14)
         host.prepend(this.gl.domElement)
         Object.assign(this.orbit, { enableDamping: true, enablePan: false, rotateSpeed: .5, minPolarAngle: .08 * Math.PI, maxPolarAngle: .92 * Math.PI })
+        this.orbit.addEventListener('change', this.depth)
         this.sizer.observe(host)
         lights(this.scene)
         this.frame = requestAnimationFrame(this.loop)
@@ -96,6 +97,15 @@ export class Stage {
         this.orbit.dispose()
         this.gl.dispose()
         this.gl.domElement.remove()
+    }
+
+    /*
+        the depth precision follows the near plane. the camera stays a sixth
+        of its distance away from the model at least, so 5% is a safe near.
+    */
+    private readonly depth = () => {
+        this.camera.near = Math.max(.5, this.camera.position.distanceTo(this.orbit.target) * .05)
+        this.camera.updateProjectionMatrix()
     }
 
     private readonly loop = (now: number) => {

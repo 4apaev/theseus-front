@@ -10,10 +10,12 @@ import { Port } from './places/port.ts'
  * client, mount the stage, enter the port while the ship is docked.
  * in transit only the sky shows, until the flight place exists.
  * `?fixture=docked` needs no gateway; without it the shell reuses the
- * old app's login token.
+ * old app's login token. `&ship=b` shows a hull variant to compare.
  */
-const name   = new URLSearchParams(location.search).get('fixture')
-const port   = new Port(new Stage(document.querySelector('main') as HTMLElement))
+const query  = new URLSearchParams(location.search)
+const name   = query.get('fixture')
+const hull   = query.get('ship')
+const port   = new Port(new Stage(document.querySelector('main') as HTMLElement), hull ? `far-treasure-${ hull }` : void 0)
 const client = name
     ? new FixtureClient(() => fixture(name))
     : new GameClient
@@ -28,7 +30,6 @@ client.onChange = s => {
     if (stid === at)
         return port.sync(s)
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     at && port.leave()
 
     if (at = stid)

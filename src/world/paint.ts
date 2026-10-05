@@ -38,7 +38,8 @@ export function paint(root: T.Object3D) {
     for (const m of meshes) {
         const src = m.material as T.MeshStandardMaterial
         const lit = src.emissive.r + src.emissive.g + src.emissive.b > .01
-        const hex = (lit ? src.emissive : src.color).clone().convertLinearToSRGB().getHex()
+        // getHex() gives the painted srgb hex. a convert before it brightens it twice
+        const hex = (lit ? src.emissive : src.color).getHex()
         if (lit) {
             m.material = lamp(hex)
             if (/tip|nav|beacon|lightbar|eye/.test(m.name)) m.add(glow(hex, /beacon|lightbar/.test(m.name) ? .9 : .5, !/eye/.test(m.name)))
@@ -155,7 +156,7 @@ function outlineNormals(g: T.BufferGeometry) {
     g.setAttribute('aOutline', new T.BufferAttribute(out, 3))
 }
 
-function rng(seed: number) {
+export function rng(seed: number) {
     return () => {
         seed = seed + 0x6D2B79F5 | 0
         let t = Math.imul(seed ^ seed >>> 15, 1 | seed)

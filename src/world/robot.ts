@@ -2,39 +2,40 @@ import * as T from 'three'
 import { model } from './loader.ts'
 import { liven } from './paint.ts'
 
-export type Point = [ number, number ]
-
 /**
  * a deck robot that walks to and fro between 2 deck points, in metres.
  * its joints (`leg_l`, `arm_r`, `wheel_l`, `head`…) swing with its speed.
  */
 export class Robot {
-    readonly group = new T.Group
-    private readonly a: Point
-    private readonly b: Point
+    /*   */ readonly group = new T.Group
+    private readonly a: T.Vector3
+    private readonly b: T.Vector3
     private readonly period: number
     private joints: Record<string, T.Object3D> = {}
     private phase = 0
 
-    constructor(name: string, a: Point, b: Point, period: number) {
+    constructor(name: string, a: T.Vector3, b: T.Vector3, period: number) {
         this.a = a
         this.b = b
         this.period = period
         this.group.scale.setScalar(.8)
-        void model(`painted/${ name }`).then(m => {
-            m.traverse(o => { if (/^(leg|arm|wheel)_[lr]$|^head$/.test(o.name)) this.joints[ o.name ] = o })
+
+        void model('painted/' + name).then(m => {
+            m.traverse(o => {
+                if (/^(leg|arm|wheel)_[lr]$|^head$/.test(o.name))
+                    this.joints[ o.name ] = o
+            })
             this.group.add(m)
         })
     }
 
     tick(t: number, dt: number) {
-        const [ ax, az ] = this.a
-        const [ bx, bz ] = this.b
+        const { a, b } = this
         const w = t / this.period * Math.PI * 2
-        const k = (1 - Math.cos(w)) / 2
         const dir = Math.sin(w) >= 0 ? 1 : -1
-        this.group.position.set(ax + (bx - ax) * k, 0, az + (bz - az) * k)
-        this.group.rotation.y = Math.atan2(-(bz - az) * dir, (bx - ax) * dir)
+
+        this.group.position.lerpVectors(a, b, (1 - Math.cos(w)) / 2)
+        this.group.rotation.y = Math.atan2(-(b.z - a.z) * dir, (b.x - a.x) * dir)
         this.walk(dt, Math.abs(Math.sin(w)) * 1.1 + .05)
         liven(this.group, t, dt)
     }
