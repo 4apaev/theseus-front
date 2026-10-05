@@ -43,6 +43,11 @@ export class KitCard extends AppElement {
             ${ this.body }`
     }
 
-    private readonly escape = (e: KeyboardEvent) => { if (e.key === 'Escape') this.close() }
+    // an open card takes the escape key, so the place stays
+    private readonly escape = (e: KeyboardEvent) => {
+        if (e.key !== 'Escape' || this.hidden) return
+        e.preventDefault()
+        this.close()
+    }
 }
 customElements.define('kit-card', KitCard)
