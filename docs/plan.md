@@ -13,7 +13,7 @@ this file is the order of the work, step by step.
 - `index.html` boots the shell. the old code is gone.
 - `npm run check` is green, with a screenshot check of each place.
 
-**where we are** (2026-10-05, stages A to E done):
+**where we are** (2026-10-05, stages A to E and F1 done; F2 to F4 wait for the user: sound files, gltf-transform, playwright):
 - `src/core/`: the wire and the truth, moved unchanged. 44 tests.
 - fixture mode: `?fixture=docked|transit|full`. a command only logs.
 - `src/world/`: the stage, the sky (ether, stars, sun, planet), the paint
@@ -45,7 +45,7 @@ steps
 | D2   | ship    | traffic at the station                     | S    | A4    | done ✔ |
 | E1   | comms   | letters and the channel                    | M    | A4    | done ✔ |
 | E2   | comms   | the feed line and the console              | S    | E1    | done ✔ |
-| F1   | parity  | settings, voices, reduced motion           | S    | A2    |        |
+| F1   | parity  | settings, voices, reduced motion           | S    | A2    | done ✔ |
 | F2   | parity  | sounds                                     | S    | B3    |        |
 | F3   | parity  | load and size                              | M    | -     |        |
 | F4   | parity  | screenshot checks                          | M    | all places |        |
