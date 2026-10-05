@@ -1,6 +1,14 @@
 
 
+export const tsrules = {
+    '@typescript-eslint/no-unused-expressions': [ 2, {
+        allowTernary: true,
+        allowShortCircuit: true,
+        allowTaggedTemplates: true
+    }]
+}
 export default {
+
     'no-cond-assign'        :   0,
     'class-methods-use-this':   0,
     'max-statements'        : [ 0, 10 ],
@@ -35,6 +43,13 @@ export default {
         argsIgnorePattern: '^-',
         varsIgnorePattern: '^-'
     }],
+
+    'no-unused-expressions': [ 2, {
+        allowTernary: true,
+        allowShortCircuit: true,
+        allowTaggedTemplates: true
+    }],
+
     'max-depth'                      : [ 2, 4 ],
     'max-params'                     : [ 2, 4 ],
     'no-var'                         :   2,
@@ -133,5 +148,12 @@ export default {
 
     // ---------------------------------------------------------------------------------------------------------
     'key-spacing'                : [ 0, { align: 'colon', afterColon : !0, beforeColon     : !1 }],
+
+
+
+    // allowShortCircuit	Allows short-circuit evaluations using && and ||	isTrue && displayMenu();
+    // allowTernary	Allows conditional ternary operators without variable assignment	isTrue ? loadA() : loadB();
+    // allowTaggedTemplates	Allows tagged template literals to stand alone as expressions	mytagTemplate literal text;
+    // enforceForJSX
 }
 
