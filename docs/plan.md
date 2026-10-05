@@ -13,7 +13,7 @@ this file is the order of the work, step by step.
 - `index.html` boots the shell. the old code is gone.
 - `npm run check` is green, with a screenshot check of each place.
 
-**where we are** (2026-10-05, stage A done):
+**where we are** (2026-10-05, stages A and B done):
 - `src/core/`: the wire and the truth, moved unchanged. 44 tests.
 - fixture mode: `?fixture=docked|transit|full`. a command only logs.
 - `src/world/`: the stage, the sky (ether, stars, sun, planet), the paint
@@ -35,9 +35,9 @@ steps
 | A3   | frame   | the place router                           | S    | A2    | done ✔ |
 | A4   | frame   | hotspots and the ship focus                | M    | A3, sam: spots | done ✔ |
 | A5   | frame   | login and register                         | S    | A2    | done ✔ |
-| B1   | trade   | the exchange                               | M    | A1-A4 |        |
-| B2   | trade   | the hold                                   | M    | B1    |        |
-| B3   | trade   | effects                                    | S    | B1    |        |
+| B1   | trade   | the exchange                               | M    | A1-A4 | done ✔ |
+| B2   | trade   | the hold                                   | M    | B1    | done ✔ |
+| B3   | trade   | effects                                    | S    | B1    | done ✔ |
 | C1   | travel  | the chart                                  | L    | A4    |        |
 | C2   | travel  | the system map                             | M    | C1    |        |
 | C3   | travel  | transit                                    | M    | C1, server 3.7 |        |
