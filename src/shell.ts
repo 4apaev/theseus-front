@@ -4,6 +4,7 @@ import { GameClient } from './core/client.ts'
 import { docked } from './core/session.ts'
 import { Stage } from './world/stage.ts'
 import { Port } from './places/port.ts'
+import { mount } from './kit/index.ts'
 
 /**
  * the new shell, beside the old app until it replaces it: boot the
@@ -15,14 +16,21 @@ import { Port } from './places/port.ts'
 const query  = new URLSearchParams(location.search)
 const name   = query.get('fixture')
 const hull   = query.get('ship')
-const port   = new Port(new Stage(document.querySelector('main') as HTMLElement), hull ? `far-treasure-${ hull }` : void 0)
+const main   = document.querySelector('main') as HTMLElement
+const stage  = new Stage(main)
+const kit    = mount(main)
+const port   = new Port(stage, kit, hull ? `far-treasure-${ hull }` : void 0)
 const client = name
     ? new FixtureClient(() => fixture(name))
     : new GameClient
 
 let at: string | undefined
 
+client.onNotify = (text, kind) => kit.toast.say(text, kind === 'err')
+
 client.onChange = s => {
+    kit.hud.session = s
+
     const stid = docked(s)
         ? s.ship?.stid
         : void 0

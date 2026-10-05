@@ -13,6 +13,7 @@ import { glow, liven, rng } from './paint.ts'
 export class Ship {
     readonly group = new T.Group
     readonly ready: Promise<void>
+    worn: FittedSlot[] = []
     private readonly sockets = new Map<string, T.Object3D>
     private readonly shown = new Map<string, string>
     private flame?: T.Sprite
@@ -35,6 +36,7 @@ export class Ship {
 
     async fit(rig: FittedSlot[]) {
         await this.ready
+        this.worn = rig.filter(f => this.sockets.has(f.slot))
         await Promise.all([ ...this.sockets ].map(([ slot, socket ]) => {
             const gid = rig.find(f => f.slot === slot)?.gid
             return this.mount(slot, socket, gid ? gid.replace('.', '-') : `empty-${ socket.userData.family }`)

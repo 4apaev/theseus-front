@@ -16,12 +16,14 @@ const BASIS = new T.Matrix4
  */
 export class Visitor {
     readonly ship: Ship
+    readonly hull: string
     readonly berth: Berth
     gone = false
     private move?: { path: T.CubicBezierCurve3, t0: number, time: number, out: boolean }
 
     constructor(hull: string, seed: number, berth: Berth) {
         this.ship = new Ship(hull, HULLS[ hull ])
+        this.hull = hull
         this.berth = berth
         void this.ship.dress(seed)
         this.place(berth.at, berth.bow)

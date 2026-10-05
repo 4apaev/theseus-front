@@ -28,7 +28,7 @@ export class GameClient {
 
     onChange?: (session: Session) => void
     onStatus?: (status: ClientStatus) => void
-    onNotify?: (text: string) => void
+    onNotify?: (text: string, kind?: LogKind) => void
     onAuth?  : (authed: boolean) => void
 
     readonly api = new Api
@@ -218,7 +218,7 @@ export class GameClient {
         const done = this.pending.settle(frame.correlation_id)
         const line = flavor(this.session, frame)
         if (done) {
-            this.onNotify?.(line.text)
+            this.onNotify?.(line.text, line.kind)
             this.learnPeer(done.tag, frame.payload.to)
         }
 

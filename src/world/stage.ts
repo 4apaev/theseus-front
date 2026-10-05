@@ -32,6 +32,7 @@ export class Stage {
 
     private readonly gl  = new T.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' })
     private readonly orbit = new OrbitControls(this.camera, this.gl.domElement)
+    private readonly ray   = new T.Raycaster
     private readonly art = new T.TextureLoader
     private readonly ticks = new Set<Tick>
     private readonly sizer = new ResizeObserver(() => this.resize())
@@ -78,6 +79,12 @@ export class Stage {
         })
         layer.add(m)
         return m
+    }
+
+    /** the first thing under a host point, among `roots` and their children. */
+    pick(x: number, y: number, roots: T.Object3D[]) {
+        this.ray.setFromCamera(new T.Vector2(x / this.host.clientWidth * 2 - 1, 1 - y / this.host.clientHeight * 2), this.camera)
+        return this.ray.intersectObjects(roots, true)[ 0 ]?.object
     }
 
     /** a world point on screen, in css px of the host. */

@@ -14,6 +14,7 @@ export class Anchorage {
     readonly group = new T.Group
     private readonly berths: Berth[]
     private readonly ships = new Map<string, Visitor>
+    private readonly rows  = new Map<string, TrafficRow>
     private readonly r: () => number
     private t = 0
     private next = 0
@@ -30,10 +31,20 @@ export class Anchorage {
     /** the players' ships docked here. `fly` false parks them at once. */
     sync(rows: TrafficRow[], fly = true) {
         const here = new Set(rows.map(row => row.sid))
+        rows.forEach(row => this.rows.set(row.sid, row))
         for (const [ id, v ] of this.ships)
             if (!id.startsWith('npc') && !here.has(id)) v.depart(this.t)
         for (const row of rows)
             if (!this.ships.has(row.sid)) this.dock(row.sid, 'far-treasure', fly)
+    }
+
+    /** the visitor that `o` belongs to, and its traffic row if a player flies it. */
+    find(o: T.Object3D) {
+        for (const [ id, v ] of this.ships) {
+            let p: T.Object3D | null = o
+            while (p && p !== v.ship.group) p = p.parent
+            if (p) return { visitor: v, row: this.rows.get(id) }
+        }
     }
 
     /** `n` npc ships, parked. */
