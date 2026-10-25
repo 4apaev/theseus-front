@@ -25,9 +25,39 @@ export const HULLS: Record<string, number> = {
     'hangar/tug'         : 35,
     'hangar/police-light': 45,
     'hangar/police-heavy': 90,
+    'hangar/police-patrol': 50,
+    'hangar/police-inspector': 40,
+    'toy/ship-cargo'     : 70,
+    'toy/ship-military'  : 90,
+    'toy/ship-industrial': 80,
+    'toy/ship-research'  : 75,
+    'toy/ship-tanker'    : 110,
+    'toy/ship-liner'     : 130,
+    'toy/ship-tug'       : 45,
+    'toy/ship-police-cutter': 55,
+    'toy/ship-raider'    : 65,
+    'toy/ship-courier'   : 50,
+    'toy/ship-cold-storage': 100,
+    'toy/ship-livestock' : 100,
+    'toy/ship-gas-carrier': 110,
+    'toy/ship-liquid-tanker': 120,
+    'toy/ship-container-ship': 130,
+    'toy/ship-ore-carrier': 120,
+    'toy/ship-asteroid-barge': 110,
+    'toy/ship-iceberg-tug': 90,
+    'toy/ship-refueller' : 70,
+    'toy/ship-repair-tender': 70,
 }
 
-export const NPC = Object.keys(HULLS).filter(h => !h.startsWith('far-treasure'))
+export const NPC = Object.keys(HULLS).filter(h => !/^(far-treasure|toy\/)/.test(h))
+
+/** who flies what: players a far treasure, npc ships the rest. */
+export const fleet = { player: 'far-treasure', npc: NPC }
+
+/** the toy look flies sam's 4 toy ships; players fly the cargo ship. */
+export function toyFleet() {
+    Object.assign(fleet, { player: 'toy/ship-cargo', npc: Object.keys(HULLS).filter(h => h.startsWith('toy/')) })
+}
 
 /** the modules of each socket family. an empty mount is a choice too. */
 export const MODULES: Record<string, string[]> = {

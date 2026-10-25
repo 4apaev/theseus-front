@@ -1,7 +1,8 @@
 import * as T from 'three'
 import { progress } from '../core/chart.ts'
 import type { Session } from '../core/session.ts'
-import { HULLS } from '../content/fleet.ts'
+import { HULLS, fleet } from '../content/fleet.ts'
+import { mySkin } from '../content/skins.ts'
 import { type Kit, voyageRows } from '../kit/index.ts'
 import { Ship } from '../world/ship.ts'
 import type { Stage } from '../world/stage.ts'
@@ -25,16 +26,18 @@ export class Transit implements Place {
     constructor(stage: Stage, kit: Kit, hull?: string) {
         this.stage = stage
         this.kit   = kit
-        this.hull  = hull ?? 'far-treasure'
+        this.hull  = hull ?? fleet.player
     }
 
     enter(s: Session) {
-        const ship = this.ship = new Ship(this.hull, HULLS[ this.hull ])
+        const ship = this.ship = new Ship(this.hull, HULLS[ this.hull ], mySkin())
         this.session = s
         void ship.fit(s.fitted)
         this.stage.sky.show()
         this.stage.scene.add(ship.group)
-        this.stage.view(new T.Vector3(0, 10, 0), 70)
+        // from the side, a little behind: the tail of bubbles shows
+        this.stage.view(new T.Vector3(-20, 10, 0), 80)
+        this.stage.turn(-1.05)
         this.untick = this.stage.tick((t, dt) => this.fly(t, dt))
         this.sync(s)
     }
@@ -58,7 +61,8 @@ export class Transit implements Place {
         ship.group.rotation.z = Math.sin(t / 7) * .02
         const f = progress(s.ship, s.universe.constants, Date.now())
         const route = s.universe.routes.find(r => r.from === s.ship?.from && r.to === s.ship?.to)
-        ship.burn(!route || route.c < 1 || f < .05 || f > .95 ? 1 : 0)
+        // a toy ship coasts on a thin trail of bubbles; a painted one goes dark
+        ship.burn(!route || route.c < 1 || f < .05 || f > .95 ? 1 : this.hull.startsWith('toy/') ? .25 : 0)
         if (Date.now() - this.shown > 1000) this.card()
         this.kit.card.at = this.stage.anchor(ship.group.position)
     }

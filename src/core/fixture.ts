@@ -87,7 +87,7 @@ export class FixtureClient extends GameClient {
         const frame = { event_type: 'ship.arrived.v1', occurred: ship.arrives, payload: { pid: this.session.me?.pid, sid: ship.sid, stid: ship.to }}
         const timer = setTimeout(() => this.receive(frame), Math.max(0, Date.parse(ship.arrives) - Date.now()))
         // in node a test run must not wait for the landing
-        ;(timer as unknown as { unref?: () => void }).unref?.()
+        Object(timer).unref?.()
     }
 }
 

@@ -173,8 +173,9 @@ export class GameClient {
         this.commit({ course: to })
     }
 
-    rename(name: string) {
-        return this.command('put', `/api/ship/${ this.needShip().sid }/name`, { name }, { label: `rename → ${ name }` })
+    /** `skin` rides along; the server ignores it until it knows skins. */
+    rename(name: string, skin?: string) {
+        return this.command('put', `/api/ship/${ this.needShip().sid }/name`, { name, skin }, { label: `rename → ${ name }` })
     }
 
     install(slot: string, gid: string) {

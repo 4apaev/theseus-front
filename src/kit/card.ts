@@ -1,5 +1,6 @@
 import { html, type TemplateResult } from 'lit'
 import { AppElement } from '../components/element.ts'
+import { emit } from '../core/util.ts'
 
 /**
  * a paper card next to a thing in the scene. the place sets `at`, the
@@ -16,9 +17,11 @@ export class KitCard extends AppElement {
         Object.assign(this, { heading, body, chip, hidden: false })
     }
 
+    /** emits `close`: the thing it was about is no longer selected. */
     close() {
         this.hidden = true
         this.body = void 0
+        emit(this, 'close', void 0)
     }
 
     set at([ x, y ]: number[]) {

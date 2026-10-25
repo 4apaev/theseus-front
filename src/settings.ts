@@ -1,9 +1,9 @@
-/** the player's settings, in this browser only: a voice for arrivals (empty: none), the chime, calm motion. */
-export interface Settings { voice: string, sound: boolean, calm: boolean }
+/** the player's settings, in this browser only: a voice for arrivals (empty: none), the chime, calm motion, the ship's skin. */
+export interface Settings { voice: string, sound: boolean, calm: boolean, skin: string }
 
 const KEY = 'theseus.settings'
 
-export const settings: Settings = { voice: 'kate', sound: true, calm: false, ...read() }
+export const settings: Settings = { voice: 'kate', sound: true, calm: false, skin: 'theme', ...read() }
 
 export function save(patch: Partial<Settings>) {
     Object.assign(settings, patch)

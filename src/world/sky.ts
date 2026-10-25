@@ -12,6 +12,10 @@ export const SUN = new T.Vector3(-4, 7, 5).normalize()
 
 const FAR = 3000
 
+// the milky way: the normal of its plane. the ether and most stars crowd round it
+const BAND = new T.Vector3(.3, .9, -.2).normalize()
+const GLSL_BAND = `const vec3 BAND = vec3(${ BAND.toArray().join(', ') });`
+
 const NOISE = /* glsl */`
 float hash(vec3 p){ return fract(sin(dot(p, vec3(127.1, 311.7, 74.7))) * 43758.5453); }
 float noise(vec3 p){
@@ -22,28 +26,29 @@ float noise(vec3 p){
 float fbm(vec3 p){ float v = 0., a = .5; for (int i = 0; i < 5; i++) { v += a * noise(p); p = p * 2.03 + 1.7; a *= .5; } return v; }`
 
 const ETHER = /* glsl */`${ NOISE }
+${ GLSL_BAND }
 uniform float uTime; varying vec3 vDir;
 void main(){
     vec3 d = normalize(vDir);
-    float band = exp(-pow(dot(d, normalize(vec3(.3, .9, -.2))) * 3.2, 2.));
+    float band = exp(-pow(dot(d, BAND) * 3.2, 2.));
     vec3 q = d * 2.2 + vec3(uTime * .004, 0., -uTime * .003);
-    vec3 col = mix(vec3(.028, .05, .1), vec3(.06, .1, .19), d.y * .35 + .5);
-    col += vec3(.18, .5, .53) * pow(fbm(q + 1.4 * fbm(q * 1.2)), 2.4) * (.35 + .8 * band);
-    col += vec3(.42, .31, .63) * pow(fbm(q * 2.4 - 4.), 3.) * (.2 + .9 * band);
-    gl_FragColor = vec4(col + vec3(.95, .9, .85) * band * .05, 1.);
+    vec3 col = mix(vec3(.012, .018, .035), vec3(.024, .036, .07), d.y * .35 + .5);
+    col += vec3(.18, .5, .53) * pow(fbm(q + 1.4 * fbm(q * 1.2)), 3.2) * band * .22;
+    col += vec3(.42, .31, .63) * pow(fbm(q * 2.4 - 4.), 3.6) * band * .16;
+    gl_FragColor = vec4(col + vec3(.95, .9, .85) * band * .02, 1.);
 }`
 
 const STAR_VS = /* glsl */`
-attribute float aSize; attribute float aPhase; uniform float uTime; varying float vLit;
+attribute float aSize; attribute float aPhase; attribute vec3 aTint; uniform float uTime; uniform float uDpr; varying vec3 vLit;
 void main(){
-    vLit = (.55 + .45 * sin(uTime * (.7 + aPhase * 2.6) + aPhase * 60.)) * (.35 + aSize / 4.);
-    gl_PointSize = aSize;
+    vLit = aTint * (.8 + .2 * sin(uTime * (.7 + aPhase * 2.6) + aPhase * 60.)) * (.25 + aSize / 3.);
+    gl_PointSize = aSize * uDpr;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.);
 }`
 
 const STAR_FS = /* glsl */`
-varying float vLit;
-void main(){ float r = length(gl_PointCoord - .5); gl_FragColor = vec4(vec3(1., .96, .9) * vLit * smoothstep(.5, 0., r), 1.); }`
+varying vec3 vLit;
+void main(){ float r = length(gl_PointCoord - .5); gl_FragColor = vec4(vLit * smoothstep(.5, 0., r), 1.); }`
 
 const PLANET_VS = /* glsl */`
 varying vec3 vNormal; varying vec3 vWorld; varying vec3 vObj;
@@ -80,9 +85,10 @@ export class Sky {
     }))
 
     private readonly sun = new T.Sprite(new T.SpriteMaterial({ transparent: true, depthTest: false }))
+    private readonly ether: T.Mesh
 
     constructor() {
-        const ether = new T.Mesh(new T.SphereGeometry(FAR, 32, 16), new T.ShaderMaterial({
+        const ether = this.ether = new T.Mesh(new T.SphereGeometry(FAR, 32, 16), new T.ShaderMaterial({
             uniforms      : { uTime: this.time },
             vertexShader  : 'varying vec3 vDir; void main(){ vDir = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); }',
             fragmentShader: ETHER,
@@ -124,6 +130,11 @@ export class Sky {
         }
     }
 
+    /** no ether: the stage's clear colour shows behind the stars. */
+    plain() {
+        this.ether.visible = false
+    }
+
     /** follow the view's rotation and lens, not its position. */
     tick(t: number, view: T.PerspectiveCamera) {
         this.time.value = t
@@ -143,23 +154,31 @@ export class Sky {
     }
 }
 
-// 2400 stars on the far sphere, each on its own blink
+// the star tints: blue white, white, warm, orange
+const TINTS = [[ .8, .88, 1 ], [ 1, .97, .92 ], [ 1, .86, .66 ], [ 1, .7, .45 ]]
+
+// 20000 stars on the far sphere, each on its own blink. 4 in 10 crowd the milky way
 function stars(time: { value: number }) {
-    const n = 2400
+    const n = 20000
     const pos = new Float32Array(n * 3)
     const size = new Float32Array(n)
     const phase = new Float32Array(n)
+    const tint = new Float32Array(n * 3)
     const v = new T.Vector3
     for (let i = 0; i < n; i++) {
-        v.randomDirection().multiplyScalar(FAR * .9).toArray(pos, i * 3)
-        size[ i ] = 1 + Math.random() ** 6 * 3
+        v.randomDirection()
+        if (i % 5 < 2) v.addScaledVector(BAND, -v.dot(BAND) * .85).normalize()
+        v.multiplyScalar(FAR * .9).toArray(pos, i * 3)
+        size[ i ] = .7 + Math.random() ** 10 * 3.6
         phase[ i ] = Math.random()
+        tint.set(TINTS[ Math.floor(Math.random() ** 2 * 4) ], i * 3)
     }
     const g = new T.BufferGeometry
     g.setAttribute('position', new T.BufferAttribute(pos, 3))
     g.setAttribute('aSize', new T.BufferAttribute(size, 1))
     g.setAttribute('aPhase', new T.BufferAttribute(phase, 1))
-    const p = new T.Points(g, new T.ShaderMaterial({ uniforms: { uTime: time }, vertexShader: STAR_VS, fragmentShader: STAR_FS, transparent: true, blending: T.AdditiveBlending, depthTest: false }))
+    g.setAttribute('aTint', new T.BufferAttribute(tint, 3))
+    const p = new T.Points(g, new T.ShaderMaterial({ uniforms: { uTime: time, uDpr: { value: Math.min(devicePixelRatio, 1.5) }}, vertexShader: STAR_VS, fragmentShader: STAR_FS, transparent: true, blending: T.AdditiveBlending, depthTest: false }))
     p.renderOrder = 1
     return p
 }

@@ -1,7 +1,7 @@
 import * as T from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { Sky } from './sky.ts'
-import { lights } from './paint.ts'
+import { lights, raw } from './paint.ts'
 
 /** the virtual frame. painted parts and anchors use its pixels. */
 export const VW = 1280
@@ -41,7 +41,8 @@ export class Stage {
     calm = false
     private last = 0
     private t = 0
-    private flight?: { from: T.Vector3[], to: T.Vector3[], t0: number, size: number }
+    private flight?: { from: T.Vector3[], to: T.Vector3[], t0: number, size?: number }
+    private arrived = -Infinity
 
     constructor(host: HTMLElement) {
         this.host = host
@@ -49,22 +50,67 @@ export class Stage {
         this.gl.outputColorSpace = T.LinearSRGBColorSpace
         this.gl.setClearColor(0x070b14)
         host.prepend(this.gl.domElement)
-        Object.assign(this.orbit, { enableDamping: true, enablePan: false, rotateSpeed: .5, minPolarAngle: .08 * Math.PI, maxPolarAngle: .92 * Math.PI })
+        Object.assign(this.orbit, { enableDamping: true, enablePan: false, rotateSpeed: .5 })
         this.orbit.addEventListener('change', this.depth)
         this.sizer.observe(host)
         lights(this.scene)
         this.frame = requestAnimationFrame(this.loop)
     }
 
-    /** orbit `target`, a thing `size` metres across. the first look is from 42°, 22° up. */
+    /** orbit `target`, a thing `size` metres across. the first look is from 42°, 22° up. a flight under way stops. */
     view(target: T.Vector3, size: number) {
         const az = 42 * Math.PI / 180
         const el = 22 * Math.PI / 180
         const d = size * 2.4
+        this.flight = void 0
         this.orbit.target.copy(target)
+        this.tilt(.08, .92)
         this.limit(size * 1.2, size * 5)
         this.camera.position.set(Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el)).multiplyScalar(d).add(target)
         this.orbit.update()
+        if (performance.now() - this.arrived < 2000) this.settle()
+    }
+
+    /** a new place arrives: the picture fades in, and its first view eases in from farther out. */
+    arrive() {
+        this.arrived = performance.now()
+        this.gl.domElement.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 350, easing: 'ease-out' })
+    }
+
+    // from a quarter farther out to the view just set
+    private settle() {
+        this.arrived = -Infinity
+        const to = this.camera.position.clone(), far = to.clone().sub(this.orbit.target).multiplyScalar(1.25).add(this.orbit.target)
+        this.flight = { from: [ this.orbit.target.clone(), far ], to: [ this.orbit.target.clone(), to ], t0: performance.now() }
+    }
+
+    /** the orbit's limits, as parts of a half turn from straight down. */
+    tilt(min: number, max: number) {
+        this.orbit.minPolarAngle = min * Math.PI
+        this.orbit.maxPolarAngle = max * Math.PI
+    }
+
+    /** turn the orbit round its target by `rad`, as a drag would. */
+    turn(rad: number) {
+        const y = new T.Vector3(0, 1, 0), spin = (v: T.Vector3, about: T.Vector3) => v.sub(about).applyAxisAngle(y, rad).add(about)
+        spin(this.camera.position, this.orbit.target)
+        // a flight under way turns with it
+        if (this.flight) for (const [ target, camera ] of [ this.flight.from, this.flight.to ]) spin(camera, target)
+        this.orbit.update()
+    }
+
+    /** come `k` times nearer, inside the orbit's limits. */
+    zoom(k: number) {
+        const d = this.camera.position.distanceTo(this.orbit.target)
+        const to = Math.min(this.orbit.maxDistance, Math.max(this.orbit.minDistance, d / k))
+        this.camera.position.sub(this.orbit.target).setLength(to).add(this.orbit.target)
+        this.orbit.update()
+    }
+
+    /** a plain backdrop of one colour in place of the ether; the stars stay. */
+    backdrop(color: number) {
+        this.gl.setClearColor(raw(color))
+        this.sky.plain()
     }
 
     /** fly in 0.8 s to orbit `target`, `size` metres across, from the same side. */
@@ -93,7 +139,7 @@ export class Stage {
         this.camera.position.lerpVectors(f.from[ 1 ], f.to[ 1 ], e)
         if (k < 1) return
         this.flight = void 0
-        this.limit(f.size * 1.2, f.size * 5)
+        if (f.size) this.limit(f.size * 1.2, f.size * 5)
     }
 
     /** a painted sprite from `art/`. `foot` is the fraction where it stands. */
@@ -116,6 +162,17 @@ export class Stage {
     pick(x: number, y: number, roots: T.Object3D[]) {
         this.ray.setFromCamera(new T.Vector2(x / this.host.clientWidth * 2 - 1, 1 - y / this.host.clientHeight * 2), this.camera)
         return this.ray.intersectObjects(roots, true)[ 0 ]?.object
+    }
+
+    /** the point under a host point on the level plane at `height`; none when the ray misses it. */
+    ground(x: number, y: number, height = 0) {
+        this.ray.setFromCamera(new T.Vector2(x / this.host.clientWidth * 2 - 1, 1 - y / this.host.clientHeight * 2), this.camera)
+        return this.ray.ray.intersectPlane(new T.Plane(new T.Vector3(0, 1, 0), -height), new T.Vector3) ?? void 0
+    }
+
+    /** `true`: the camera stays put while the player drags a thing. */
+    hold(on: boolean) {
+        this.orbit.enabled = !on
     }
 
     /** a world point on screen, in css px of the host. */
@@ -165,10 +222,20 @@ export class Stage {
         this.frame = requestAnimationFrame(this.loop)
     }
 
+    /*
+        the stage fills its host, whatever its shape. the 3D lens keeps at
+        least the width a 16:9 frame shows; the painted frame stays 16:9 in
+        the middle, with more of the sky round it.
+    */
     private resize() {
+        const w = this.host.clientWidth, h = Math.max(1, this.host.clientHeight), a = w / h, k = VW / VH
         this.gl.setPixelRatio(Math.min(devicePixelRatio, 1.5))
-        this.gl.setSize(this.host.clientWidth, this.host.clientHeight, false)
-        this.camera.aspect = this.host.clientWidth / Math.max(1, this.host.clientHeight)
+        this.gl.setSize(w, h, false)
+        this.camera.aspect = a
+        this.camera.fov = a < k ? 2 * Math.atan(Math.tan(15 * Math.PI / 180) * k / a) * 180 / Math.PI : 30
         this.camera.updateProjectionMatrix()
+        const [ x, y ] = a > k ? [ (VH * a - VW) / 2, 0 ] : [ 0, (VW / a - VH) / 2 ]
+        Object.assign(this.flat, { left: -x, right: VW + x, top: y, bottom: -VH - y })
+        this.flat.updateProjectionMatrix()
     }
 }

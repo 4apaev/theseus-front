@@ -189,7 +189,14 @@ export function universe(x: unknown): Universe {
             const g = row(item)
             const kind = text(g, 'kind')
             assert(kind === 'commodity' || kind === 'module', 'unknown good kind', 'payload')
-            return { name: text(g, 'name'), kind, volume: num(g, 'volume'), price_base: num(g, 'price_base') }
+            return {
+                name      : text(g, 'name'),
+                kind,
+                volume    : num(g, 'volume'),
+                price_base: num(g, 'price_base'),
+                form      : g.form ? text(g, 'form') : void 0,
+                category  : g.category ? text(g, 'category') : void 0,
+            }
         }),
         hulls: record(r.hulls, item => {
             const h = row(item)

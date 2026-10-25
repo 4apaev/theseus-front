@@ -11,7 +11,7 @@ const BASIS = new T.Matrix4
 /**
  * a ship that is not ours. it parks at its berth, or it flies in on a
  * curve and slows down to it. later it flies out along its bow and
- * speeds up. the drive glows on the way out; on the way in it coasts.
+ * speeds up. the drive burns both ways: harder out, softer in.
  * both ends lie 10 km out or more, where a hull is a dot.
  */
 export class Visitor {
@@ -46,7 +46,8 @@ export class Visitor {
         const k = Math.min(1, (t - m.t0) / m.time)
         const u = m.out ? k * k : 1 - (1 - k) ** 2
         this.place(m.path.getPoint(u), m.path.getTangent(u))
-        this.ship.burn(m.out ? Math.min(1, k * 4) : 0)
+        // out, the drive speeds it up; in, it brakes
+        this.ship.burn(m.out ? Math.min(1, k * 4) : k < 1 ? .6 : 0)
         if (k < 1) return
         this.move = void 0
         this.gone = m.out

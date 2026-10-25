@@ -12,6 +12,9 @@ __pycache__/
 
 # the painted models come from ../assets/exports/painted: npm run sync
 public/models/painted/
+public/models/kits/
+public/models/toy/
 # the place art and the web icons: npm run sync makes them from ../assets
 public/art/places/
 public/art/icons/
+public/art/toy/

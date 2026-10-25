@@ -3,7 +3,7 @@ import { SUN } from './sky.ts'
 
 /**
  * the painted look of a 3D model, lit like the sprites: a 4-step toon
- * ramp over a grime map, an inverted hull for the ink outline, a glow
+ * ramp over a grime map (a kit model keeps its own colour map), an inverted hull for the ink outline, a glow
  * on each lamp. a lamp named `tip`, `nav`, `beacon`, `lightbar` or
  * `eye` blinks. an object with `spin` in its extras turns.
  * colours stay raw, as painted: the stage does no colour management.
@@ -26,9 +26,16 @@ const OUTLINE = new T.ShaderMaterial({
     fragmentShader: 'void main(){ gl_FragColor = vec4(.08, .066, .05, 1.); }',
 })
 
-const toons = new Map<number, T.Material>
+const toons = new Map<number | string, T.Material>
 const lamps = new Map<number, T.Material>
 const toon = (c: number) => toons.get(c) ?? toons.set(c, new T.MeshToonMaterial({ color: raw(c), gradientMap: RAMP, map: grime() })).get(c) as T.Material
+
+// a kit model keeps its colour map, read raw like our hex
+function mapped(src: T.MeshStandardMaterial) {
+    const map = src.map as T.Texture, key = `${ map.uuid } ${ src.color.getHex() }`
+    map.colorSpace = T.NoColorSpace
+    return toons.get(key) ?? toons.set(key, new T.MeshToonMaterial({ color: raw(src.color.getHex()), gradientMap: RAMP, map })).get(key) as T.Material
+}
 const lamp = (c: number) => lamps.get(c) ?? lamps.set(c, new T.MeshBasicMaterial({ color: raw(c) })).get(c) as T.Material
 
 export function paint(root: T.Object3D) {
@@ -47,7 +54,7 @@ export function paint(root: T.Object3D) {
         }
         boxUV(m.geometry)
         outlineNormals(m.geometry)
-        m.material = toon(hex)
+        m.material = src.map ? mapped(src) : toon(hex)
         m.add(new T.Mesh(m.geometry, OUTLINE))
     }
     return root

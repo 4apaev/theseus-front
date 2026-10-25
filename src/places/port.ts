@@ -1,16 +1,20 @@
 import * as T from 'three'
 import { type Session, dockedAt, station } from '../core/session.ts'
 import { type Stage } from '../world/stage.ts'
-import { HULLS, seedOf } from '../content/fleet.ts'
-import { viewOf } from '../content/stations.ts'
+import { HULLS, fleet, seedOf } from '../content/fleet.ts'
+import { mySkin } from '../content/skins.ts'
+import { skinOf, toyStationOf, viewOf } from '../content/stations.ts'
+import { globe } from '../world/globe.ts'
 import { model } from '../world/loader.ts'
 import { liven } from '../world/paint.ts'
+import { tint, toon, toy, wear } from '../world/toy.ts'
 import { Robot } from '../world/robot.ts'
 import { Ship } from '../world/ship.ts'
 import { type Berth, face, inbound } from '../world/visitor.ts'
 import type { Effect } from '../core/effects.ts'
 import { html } from 'lit'
 import { type Kit, shipRows, visitorRows } from '../kit/index.ts'
+import type { KitSpot } from '../kit/spot.ts'
 import { Anchorage } from './anchorage.ts'
 import { spots } from './spots.ts'
 
@@ -32,6 +36,7 @@ export class Port {
     private readonly stage: Stage
     private readonly kit: Kit
     private readonly hull: string
+    private readonly round: boolean
     private readonly made: T.Object3D[] = []
 
     private untick?: () => void
@@ -42,17 +47,18 @@ export class Port {
     private focus?: T.Object3D
     private shows?: () => void
     private home?: [ T.Vector3, number ]
-    private marks: { at: T.Vector3, el: HTMLElement & { at: number[] }}[] = []
+    private marks: { at: T.Vector3, el: KitSpot }[] = []
     private down = [ 0, 0 ]
     private landing = false
     private land?: { path: T.CubicBezierCurve3, t0: number, end: T.Quaternion }
     private visit = 0
 
-    /** `hull`: a far treasure variant to compare, `far-treasure-b`. */
-    constructor(stage: Stage, kit: Kit, hull?: string) {
+    /** `hull`: a far treasure variant to compare, `far-treasure-b`; a `toy/` hull docks at sam's toy station. `round`: the station as a small world. */
+    constructor(stage: Stage, kit: Kit, hull?: string, round = false) {
         this.stage = stage
         this.kit   = kit
-        this.hull  = hull ?? 'far-treasure'
+        this.hull  = hull ?? fleet.player
+        this.round = round
     }
 
     async enter(s: Session) {
@@ -62,11 +68,13 @@ export class Port {
         const at    = station(s, s.ship?.stid)
         const sys   = s.universe?.systems.find(x => x.sysid === at?.system)
         const v     = viewOf(at?.stid ?? '', sys?.sysid ?? 'sol', sys?.star ?? 'G')
-        const hull  = await model(v.model)
+        const toyed = this.hull.startsWith('toy/')
+        const hull  = toyed ? await model(toyStationOf(at?.stid ?? ''), toy).catch(() => model('toy/station', toy)) : this.round ? await globe(seedOf(at?.stid ?? '')) : await model(v.model)
 
         if (visit !== this.visit) return // the ship left while the station loaded
+        if (toyed) wear(hull, skinOf(at?.stid ?? ''))
 
-        const ship = this.ship = new Ship(this.hull, HULLS[ this.hull ])
+        const ship = this.ship = new Ship(this.hull, HULLS[ this.hull ], mySkin())
 
         hull.updateMatrixWorld(true)
         hull.getObjectByName('berth')?.matrixWorld
@@ -78,7 +86,7 @@ export class Port {
 
         if (this.landing) this.approach(ship.group)
 
-        const actors = [ ship, ...robots(hull) ]
+        const actors = [ ship, ...toyed ? [] : robots(hull) ]
         const groups = actors.map(a => a.group)
 
         st.scene.add(hull, ...groups)
@@ -92,11 +100,21 @@ export class Port {
         yard.fill(3)
         st.scene.add(yard.group)
         this.made.push(yard.group)
+        if (toyed) {
+            const world = planet(box, seedOf(at?.stid ?? ''))
+            st.scene.add(world)
+            this.made.push(world)
+            void this.lagrange(box, world.position)
+            void this.dress(world, seedOf(at?.stid ?? ''))
+        }
 
-        this.home  = [ box.getCenter(new T.Vector3), box.getSize(new T.Vector3).length() / 2 ]
+        // a small world needs room round it: the lens fits a deck, not a ball
+        this.home  = [ box.getCenter(new T.Vector3), box.getSize(new T.Vector3).length() / 2 * (this.round ? 1.3 : 1) ]
         this.marks = spots(hull, ship.group.position).map(s => ({ at: s.at, el: this.kit.spot(s.place) }))
 
-        st.sky.show(v.planet, v.sun)
+        // the toy planet is in the scene, not in the sky
+        if (toyed) st.sky.show()
+        else st.sky.show(v.planet, v.sun)
         st.view(...this.home)
 
         this.untick = st.tick((t, dt) => {
@@ -111,6 +129,31 @@ export class Port {
         st.host.addEventListener('pointerup', this.release)
         addEventListener('keydown', this.key)
         this.sync(s)
+    }
+
+    // sam's planet, when it loads, in place of the plain ball and its ring
+    private async dress(world: T.Object3D, seed: number) {
+        const visit = this.visit, ball = world.children[ 0 ], m = await model(PLANETS[ seed % PLANETS.length ], toy).catch(() => void 0)
+        if (!m || visit !== this.visit) return
+        m.scale.setScalar(ball.scale.x * 2 * Math.sqrt(3) / (new T.Box3).setFromObject(m).getSize(new T.Vector3).length())
+        world.children.forEach(o => o.visible = false)
+        world.add(m)
+    }
+
+    // the dry dock and the gas station at the points between the station and its planet
+    private async lagrange(box: T.Box3, planet: T.Vector3) {
+        const visit = this.visit, mid = box.getCenter(new T.Vector3), size = box.getSize(new T.Vector3).length()
+        const both = await Promise.all([ 'toy/station-dry-dock', 'toy/station-gas-station' ].map(id => model(id, toy).catch(() => void 0)))
+        if (visit !== this.visit) return
+        both.forEach((m, i) => {
+            if (!m) return
+            const fit = size * .35 / (new T.Box3).setFromObject(m).getSize(new T.Vector3).length()
+            m.scale.setScalar(fit)
+            m.position.lerpVectors(mid, planet, .3 + i * .22).add(new T.Vector3(0, (i ? -1 : 1) * size * .25, 0))
+            m.userData.mark = i ? 'gas station' : 'dry dock'
+            this.stage.scene.add(m)
+            this.made.push(m)
+        })
     }
 
     sync(s: Session) {
@@ -157,6 +200,8 @@ export class Port {
         const k = Math.min(1, (t - l.t0) / 12), u = 1 - (1 - k) ** 2
         g.position.copy(l.path.getPoint(u))
         face(g, l.path.getTangent(u))
+        // the drive brakes all the way in
+        this.ship?.burn(k < 1 ? .4 + .6 * (1 - k) : 0)
         if (k < 1) return
         g.quaternion.copy(l.end)
         this.land = void 0
@@ -172,13 +217,16 @@ export class Port {
 
     private readonly press = (e: PointerEvent) => { this.down = [ e.offsetX, e.offsetY ] }
 
-    // a click, not a drag, on the scene picks a ship
+    // a click, not a drag, on the scene picks a ship, or a facility opens its place
     private readonly release = (e: PointerEvent) => {
         if (!(e.target instanceof HTMLCanvasElement) || Math.hypot(e.offsetX - this.down[ 0 ], e.offsetY - this.down[ 1 ]) > 4) return
         const hit = this.stage.pick(e.offsetX, e.offsetY, [ ...this.made ])
         const other = hit && this.yard?.find(hit)
         if (other) return this.showVisitor(other)
         if (hit && this.ship && isIn(hit, this.ship.group)) return this.showShip()
+        // a merged station has no halls to tell apart: the lit label says which
+        const place = placeOf(hit) ?? this.marks.find(m => m.el.hasAttribute('lit'))?.el.place
+        if (place) location.hash = place
         this.kit.card.close()
     }
 
@@ -219,12 +267,36 @@ export class Port {
     }
 }
 
+function placeOf(o: T.Object3D | null | undefined) {
+    while (o && !o.userData.place) o = o.parent
+    return o?.userData.place as string | undefined
+}
+
 function isIn(o: T.Object3D | null, root: T.Object3D) {
     while (o && o !== root) o = o.parent
     return !!o
 }
 
 // the station's other pads: `berth_b`, `berth_c`… with the extra `size`
+// sam's planets, one picked by the station
+const PLANETS = [ 'toy/sky/gas-giant', 'toy/sky/rocky-planet', 'toy/sky/ice-world' ]
+
+const BALL = new T.SphereGeometry(1, 48, 32)
+const RING = new T.TorusGeometry(1, .02, 8, 128)
+
+// the toy station's planet: a fat ball beyond the station, up and right of it at first look, and its ring, in a colour apart from the station's
+function planet(box: T.Box3, seed: number) {
+    const size = box.getSize(new T.Vector3).length(), g = new T.Group
+    const ball = new T.Mesh(BALL, toon(tint(([ 'teal', 'pink', 'amber', 'mist' ] as const)[ seed % 4 ])))
+    const ring = new T.Mesh(RING, toon(tint('cream')))
+    ball.scale.setScalar(size * 1.6)
+    ring.scale.setScalar(size * 2.6)
+    ring.rotation.set(Math.PI / 2 + .35, 0, .3)
+    g.add(ball, ring)
+    g.position.copy(box.getCenter(new T.Vector3)).addScaledVector(new T.Vector3(-.24, -.01, -.97).normalize(), size * 5)
+    return g
+}
+
 const SIZES: Record<string, number> = { small: 60, medium: 150, large: 260 }
 
 function pads(hull: T.Object3D) {

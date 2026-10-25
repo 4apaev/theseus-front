@@ -4,6 +4,7 @@ const PLACES: Record<string, RegExp> = {
     exchange: /exchange|market|trade|bazaar/,
     rigging : /rig|workshop|yard|chandler|hangar/,
     comms   : /comm|mail|relay|signal|radio/,
+    chart   : /chart|observ|nav/,
 }
 
 /**

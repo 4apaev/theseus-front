@@ -1,19 +1,18 @@
-import { html } from 'lit'
 import * as T from 'three'
 import type { GameClient } from '../core/client.ts'
-import { type Plan, displayRadius, orbitRadius, routeEdges, shortestPath, starColor, systemPosition } from '../core/chart.ts'
-import { type Session, station, stationName } from '../core/session.ts'
+import { displayRadius, orbitRadius, routeEdges, starColor, systemPosition } from '../core/chart.ts'
+import { type Session, station } from '../core/session.ts'
 import type { Universe } from '../core/transport/types.ts'
-import { Fail, credits, fmtDist, fmtYears, span } from '../core/util.ts'
 import { seedOf } from '../content/fleet.ts'
 import type { Kit } from '../kit/index.ts'
 import type { KitMark } from '../kit/mark.ts'
 import { glow } from '../world/paint.ts'
 import type { Stage } from '../world/stage.ts'
+import { Course } from './course.ts'
 import type { Place } from './router.ts'
 
 // scene metres per light year in the sector, and per chart radius in a system
-const LY  = 40
+export const LY = 40
 const ORB = 60
 
 // the golden angle: stations in orbit order spread round the star, none on top of another
@@ -30,7 +29,7 @@ const GOLDEN = 137.5 * Math.PI / 180
 export class Chart implements Place {
     private readonly stage: Stage
     private readonly kit: Kit
-    private readonly client: GameClient
+    private readonly course: Course
     private readonly group = new T.Group
     private marks: { at: T.Vector3, el: KitMark }[] = []
     private untick?: () => void
@@ -40,11 +39,12 @@ export class Chart implements Place {
     constructor(stage: Stage, kit: Kit, client: GameClient) {
         this.stage  = stage
         this.kit    = kit
-        this.client = client
+        this.course = new Course(kit, client)
     }
 
     enter(s: Session) {
         this.session = s
+        this.course.sync(s)
         this.stage.sky.show()
         this.stage.scene.add(this.group)
         this.untick = this.stage.tick(() => this.marks.forEach(m => m.el.at = this.stage.anchor(m.at)))
@@ -54,6 +54,7 @@ export class Chart implements Place {
 
     sync(s: Session) {
         this.session = s
+        this.course.sync(s)
         const here = this.sysid ? s.ship?.stid : station(s, s.ship?.stid)?.system
         this.marks.forEach(m => m.el.here = m.el.value === here)
     }
@@ -87,45 +88,20 @@ export class Chart implements Place {
         this.kit.card.close()
         this.dot(new T.Vector3, starColor(sys.star), 60).mark(sys.name, sysid, () => this.sector())
         let far = 0
-        for (const [ i, x ] of u.stations.filter(y => y.system === sysid).entries()) {
-            const r = displayRadius(orbitRadius(u, x.stid)) * ORB, a = i * GOLDEN + seedOf(sysid) % 360 * Math.PI / 180
-            this.lines(ring(r))
-            this.dot(new T.Vector3(Math.cos(a) * r, 0, Math.sin(a) * r), '#d9d2b7', 16).mark(x.name, x.stid, () => this.course(x.stid))
-            far = Math.max(far, r)
+        for (const x of u.stations.filter(y => y.system === sysid)) {
+            const at = onOrbit(u, x.stid)
+            this.lines(ring(at.length()))
+            this.dot(at, '#d9d2b7', 16).mark(x.name, x.stid, () => this.plot(x.stid))
+            far = Math.max(far, at.length())
         }
         this.stage.view(new T.Vector3, far * 1.6)
         this.sync(s)
     }
 
-    // the course card. the cargo's cost is what its value earns in the bank meanwhile
-    private course(stid: string) {
-        const s = this.session, u = s?.universe, ship = s?.ship
-        const plan = u && ship?.stid ? shortestPath(u, ship, ship.stid, stid) : void 0
-        if (!s || !plan?.legs.length) return this.kit.toast.say(plan ? 'the ship is there' : 'no route from here', true)
-        const value = s.cargo.reduce((n, c) => n + c.quantity * (s.market.find(m => m.gid === c.gid)?.price_sell ?? 0), 0)
-        const cost = value * ((1 + (u?.constants.interest ?? .05)) ** plan.years_abs - 1)
-        this.kit.card.show(stationName(s, stid), this.plan(s, plan, cost, stid), `${ plan.legs.length } ${ plan.legs.length > 1 ? 'hops' : 'hop' }`)
+    private plot(stid: string) {
+        if (!this.course.show(stid)) return
         const at = this.marks.find(m => m.el.value === stid)?.at
         if (at) void this.kit.card.updateComplete.then(() => this.kit.card.at = this.stage.anchor(at))
-    }
-
-    private plan(s: Session, plan: Plan, cost: number, stid: string) {
-        return html`
-            <dl>
-                <dt>via</dt>         <dd>${ plan.stops.slice(1, -1).map(x => stationName(s, x)).join(', ') || 'direct' }</dd>
-                <dt>distance</dt>    <dd>${ fmtDist(plan.ly) }</dd>
-                <dt>galaxy years</dt><dd>${ fmtYears(plan.years_abs) }</dd>
-                <dt>ship years</dt>  <dd>${ fmtYears(plan.years_rel) }</dd>
-                <dt>real time</dt>   <dd>${ span(plan.ms) }</dd>
-                <dt>cargo cost</dt>  <dd>${ credits(cost) }</dd>
-            </dl>
-            <form @submit=${ (e: SubmitEvent) => this.travel(e, stid) }><button>travel</button></form>`
-    }
-
-    private travel(e: SubmitEvent, stid: string) {
-        e.preventDefault()
-        this.kit.card.close()
-        this.client.travel(stid).catch(x => this.kit.toast.say(Fail.from(x).message, true))
     }
 
     // ── the scene ────────────────────────────────────────────
@@ -163,15 +139,23 @@ export class Chart implements Place {
     }
 }
 
-// the whole sector: its middle, and a size that fits every star in a 30° view
-function frame(u: Universe): [ T.Vector3, number ] {
+/** the whole sector: its middle, and a size that fits every star in a 30° view. */
+export function frame(u: Universe): [ T.Vector3, number ] {
     const points = u.systems.map(x => point(u, x.sysid))
     const middle = points.reduce((m, v) => m.add(v), new T.Vector3).divideScalar(points.length)
     return [ middle, Math.max(...points.map(v => v.distanceTo(middle))) * 1.6 ]
 }
 
-function point(u: Universe, sysid: string) {
+/** a system in the sector, in scene metres. */
+export function point(u: Universe, sysid: string) {
     return new T.Vector3(...systemPosition(u, sysid)).multiplyScalar(LY)
+}
+
+/** a station on its orbit, in scene metres: in orbit order round the star, none on top of another. */
+export function onOrbit(u: Universe, stid: string) {
+    const sysid = u.stations.find(x => x.stid === stid)?.system ?? '', i = u.stations.filter(x => x.system === sysid).findIndex(x => x.stid === stid)
+    const r = displayRadius(orbitRadius(u, stid)) * ORB, a = i * GOLDEN + seedOf(sysid) % 360 * Math.PI / 180
+    return new T.Vector3(Math.cos(a) * r, 0, Math.sin(a) * r)
 }
 
 // a circle as line segments, in the plane of the orbits

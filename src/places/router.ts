@@ -37,8 +37,9 @@ export class Router {
         this.current?.leave()
         this.shown = `${ name } ${ stid }`
         this.current = this.places[ name ]
-        void this.current?.enter(s)
+        // the stage knows of the arrival before the place sets its view
         this.onPlace?.(name)
+        void this.current?.enter(s)
     }
 
     /** an effect goes to the place on stage. */

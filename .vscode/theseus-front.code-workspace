@@ -2,16 +2,9 @@
     "folders": [
         {
             "path": "../",
-            "name": "💈 theseus front"
+            "name": "💈 front"
         }
     ],
-
-    "extensions": {
-        "recommendations": [
-            "bierner.lit-html",
-            "local.sql-in-strings"
-        ]
-    },
 
     "settings": {
 
@@ -25,6 +18,13 @@
         "explorer.fileNesting.patterns": {
             "package.json":  ".env*, .git*, .editor*, *rc, *.json, .*.yml, *.config.js, *.config.ts",
         },
-    }
+    },
+
+    "extensions": {
+        "recommendations": [
+            "bierner.lit-html",
+            "local.sql-in-strings"
+        ]
+    },
 }
 

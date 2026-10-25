@@ -88,6 +88,8 @@ export interface Good {
     kind      : 'commodity' | 'module'
     volume    : number
     price_base: number
+    form?     : string
+    category? : string
 }
 
 export interface Slot { id: string, family: string, size: string }

@@ -16,15 +16,14 @@ export class KitComms extends AppElement {
     declare peers?: Peer[]
 
     override render() {
+        const lines = this.lines ?? [], none = lines.length ? '' : html`<li><small>no messages yet</small></li>`
+        const to = [{ value: '', label: 'station channel' }, ...(this.peers ?? []).map(p => ({ value: p.sid, label: `letter → ${ p.name }` })) ]
         return html`
-            <ol>${ (this.lines ?? []).map(l => html`
-                <li ?data-letter=${ l.letter }><b>${ l.who }</b> <q>${ l.body }</q> <small>${ l.flying ? 'in flight' : l.when }</small></li>`) }
+            <ol>${ lines.map(l => html`
+                <li ?data-letter=${ l.letter }><b>${ l.who }</b> <q>${ l.body }</q> <small>${ l.flying ? 'in flight' : l.when }</small></li>`) }${ none }
             </ol>
             <form @submit=${ this.send }>
-                <select name="to" aria-label="to">
-                    <option value="">station channel</option>
-                    ${ (this.peers ?? []).map(p => html`<option value=${ p.sid }>letter → ${ p.name }</option>`) }
-                </select>
+                <kit-select name="to" up aria-label="to" .choices=${ to }></kit-select>
                 <textarea name="body" rows="2" required placeholder="a message"></textarea>
                 <button>send</button>
             </form>`

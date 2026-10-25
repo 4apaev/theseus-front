@@ -53,6 +53,13 @@ steps
 | G2   | switch  | remove the old code                        | S    | G1    |        |
 | G3   | switch  | the docs                                   | S    | G2    |        |
 | H    | server  | fuel, holds, crew, the well, the fight     | -     | phase 4, 5 |        |
+| K1   | look    | the station as a small world               | M    | -     | sketch |
+| K2   | look    | ship exhaust                               | S    | K1    |        |
+| K3   | look    | facilities seen from above                 | L    | K1    |        |
+| K4   | look    | rigging as a module graph                  | M    | D1    |        |
+| K5   | look    | the chart as an iso diagram, the manifest  | M    | C1    |        |
+| K6   | look    | the ui kit after shapez 2                  | M    | A2    |        |
+| K7   | look    | the ship's position: a compass             | S    | K6    |        |
 
 
 A · the frame
@@ -302,6 +309,66 @@ each one follows its server step in
 | 4.6 fuel | the fuel gauge, refuel at the exchange, the adrift state, the tug |
 | 4.7 crew | crew cards with sam's portraits, hire at a station |
 | phase 5 | flight, encounter |
+
+
+K · the look
+------------------------------------------------
+
+the user, 2026-10-06: stop fighting the art; take a low-poly kit and the
+look of 3 games. the references are in `sketches/direction-2026-10-06/`.
+the models: the cc0 kits in `assets/kits/` (kaykit, kenney, quaternius).
+
+### K1 - the station as a small world
+
+after star birds (`starbirds-globe-station`): a rock, facilities grown
+out of it, pipes between them. drag turns the world; a click on a
+facility opens its place. the sketch is behind `&globe`
+(`world/globe.ts`). the user: good direction, sloppy: the parts of 3
+kits do not match.
+
+- one kit for the parts, the others only where it has a gap.
+- our palette on every part, one material set.
+- pipes between the facilities: tubes along the surface.
+- facilities at one scale; the ship's pad the largest.
+
+### K2 - ship exhaust
+
+`starbirds-ship-exhaust`: a puffy trail of round clouds behind a burning
+ship, at the port and in transit.
+
+### K3 - facilities seen from above
+
+after jumplight odyssey (`jumplight-deck-1`, `-2`): a room cut open,
+seen from above at an angle, its machines and crew inside. the
+exchange, comms and the hold. open: 3D rooms from kit parts, or sam's
+painted plates (pl1, now in style).
+
+### K4 - rigging as a module graph
+
+`starbirds-graph-green`, `-blue`: tiles on an iso grid, paths between
+them. a tile is a module, a path a dependency (power feeds the drive).
+`reactor-cutaway-rigging`: a module opened, its core inside.
+
+### K5 - the chart as an iso diagram, the manifest
+
+`starbirds-graph-*`, `starbirds-map-manifest`: stations as tiles,
+routes as paths, numbered stops. the same view lists the manifest of a
+voyage.
+
+### K6 - the ui kit after shapez 2
+
+`shapez2-ui-01` … `-12`: dark rounded panels, a numbered tool bar,
+bright flat icons, counters as `icon value / max`, a compass for the
+camera. not star birds' panels: too childish.
+
+### K7 - the ship's position: a compass
+
+`shapez2-compass-position-1`, `-2`: the user picks this widget to show
+where the player's ship is in space. a round badge in a ring of
+bearings (n, e, s, w); an orange arrow on the ring points to the
+destination; a chip under it holds a number (the distance left, or the
+time); a small tilt readout beside it (`∠ 15°`). docked, the arrow
+points to the next stop on the course.
 
 
 sam, by stage

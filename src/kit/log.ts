@@ -28,7 +28,7 @@ export class KitLog extends AppElement {
         const [ last ] = this.lines ?? []
         return html`
             <button data-kind=${ last?.kind ?? 'dim' } @click=${ () => this.open = !this.open }>${ last?.text ?? 'no events yet' }</button>
-            ${ this.open
+            ${ this.open && this.lines?.length
                 ? html`<ol>${ (this.lines ?? []).map(l => html`
                 <li data-kind=${ l.kind }><time datetime=${ l.time }>${ time(l.time) }</time> <b>${ l.kind }</b> ${ l.text }</li>`) }</ol>`
                 : '' }`

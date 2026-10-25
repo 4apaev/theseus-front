@@ -1,6 +1,6 @@
 import * as T from 'three'
 import type { TrafficRow } from '../core/transport/types.ts'
-import { HULLS, NPC, seedOf } from '../content/fleet.ts'
+import { HULLS, fleet, seedOf } from '../content/fleet.ts'
 import { rng } from '../world/paint.ts'
 import { type Berth, Visitor } from '../world/visitor.ts'
 
@@ -36,7 +36,7 @@ export class Anchorage {
         for (const [ id, v ] of this.ships)
             if (!id.startsWith('npc') && !here.has(id)) v.depart(this.t)
         for (const row of rows)
-            if (!this.ships.has(row.sid)) this.dock(row.sid, 'far-treasure', fly)
+            if (!this.ships.has(row.sid)) this.dock(row.sid, fleet.player, fly)
     }
 
     /** the visitor that `o` belongs to, and its traffic row if a player flies it. */
@@ -55,7 +55,7 @@ export class Anchorage {
 
     /** `n` npc ships, parked. */
     fill(n: number) {
-        for (let i = 0; i < n; i++) this.dock(`npc${ this.npc++ }`, NPC[ Math.floor(this.r() * NPC.length) ], false)
+        for (let i = 0; i < n; i++) this.dock(`npc${ this.npc++ }`, fleet.npc[ Math.floor(this.r() * fleet.npc.length) ], false)
     }
 
     tick(t: number, dt: number) {
@@ -73,7 +73,7 @@ export class Anchorage {
         this.next = this.t + 20 + this.r() * 30
         const npcs = [ ...this.ships ].filter(([ id ]) => id.startsWith('npc'))
         if (this.open().length > 1 && (npcs.length < 3 || this.r() < .5))
-            return this.dock(`npc${ this.npc++ }`, NPC[ Math.floor(this.r() * NPC.length) ], true)
+            return this.dock(`npc${ this.npc++ }`, fleet.npc[ Math.floor(this.r() * fleet.npc.length) ], true)
         npcs[ Math.floor(this.r() * npcs.length) ]?.[ 1 ].depart(this.t)
     }
 

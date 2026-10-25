@@ -14,7 +14,7 @@ export abstract class Painted implements Place {
     protected readonly stage: Stage
     protected readonly kit: Kit
     protected session?: Session
-    private readonly made: T.Mesh[] = []
+    private readonly made: T.Mesh<T.PlaneGeometry, T.MeshBasicMaterial>[] = []
     private readonly art: string[]
     private visit = 0
 
@@ -45,7 +45,7 @@ export abstract class Painted implements Place {
         this.kit.card.close()
         for (const m of this.made.splice(0)) {
             m.removeFromParent()
-            ;(m.material as T.MeshBasicMaterial).map?.dispose()
+            m.material.map?.dispose()
         }
     }
 
