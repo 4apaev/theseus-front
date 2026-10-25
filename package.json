@@ -1,6 +1,6 @@
 {
     "name"       : "theseus-front",
-    "version"    : "0.1.0",
+    "version"    : "0.2.0",
     "description": "theseus client",
     "repository" : "github:4apaev/theseus-front",
     "type"       : "module",
