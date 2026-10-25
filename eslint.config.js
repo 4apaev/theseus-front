@@ -24,7 +24,7 @@ if (typeof rules.quotes[ 2 ].allowTemplateLiterals === 'boolean') {
 }
 
 // extension rules understand typescript syntax while retaining the same policy.
-const extensions = [ 'class-methods-use-this', 'max-params', 'no-unused-vars', 'no-useless-constructor' ]
+const extensions = [ 'class-methods-use-this', 'max-params', 'no-unused-expressions', 'no-unused-vars', 'no-useless-constructor' ]
 const tsRules = { ...styleRules, 'no-undef': 0 }
 for (const name of extensions) {
     tsRules[ name ] = 0
@@ -35,7 +35,7 @@ for (const name of extensions) {
 
 export default defineConfig([
     {
-        ignores: [ 'dist/**', 'node_modules/**', 'scripts/eslint.rules.js' ],
+        ignores: [ 'dist/**', 'node_modules/**', 'prototype/**', 'scripts/eslint.rules.js' ],
     },
     {
         files: [ '**/*.{js,ts}' ],

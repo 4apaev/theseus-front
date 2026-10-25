@@ -1,9 +1,9 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { fold, flavor } from '../src/events.ts'
-import { emptySession } from '../src/session.ts'
-import type { Session } from '../src/session.ts'
-import type { Frame } from '../src/transport/types.ts'
+import { fold, flavor } from '../src/core/events.ts'
+import { emptySession } from '../src/core/session.ts'
+import type { Session } from '../src/core/session.ts'
+import type { Frame } from '../src/core/transport/types.ts'
 
 const ME = 'pid-me'
 

@@ -1,0 +1,402 @@
+/* the kit: paper cards and glass lines over the scene, after the painted prototype */
+
+:root {
+    --paper  : #e8dfcb;
+    --ink    : #2a2620;
+    --kmuted : #8a8173;
+    --orange : #e8612c;
+    --teal   : #3fb6a8;
+    --red    : #d9483b;
+    --up     : #7ce0a0;
+    --down   : #ff7a6a;
+    --glass  : rgb(10 15 22 / .76);
+    --edge   : rgb(232 223 203 / .2);
+    --mono   : 'SF Mono', ui-monospace, Menlo, monospace;
+    --rounded: 'SF Pro Rounded', ui-rounded, system-ui, sans-serif;
+}
+
+main {
+    color         : var(--paper);
+    font          : .75rem/1.5 var(--mono);
+    text-transform: lowercase;
+    position      : relative;
+    overflow      : hidden;
+    container-type: inline-size;
+
+    & :focus-visible { outline: .125rem solid var(--orange); outline-offset: .125rem }
+}
+
+kit-hud header {
+    top            : 1cqw;
+    left           : 1.25cqw;
+    right          : 1.25cqw;
+    position       : absolute;
+    display        : flex;
+    flex-wrap      : wrap;
+    justify-content: space-between;
+    gap            : .5rem;
+    pointer-events : none;
+    z-index        : 2;
+
+    & p { margin: 0; padding: .25rem .75rem; white-space: nowrap; background: var(--glass); border: 1px solid var(--edge); backdrop-filter: blur(4px) }
+    & b { font-weight: 600 }
+    & button { font: inherit; color: var(--kmuted); background: none; border: 0; cursor: pointer; pointer-events: auto }
+    & button:hover { color: var(--paper) }
+}
+
+kit-credits {
+    margin-left        : .5rem;
+    font-variant       : tabular-nums;
+    transition         : color .9s;
+
+    &[data-trend='up']   { color: var(--up) }
+    &[data-trend='down'] { color: var(--down) }
+}
+
+kit-toast {
+    top           : 4cqw;
+    left          : 50%;
+    position      : absolute;
+    translate     : -50% 0;
+    display       : grid;
+    gap           : .25rem;
+    pointer-events: none;
+    z-index       : 4;
+
+    & p { margin: 0; padding: .25rem .75rem; background: var(--glass); border: 1px solid var(--teal) }
+    & p[data-bad] { border-color: var(--red) }
+}
+
+kit-card {
+    color     : var(--ink);
+    background: var(--paper);
+    border    : 1px solid var(--ink);
+    box-shadow: 0 .5rem 1.5rem rgb(0 0 0 / .55);
+    top       : 0;
+    left      : 0;
+    position  : absolute;
+    width     : 16rem;
+    padding   : .75rem 1rem;
+    z-index   : 3;
+
+    &[hidden] { display: none }
+
+    & header { display: flex; align-items: center; gap: .5rem; margin-bottom: .5rem }
+    & h4     { flex: 1; margin: 0; font: 600 1.125rem/1.25 var(--rounded) }
+    & small  { font-size: .625rem; border: 1px solid currentColor; padding: 0 .25rem }
+    & button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer }
+    & dl     { display: grid; grid-template-columns: auto 1fr; margin: 0 }
+    & dt     { color: var(--kmuted) }
+    & dd     { margin: 0; text-align: right; font-variant: tabular-nums }
+    & dt, & dd { padding: .125rem 0; border-bottom: 1px solid rgb(42 38 32 / .12) }
+    & ul     { list-style: none; margin: .5rem 0 0; padding: 0 }
+    & li b   { display: inline-block; width: 5.5rem; font-weight: 400; color: var(--kmuted) }
+    & ul:has(img) { display: flex; flex-wrap: wrap; gap: .5rem; margin: 0 0 .5rem }
+    & li img { width: 2rem; height: 2rem; vertical-align: middle }
+}
+
+kit-hud nav {
+    background    : var(--glass);
+    border        : 1px solid var(--edge);
+    display       : flex;
+    pointer-events: auto;
+
+    & a { color: var(--kmuted); text-decoration: none; padding: .25rem .75rem }
+    & a:hover { color: var(--paper) }
+    & a[data-on] { color: var(--paper); box-shadow: inset 0 -.125rem 0 var(--orange) }
+}
+
+kit-spot, kit-mark {
+    top     : 0;
+    left    : 0;
+    position: absolute;
+
+    & a, & button {
+        font       : inherit;
+        cursor     : pointer;
+        color      : var(--ink);
+        background : var(--paper);
+        border     : 1px solid var(--ink);
+        position   : absolute;
+        translate  : -50% calc(-100% - 1.25rem);
+        padding    : .125rem .5rem;
+        white-space: nowrap;
+        text-decoration: none;
+
+        &:hover { background: var(--orange); border-color: var(--orange) }
+        &::after { content: ''; position: absolute; left: 50%; top: 100%; width: 1px; height: 1.25rem; background: var(--paper) }
+    }
+}
+
+kit-auth {
+    inset          : 0;
+    position       : absolute;
+    display        : grid;
+    place-items    : center;
+    z-index        : 5;
+
+    &[hidden] { display: none }
+
+    & form {
+        color     : var(--ink);
+        background: var(--paper);
+        border    : 1px solid var(--ink);
+        box-shadow: 0 .5rem 1.5rem rgb(0 0 0 / .55);
+        display   : grid;
+        gap       : .75rem;
+        width     : 18rem;
+        padding   : 1.25rem 1.5rem;
+    }
+
+    & h4     { margin: 0; font: 600 1.125rem/1.25 var(--rounded) }
+    & label  { display: grid; grid-template-columns: 1fr auto; gap: .25rem .5rem; color: var(--kmuted) }
+    & input  { grid-column: 1; font: inherit; text-transform: none; color: var(--ink); background: none; border: 0; border-bottom: 1px solid var(--ink); padding: .25rem 0 }
+    & output { color: var(--red) }
+    & menu   { display: flex; gap: .5rem; margin: 0; padding: 0 }
+    & menu button { flex: 1; padding: .5rem; border: 1px solid var(--ink); background: none }
+    & menu button:first-child { background: var(--orange); border-color: var(--orange); font-weight: 600 }
+    & button { font: inherit; color: inherit; cursor: pointer; background: none; border: 0 }
+    & label button { grid-column: 2; grid-row: 2 }
+}
+
+kit-tray {
+    left       : 1.25cqw;
+    right      : 1.25cqw;
+    bottom     : 1.25cqw;
+    position   : absolute;
+    z-index    : 1;
+    display    : flex;
+    align-items: end;
+    gap        : .5rem;
+
+    &[hidden] { display: none }
+
+    & menu { display: flex; flex-direction: column; gap: .25rem; margin: 0; padding: .25rem }
+    & menu button { font: inherit; color: var(--paper); background: var(--glass); border: 1px solid var(--edge); padding: .25rem .75rem; cursor: pointer }
+    & menu button[data-on] { color: var(--ink); background: var(--paper) }
+
+    & ul {
+        /*
+        background: var(--glass);
+        border    : 1px solid var(--edge);
+        */
+        border     : none !important;
+        box-shadow : none !important;
+        display    : flex;
+        align-items: end;
+        gap        : .25rem;
+        margin     : 0;
+        padding    : 0;
+        list-style : none;
+    }
+
+    /* a list scrolls on its own; the goods take the room the modules leave */
+    & > ul { gap: .5rem; padding: .5rem; overflow-x: auto; scrollbar-width: none }
+
+    /* a list fades at an edge with more tiles past it */
+    & > ul[data-more='left']  { mask-image: linear-gradient(to right, transparent, #000 3rem) }
+    & > ul[data-more='right'] { mask-image: linear-gradient(to left, transparent, #000 3rem) }
+    & > ul[data-more='both']  { mask-image: linear-gradient(to right, transparent, #000 3rem, #000 calc(100% - 3rem), transparent) }
+    & > ul:first-of-type { flex: 1; min-width: 0 }
+    & > ul > li > b { display: block; padding: 0 .25rem .25rem; font-size: .625rem; text-transform: uppercase; color: var(--kmuted) }
+    & li li { flex: 0 0 5rem }
+
+    & li button {
+        font          : var(--rounded);
+        color         : var(--paper);
+        background    : rgba(249, 111, 157, 0.25) !important;
+        border        : none !important;
+        box-shadow    : none !important;
+
+        display       : grid;
+        justify-items : center;
+        text-transform: inherit;
+        padding       : .25rem;
+        width         : 100%;
+        cursor        : pointer;
+
+        &:hover       { border-color: var(--orange) }
+        &[data-busy]  { opacity: .5; border-style: dashed }
+    }
+
+    & img      { width: 2.5rem; aspect-ratio: 1 }
+    & button b { font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100% }
+    & s        { font-size: .625rem; color: var(--teal); text-decoration: none }
+}
+
+kit-card form {
+    display: grid;
+    gap    : .5rem;
+
+    & :not(kit-select) > menu { display: flex; gap: .25rem; margin: 0; padding: 0 }
+    & :not(kit-select) > menu button { flex: 1; padding: .25rem; border: 1px solid var(--ink) }
+    & menu button[data-on] { background: var(--ink); color: var(--paper) }
+    & label  { display: flex; justify-content: space-between; align-items: center; color: var(--kmuted) }
+    & input  { width: 5rem; font: inherit; text-align: right; color: var(--ink); background: none; border: 0; border-bottom: 1px solid var(--ink) }
+    & > input { width: auto; text-align: left }
+    & > button { padding: .5rem; background: var(--orange); border: 1px solid var(--orange); font-weight: 600 }
+    & > button:disabled { opacity: .4; cursor: default }
+}
+
+kit-hold {
+    color     : var(--paper);
+    background: var(--glass);
+    border    : 1px solid var(--edge);
+    position  : absolute;
+    z-index   : 1;
+    padding   : .5rem;
+
+    &[hidden] { display: none }
+    &[data-place='exchange'] { top: 4cqw; right: 1.25cqw; width: 16rem }
+    &[data-place='hold']     { top: 50%; left: 50%; translate: -50% -50%; width: 32rem }
+
+    & header { display: flex; justify-content: space-between; margin-bottom: .5rem }
+    & ol     { display: grid; grid-template-columns: repeat(5, 1fr); gap: .25rem; margin: 0; padding: 0; list-style: none }
+    & li     { aspect-ratio: 1; border: 1px dashed var(--edge); display: grid; place-items: center; position: relative }
+    & li[data-gid] { background: rgb(63 182 168 / .18); border: 1px solid var(--teal); cursor: grab }
+    & img    { width: 80% }
+    & small  { position: absolute; right: .25rem; bottom: 0; font-size: .625rem }
+}
+
+main img[data-fly] {
+    top           : 0;
+    left          : 0;
+    position      : absolute;
+    width         : 3rem;
+    z-index       : 6;
+    pointer-events: none;
+}
+
+kit-mark[here] button { background: var(--orange); border-color: var(--orange) }
+
+kit-card progress {
+    accent-color: var(--orange);
+    width       : 100%;
+    height      : .5rem;
+    margin-top  : .5rem;
+}
+
+kit-comms {
+    background: var(--glass);
+    border    : 1px solid var(--edge);
+    top       : 4cqw;
+    right     : 1.25cqw;
+    bottom    : 1.25cqw;
+    position  : absolute;
+    z-index   : 1;
+    display   : grid;
+    grid-template-rows: 1fr auto;
+    width     : 26rem;
+
+    &[hidden] { display: none }
+
+    & ol     { margin: 0; padding: .75rem; list-style: none; overflow-y: auto; display: grid; align-content: start; gap: .5rem }
+    & li     { line-height: 1.5 }
+    & li[data-letter] b { color: var(--teal) }
+    & q      { text-transform: none; quotes: none }
+    & small  { color: var(--kmuted); font-size: .625rem }
+    & form   { display: grid; grid-template-columns: 1fr auto; gap: .5rem; padding: .75rem; border-top: 1px solid var(--edge) }
+    & kit-select { grid-column: 1 / -1 }
+    & textarea { font: inherit; text-transform: none; color: var(--paper); background: none; border: 1px solid var(--edge); resize: none; padding: .25rem }
+    & button { font: inherit; padding: .5rem 1rem; background: var(--orange); border: 1px solid var(--orange); font-weight: 600; cursor: pointer; align-self: end }
+}
+
+kit-select {
+    position: relative;
+    display : inline-block;
+    min-width: 8rem;
+
+    & > button {
+        font      : inherit;
+        color     : inherit;
+        background: none;
+        border    : 1px solid var(--edge);
+        padding   : .25rem 1.75rem .25rem .5rem;
+        width     : 100%;
+        text-align: left;
+        cursor    : pointer;
+    }
+    & > button::after { content: '▾'; position: absolute; right: .625rem }
+
+    & menu {
+        background: var(--glass);
+        border    : 1px solid var(--edge);
+        top       : calc(100% + .25rem);
+        left      : 0;
+        right     : 0;
+        position  : absolute;
+        z-index   : 5;
+        max-height: 16rem;
+        overflow-y: auto;
+        margin    : 0;
+        padding   : .25rem;
+        list-style: none;
+    }
+    &[up] menu { top: auto; bottom: calc(100% + .25rem) }
+
+    & menu button { font: inherit; color: inherit; background: none; border: 0; width: 100%; text-align: left; padding: .25rem .5rem; cursor: pointer }
+    & menu button:hover { background: var(--edge) }
+    & menu button[aria-selected='true'] { color: var(--ink); background: var(--paper) }
+}
+
+kit-log {
+    top     : 2.75rem;
+    left    : 1.25cqw;
+    position: absolute;
+    z-index : 2;
+    width   : 28rem;
+
+    & > button {
+        color        : var(--kmuted);
+        background   : none;
+        border       : 0;
+        font         : .625rem/1.5 var(--mono);
+        text-transform: inherit;
+        text-align   : left;
+        white-space  : nowrap;
+        overflow     : hidden;
+        text-overflow: ellipsis;
+        max-width    : 100%;
+        padding      : 0 .75rem;
+        cursor       : pointer;
+    }
+
+    & ol {
+        background : var(--glass);
+        border     : 1px solid var(--edge);
+        max-height : 60cqh;
+        overflow-y : auto;
+        margin     : .25rem 0 0;
+        padding    : .5rem .75rem;
+        list-style : none;
+        font-size  : .625rem;
+    }
+
+    & li   { padding: .125rem 0; border-bottom: 1px solid rgb(232 223 203 / .08) }
+    & time { color: var(--kmuted); font-variant: tabular-nums }
+    & b    { font-weight: 400; color: var(--teal) }
+    & [data-kind='err'], & [data-kind='err'] b { color: var(--down) }
+    & [data-kind='ok'] b { color: var(--up) }
+}
+
+kit-card {
+    & dd[data-up]    { color: #1f7f72 }
+    & dd[data-down]  { color: #b8352a }
+    & p[data-error]  { color: #b8352a; margin: .5rem 0 0 }
+    & p              { margin: 0 0 .5rem }
+    /* the card's own menus; a select keeps its list */
+    & :not(kit-select) > menu        { display: flex; gap: .25rem; margin: .5rem 0 0; padding: 0 }
+    & :not(kit-select) > menu button { flex: 1; padding: .5rem; border: 1px solid var(--ink) }
+    & ul button      { text-align: left; width: 100%; padding: .25rem 0 }
+    & ul button:hover { color: var(--orange) }
+    & a              { color: inherit }
+}
+
+/* a narrow screen: the places take a row of their own under the top line */
+@container (width < 56rem) {
+    kit-hud header { display: grid; grid-template-columns: auto auto }
+    kit-hud nav { grid-area: 2 / 1 / 3 / 3; justify-self: center; max-width: 100%; overflow-x: auto; scrollbar-width: none }
+    kit-hud header p b { display: inline-block; max-width: 14rem; overflow: hidden; text-overflow: ellipsis; vertical-align: bottom }
+    kit-log   { top: 5.25rem }
+    kit-toast { top: 6rem }
+}

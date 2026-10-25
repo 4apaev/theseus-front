@@ -1,0 +1,78 @@
+{
+  "me": {
+    "pid": "0b1c2d3e-0000-4000-8000-000000000001",
+    "handle": "nobody",
+    "balance": "1000.00"
+  },
+  "traffic": [
+    {
+      "sid": "5a1d0000-0000-4000-8000-000000000002",
+      "name": "sleeper service",
+      "handle": "gurgeh",
+      "status": "docked",
+      "stid": "sol.outpost"
+    },
+    {
+      "sid": "5a1d0000-0000-4000-8000-000000000003",
+      "name": "mistake not",
+      "handle": "zakalwe",
+      "status": "transit",
+      "from": "sol.mars",
+      "to": "barnards.rama",
+      "arrives": "+120s",
+      "years_abs": "6.1"
+    }
+  ],
+  "messages": [],
+  "trades": [],
+  "ship": {
+    "sid": "5a1d0000-0000-4000-8000-000000000001",
+    "name": "the chronic interlude",
+    "hull": "starter",
+    "rig": 1,
+    "capacity": 20,
+    "velocity": 0.6,
+    "acceleration": 0.002,
+    "power": 4,
+    "power_pool": 8,
+    "status": "transit",
+    "from": "sol.outpost",
+    "to": "alpha.exchange",
+    "arrives": "+90s",
+    "years_abs": "7.200000000000001",
+    "years_rel": "5.760000000000002"
+  },
+  "cargo": [
+    {
+      "gid": "ore",
+      "quantity": "6"
+    },
+    {
+      "gid": "electronics",
+      "quantity": "4"
+    }
+  ],
+  "fitted": [
+    {
+      "slot": "power1",
+      "gid": "reactor.mk1"
+    },
+    {
+      "slot": "cruise1",
+      "gid": "cruise.mk1"
+    },
+    {
+      "slot": "maneuver1",
+      "gid": "maneuver.mk1"
+    },
+    {
+      "slot": "cargo1",
+      "gid": "cargo.mk1"
+    },
+    {
+      "slot": "utility1",
+      "gid": "ansible.mk1"
+    }
+  ],
+  "market": []
+}

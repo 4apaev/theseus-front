@@ -2,9 +2,23 @@
     "folders": [
         {
             "path": "../",
-            "name": "💈 theseus front"
+            "name": "💈 front"
         }
     ],
+
+    "settings": {
+
+        "files.exclude": {
+            ".git"        : true,
+            ".github"     : true,
+            "node_modules": true,
+            "dist"        : true,
+        },
+
+        "explorer.fileNesting.patterns": {
+            "package.json":  ".env*, .git*, .editor*, *rc, *.json, .*.yml, *.config.js, *.config.ts",
+        },
+    },
 
     "extensions": {
         "recommendations": [

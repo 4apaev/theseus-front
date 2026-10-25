@@ -9,3 +9,11 @@ dist/
 
 # python build helpers
 __pycache__/
+
+# the toy models, icons and sprites come from ../assets: npm run sync
+public/models/toy/
+public/art/toy/
+
+# playwright output
+test-results/
+playwright-report/

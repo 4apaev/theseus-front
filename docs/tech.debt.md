@@ -15,7 +15,7 @@ should include vscode syntax highlight extension
 
 
 
-```pug
+```jade
 body
     //- stylus/sass like syntax for css
 
@@ -59,7 +59,6 @@ body
         select#list
         -
             const list = [ 'uno', 'dos', 'tres' ]
-
 
         each x of list
             option(value=$x) $i $x

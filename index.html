@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport"    content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#131020">
+    <meta name="theme-color" content="#1d2e2a">
     <meta
         name="description"
         content="theseus — a small vessel in an indifferent universe. an interstellar trading game client."
@@ -17,15 +17,20 @@
         type="image/svg+xml"
         href="/favicon.svg"
     >
+    <style>
+        body { margin: 0; background: #1d2e2a }
+        main {
+            display: block;
+            width  : 100vw;
+            height : 100dvh;
+
+            & canvas { width: 100%; height: 100% }
+        }
+    </style>
 </head>
 
 <body>
-    <theseus-app>
-    </theseus-app>
-
-    <script
-        type="module"
-        src="/src/main.ts"
-    ></script>
+    <main></main>
+    <script type="module" src="/src/shell.ts"></script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 import { test, mock } from 'node:test'
 import assert from 'node:assert/strict'
-import * as parse from '../src/transport/validate.ts'
-import { Pending } from '../src/transport/pending.ts'
+import * as parse from '../src/core/transport/validate.ts'
+import { Pending } from '../src/core/transport/pending.ts'
 
 test('rows coerce postgres numeric strings and normalize nulls', () => {
     const ship = parse.ship({

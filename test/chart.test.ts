@@ -3,8 +3,8 @@ import assert from 'node:assert/strict'
 import {
     systemPosition, orbitRadius, place, sectorNodes, systemNodes, routeEdges, courseEdges,
     orbitRings, progress, moverPoint, heading, shortestPath, gatewayOf, starColor, displayRadius,
-} from '../src/maps/chart.ts'
-import type { Universe, Ship } from '../src/transport/types.ts'
+} from '../src/core/chart.ts'
+import type { Universe, Ship } from '../src/core/transport/types.ts'
 
 const K = { time_scale: 20, light_speed: 299792458, year_seconds: 31557600, currency: '₢' }
 const AU = 1 / 63241.077

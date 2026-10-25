@@ -1,7 +1,6 @@
 import { test } from 'node:test'
 import strict from 'node:assert/strict'
-import { assert, raise, Fail, ValidationError, number, decimal, credits, duration, clamp, countdown, span, fmtDist } from '../src/util.ts'
-import { themePreference } from '../src/theme.ts'
+import { assert, raise, Fail, ValidationError, number, decimal, credits, duration, clamp, countdown, span, fmtDist } from '../src/core/util.ts'
 
 test('assert and raise preserve typed failures, codes and causes', () => {
     const cause = new TypeError('source failure')
@@ -30,10 +29,4 @@ test('formatters retain orbital precision and duration units', () => {
     strict.equal(span(125000), '2m 05s')
     strict.equal(fmtDist(0.000008285), '0.52 au')
     strict.equal(fmtDist(4.32), '4.32 ly')
-})
-
-test('unknown theme preferences fall back to the system setting', () => {
-    for (const value of [ null, undefined, 'blue', '', 1 ]) strict.equal(themePreference(value), 'system')
-    strict.equal(themePreference('dark'), 'dark')
-    strict.equal(themePreference('light'), 'light')
 })

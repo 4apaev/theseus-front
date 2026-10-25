@@ -3,9 +3,9 @@ theseus frontend
 
 ## an orbital trading game
 
-game client built with ts, lit, and three.js.
-ships and port facilities are blender models and procedural geometry.
-no image assets, texture maps or external fonts load at runtime.
+game client built with ts, lit, and three.js, in the toy look: sam's
+toy models from `../assets` on a 3D stage, a kit of toy blocks over it.
+sounds are made in the browser; no sound files load.
 
 the client talks to the theseus gateway. the server owns every rule:
 trade settlement, fitting, travel time, message delivery. the client
@@ -24,33 +24,37 @@ npm run dev
 
 open `http://localhost:5174`. vite proxies `/api`, rest and websocket,
 to the gateway, so the browser sees one origin. set `GATEWAY` to point
-the proxy elsewhere. `npm run check` runs lint, tests, type checking, and
-a production build. `npm run preview` serves that build; it still needs a
+the proxy elsewhere. `npm run check` runs lint, tests, type checking, a
+production build and the screen checks. `npm run preview` serves that build; it still needs a
 proxy in front of it, or same-origin serving.
+
+`?fixture=docked`, `transit` or `full` boots on a recorded session, with
+no backend. `?theme=` picks the palette: meadow (the first), toybox,
+lagoon or postcard. `npm run sync` compresses the toy models of
+`../assets` into `public/models/toy/` and makes the icons and sprites.
+`npm run screens` checks each place against a stored image in
+`test/screens/`; `-- --update-snapshots` stores new ones.
+
+the client before the toy look lives in git tags: `client-1` is the
+panel client, `client-2` the painted look beside the toy look.
 
 ## play
 
 - docking clearance: register a handle to commission a starter ship, or
   log in. the session token stays in local storage.
-- port: who is docked here, and the departures from this station with
-  real distance, arrival time and the years you age. a departure asks
-  for confirmation, then the ship flies on the server's clock.
-- rigging: the hull's slots, the fitted module in each, and the packaged
-  modules in your hold. the gateway previews a fit before you commit.
-  rename the ship here.
-- exchange: live quotes at the current station, and the hold. buy and
-  sell settle on the server; the wallet and hold update from the feed. a
-  station buys back only the modules it stocks; the hold says where each
-  row sells.
-- comms: the station channel, and a private ansible channel to any ship
-  in traffic. a private signal crosses the distance at ansible speed.
-- map: the universe as a chart. systems at their catalogue positions,
-  stations on their orbits, every ship in transit on the server clock.
-  choose a station, read the shortest course for your drive, and depart.
-  see [maps](docs/maps.md).
-- flight stays a local preview of maneuver planning.
-- hull catalog: a visual preview of 36 blender hulls. the server knows
-  one hull today; the choice is a browser preference.
+- port: the station as a toy world, its planet, the dry dock and the gas
+  station, the ships at its pads and at anchor. the traffic list names
+  who is docked here.
+- exchange: the goods of the sector on a plane: who makes a good, who
+  wants it, the price on each route. buy and sell settle on the server.
+- hold: a toy box, a crate per unit of cargo. drag a crate to the tray
+  to sell it.
+- chart: the stars, the routes, the systems. pick a station, read the
+  course, and depart.
+- orbit: plan a burn round the planet. it changes nothing on the server.
+- rigging: the ship over its diagram, a tile per slot. the gateway
+  previews a fit before you commit. rename and skin the ship here.
+- comms: the ansible net, the station channel and letters to a peer.
 
 ## code style and dependency policy
 
@@ -59,7 +63,7 @@ the lint rules are the backend's: `scripts/eslint.rules.js` is a copy of
 onto typescript-eslint and the stylistic plugin. `npm run lint:fix` applies
 them. no runtime dependency on the server repositories is needed. see
 [frontend foundations](docs/frontend.md) for boundaries, styles, themes and
-the style conventions, and [architecture](docs/architecture.md) for the
+the style conventions, and [architecture](../docs/architecture.client.md) for the
 module layout.
 
 the lint tool is typescript-eslint (imported as `tslint`), not the retired tslint package. no prettier preset overrides the project style.
