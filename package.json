@@ -13,7 +13,8 @@
         "tsc"     : "tsc --noEmit",
         "lint"    : "eslint . --fix",
         "test"    : "node --test test/*.test.ts",
-        "check"   : "npm run lint && npm run test && npm run build",
+        "screens" : "playwright test",
+        "check"   : "npm run lint && npm run test && npm run build && npm run screens",
         "sync"    : "sh scripts/sync.sh"
     },
     "dependencies": {
@@ -23,6 +24,8 @@
     },
     "devDependencies": {
         "vite"                    : "^8.3.5",
+        "@playwright/test"        : "^1.64.1",
+        "@gltf-transform/cli"     : "^4.5.1",
         "globals"                 : "^17.13.0",
         "eslint"                  : "^10.13.0",
         "@eslint/js"              : "^10.0.1",

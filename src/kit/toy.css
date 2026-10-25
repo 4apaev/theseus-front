@@ -92,6 +92,19 @@ main[data-toy] {
 
     & kit-toast p { background: var(--toy-panel); border-color: var(--toy-green) }
 
+    /* models in flight: a line along the top edge, as long as the share loaded */
+    &[data-loading]::after {
+        content   : '';
+        position  : absolute;
+        top       : 0;
+        left      : 0;
+        height    : .25rem;
+        width     : calc(var(--loaded, 0) * 100%);
+        background: var(--toy-amber);
+        transition: width .2s ease-out;
+        z-index   : 6;
+    }
+
     /* the toy blocks are taller: the feed and the toasts sit under the top line */
     & kit-log   { top: calc(1cqw + 3rem) }
     & kit-toast { top: calc(1cqw + 3.25rem) }

@@ -46,12 +46,12 @@ steps
 | E1   | comms   | letters and the channel                    | M    | A4    | done ✔ |
 | E2   | comms   | the feed line and the console              | S    | E1    | done ✔ |
 | F1   | parity  | settings, voices, reduced motion           | S    | A2    | done ✔ |
-| F2   | parity  | sounds                                     | S    | B3    |        |
-| F3   | parity  | load and size                              | M    | -     |        |
-| F4   | parity  | screenshot checks                          | M    | all places |        |
-| G1   | switch  | `index.html` boots the shell               | S    | F     |        |
-| G2   | switch  | remove the old code                        | S    | G1    |        |
-| G3   | switch  | the docs                                   | S    | G2    |        |
+| F2   | parity  | sounds                                     | S    | B3    | done ✔ |
+| F3   | parity  | load and size                              | M    | -     | done ✔ |
+| F4   | parity  | screenshot checks                          | M    | all places | done ✔ |
+| G1   | switch  | `index.html` boots the shell               | S    | F     | done ✔ |
+| G2   | switch  | remove the old code                        | S    | G1    | done ✔ |
+| G3   | switch  | the docs                                   | S    | G2    | done ✔ |
 | H    | server  | fuel, holds, crew, the well, the fight     | -     | phase 4, 5 |        |
 | K1   | look    | the station as a small world               | M    | -     | sketch |
 | K2   | look    | ship exhaust                               | S    | K1    |        |
@@ -258,16 +258,22 @@ keep their time, and ambient motion stops.
 the list in [todo.md](todo.md): depart, arrive, buy, sell, install,
 remove, a letter out, a letter in, and a bed of noise per place.
 
+**done 2026-10-25:** `sound.ts` makes every cue with web audio: buy, sell, install, remove, depart, arrive, a letter out, a letter in, and a bed of noise per place. no sound files.
+
 ### F3 - load and size
 
 the 9 station models are 5 to 8 MB each. the sync step compresses them
 (meshopt, quantized). the loader shows progress. a place disposes what
 it made: the memory stays flat after 20 place changes.
 
+**done 2026-10-25:** the sync compresses the toy models with meshopt and quantization: 23 MB to 6.3 MB. names, extras and materials stay. a line on the top edge shows the load. 20 place changes keep the gpu memory flat (a screen check).
+
 ### F4 - screenshot checks
 
 each place on its fixture, in a headless browser, against a stored
 image. it runs in `npm run check`.
+
+**done 2026-10-25:** playwright, headless chromium, `test/places.spec.ts`: 7 places and transit against `test/screens/`, with a fixed date, a seeded random and calm motion.
 
 **done when:** a list of the panel client's features is all ticked in
 the painted client.
@@ -282,10 +288,14 @@ G · the switch
 
 the shell takes the old app's place. `shell.html` goes.
 
+**done 2026-10-25:** the toy look is the only look; `?toy` is gone, `?theme=` stays.
+
 ### G2 - remove the old code
 
 `screens/`, `render/`, `components/`, `maps/atlas-*`, the panel styles,
 `app.ts`, `main.ts`, `prototype/`, and the packages only they use.
+
+**done 2026-10-25:** the old app, the painted look (rooms, chart, globe, robots, the painted sky) and the old art in `public/` are gone. `client-1` and `client-2` keep them.
 
 ### G3 - the docs
 

@@ -8,7 +8,6 @@ art  = root.parent / 'assets'
 
 # the source, the folder in public/art, the size; an icon keeps its set's folder
 SETS = [
-    ('icons/*/*.png', 'icons', 256),
     ('icons/toy/*/*.png', 'toy/icons', 256),
     ('concepts/toy/sprites/*.png', 'toy/sprites', 512),
 ]

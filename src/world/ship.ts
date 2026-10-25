@@ -3,7 +3,7 @@ import type { FittedSlot } from '../core/transport/types.ts'
 import { MODULES } from '../content/fleet.ts'
 import { type Skin, hullSkin } from '../content/skins.ts'
 import { model } from './loader.ts'
-import { glow, liven, paint, rng } from './paint.ts'
+import { liven, rng } from './paint.ts'
 import { Puffs, puffs } from './puffs.ts'
 import { beads, line } from './beads.ts'
 import { picture, tint, toy, wear } from './toy.ts'
@@ -19,8 +19,8 @@ const TOYS: Record<string, string> = { power: 'reactor', cruise: 'cruise-drive',
  * slot and the family. a module glb sits on its socket, an empty slot
  * shows a bare mount. a fit reloads only the slots that changed. the
  * hull scales to its length in metres, whatever unit it was built in.
- * a `toy/` hull wears the toy look and a skin, its modules too, and its
- * drive blows bubbles from its `exhaust` empties.
+ * the hull wears a skin, its modules too, and its drive blows bubbles
+ * from its `exhaust` empties.
  */
 export class Ship {
     readonly group = new T.Group
@@ -28,24 +28,21 @@ export class Ship {
     worn: FittedSlot[] = []
     readonly sockets = new Map<string, T.Object3D>
     private readonly shown = new Map<string, string>
-    private readonly toy: boolean
     private skin: Skin
-    private flame?: T.Sprite
     private puffs?: Puffs
     private thrust = 0
 
     /** `skin`: the player's pick; none, the hull's own. */
-    constructor(name = 'far-treasure', metres = 70, skin?: Skin) {
-        this.toy = name.startsWith('toy/')
+    constructor(name = 'toy/ship-cargo', metres = 70, skin?: Skin) {
         this.skin = skin ?? hullSkin(name)
-        this.ready = model(this.toy ? name : `painted/${ name }`, this.toy ? toy : paint).then(hull => {
-            if (this.toy) wear(hull, this.skin)
+        this.ready = model(name, toy).then(hull => {
+            wear(hull, this.skin)
             const nozzles: T.Object3D[] = []
             hull.traverse(o => {
                 if (o.userData.slot) this.sockets.set(o.userData.slot, o)
                 if (o.name.startsWith('exhaust')) nozzles.push(o)
             })
-            if (this.toy) this.puffs = new Puffs(nozzles, tint('glow'), puffs().map(picture))
+            this.puffs = new Puffs(nozzles, tint('glow'), puffs().map(picture))
             // the puffs go with the ship, whichever place takes it off the stage
             this.group.addEventListener('removed', () => this.puffs?.clear())
             // the belly rests on the group's origin, the middle of the hull above it
@@ -55,10 +52,7 @@ export class Ship {
             hull.position.y -= box.min.y
             if (TOWS[ name ]) void this.tow(TOWS[ name ], hull, box.min.x)
             this.group.scale.setScalar(metres / Math.max(size.x, size.y, size.z))
-            this.flame = glow(0xffc27a, size.y * 1.6)
-            this.flame.position.set(-size.x / 2, size.y / 2, 0)
-            this.flame.material.opacity = 0
-            this.group.add(hull, this.flame)
+            this.group.add(hull)
         })
     }
 
@@ -67,8 +61,7 @@ export class Ship {
         this.worn = rig.filter(f => this.sockets.has(f.slot))
         await Promise.all([ ...this.sockets ].map(([ slot, socket ]) => {
             const gid = rig.find(f => f.slot === slot)?.gid, family = socket.userData.family
-            if (this.toy) return this.mount(slot, socket, gid ? `toy/modules/${ TOYS[ family ] }` : '')
-            return this.mount(slot, socket, `painted/modules/${ gid ? gid.replace('.', '-') : `empty-${ family }` }`)
+            return this.mount(slot, socket, gid ? `toy/modules/${ TOYS[ family ] }` : '')
         }))
     }
 
@@ -95,13 +88,12 @@ export class Ship {
     async wear(skin: Skin) {
         this.skin = skin
         await this.ready
-        if (this.toy) wear(this.group, skin)
+        wear(this.group, skin)
     }
 
-    /** the drive at the stern, 0 to 1: a glow, or bubbles. */
+    /** the drive at the stern, 0 to 1: the bubbles it blows. */
     burn(k: number) {
         this.thrust = k
-        if (this.flame) this.flame.material.opacity = this.toy ? 0 : k * .9
     }
 
     tick(t: number, dt: number) {
@@ -113,11 +105,11 @@ export class Ship {
     private async mount(slot: string, socket: T.Object3D, id: string) {
         if (this.shown.get(slot) === id) return
         this.shown.set(slot, id)
-        const m = id ? await model(id, this.toy ? toy : paint) : void 0
+        const m = id ? await model(id, toy) : void 0
         // a later fit of the same slot wins
         if (this.shown.get(slot) !== id) return
         socket.clear()
-        if (m && this.toy) wear(m, this.skin)
+        if (m) wear(m, this.skin)
         if (m) socket.add(m)
     }
 }

@@ -10,7 +10,7 @@ import type { KitMark } from '../kit/mark.ts'
 import { type At, CELL, Plane, along, wire } from '../world/plane.ts'
 import type { Stage } from '../world/stage.ts'
 import { toon, picture } from '../world/toy.ts'
-import { compose, fill } from './comms.ts'
+import { compose, fill } from './letters.ts'
 import type { Place } from './router.ts'
 
 interface Node { at: At, up?: string }

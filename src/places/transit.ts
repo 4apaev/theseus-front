@@ -10,8 +10,8 @@ import type { Place } from './router.ts'
 
 /**
  * our ship underway: alone in the sky, its card pinned beside it. the
- * drive burns while the ship speeds up and brakes, and is dark while it
- * coasts; an in-system leg burns the whole way. the card counts down
+ * drive burns while the ship speeds up and brakes, and burns low while
+ * it coasts; an in-system leg burns the whole way. the card counts down
  * each second. at zero it waits: the arrival event ends the leg.
  */
 export class Transit implements Place {
@@ -23,17 +23,16 @@ export class Transit implements Place {
     private untick?: () => void
     private shown = 0
 
-    constructor(stage: Stage, kit: Kit, hull?: string) {
+    constructor(stage: Stage, kit: Kit) {
         this.stage = stage
         this.kit   = kit
-        this.hull  = hull ?? fleet.player
+        this.hull  = fleet.player
     }
 
     enter(s: Session) {
         const ship = this.ship = new Ship(this.hull, HULLS[ this.hull ], mySkin())
         this.session = s
         void ship.fit(s.fitted)
-        this.stage.sky.show()
         this.stage.scene.add(ship.group)
         // from the side, a little behind: the tail of bubbles shows
         this.stage.view(new T.Vector3(-20, 10, 0), 80)
@@ -61,8 +60,8 @@ export class Transit implements Place {
         ship.group.rotation.z = Math.sin(t / 7) * .02
         const f = progress(s.ship, s.universe.constants, Date.now())
         const route = s.universe.routes.find(r => r.from === s.ship?.from && r.to === s.ship?.to)
-        // a toy ship coasts on a thin trail of bubbles; a painted one goes dark
-        ship.burn(!route || route.c < 1 || f < .05 || f > .95 ? 1 : this.hull.startsWith('toy/') ? .25 : 0)
+        // the ship coasts on a thin trail of bubbles
+        ship.burn(!route || route.c < 1 || f < .05 || f > .95 ? 1 : .25)
         if (Date.now() - this.shown > 1000) this.card()
         this.kit.card.at = this.stage.anchor(ship.group.position)
     }

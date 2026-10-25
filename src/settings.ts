@@ -1,4 +1,4 @@
-/** the player's settings, in this browser only: a voice for arrivals (empty: none), the chime, calm motion, the ship's skin. */
+/** the player's settings, in this browser only: a voice for arrivals (empty: none), the sounds, calm motion, the ship's skin. */
 export interface Settings { voice: string, sound: boolean, calm: boolean, skin: string }
 
 const KEY = 'theseus.settings'

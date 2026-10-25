@@ -10,11 +10,10 @@ dist/
 # python build helpers
 __pycache__/
 
-# the painted models come from ../assets/exports/painted: npm run sync
-public/models/painted/
-public/models/kits/
+# the toy models, icons and sprites come from ../assets: npm run sync
 public/models/toy/
-# the place art and the web icons: npm run sync makes them from ../assets
-public/art/places/
-public/art/icons/
 public/art/toy/
+
+# playwright output
+test-results/
+playwright-report/

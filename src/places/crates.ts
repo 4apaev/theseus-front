@@ -56,7 +56,6 @@ export class Crates implements Place {
     }
 
     enter(s: Session) {
-        this.stage.sky.show()
         this.stage.scene.add(this.group)
         this.kit.view.hidden = false
         this.untick = this.stage.tick(t => this.tick(t))

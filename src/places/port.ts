@@ -3,12 +3,10 @@ import { type Session, dockedAt, station } from '../core/session.ts'
 import { type Stage } from '../world/stage.ts'
 import { HULLS, fleet, seedOf } from '../content/fleet.ts'
 import { mySkin } from '../content/skins.ts'
-import { skinOf, toyStationOf, viewOf } from '../content/stations.ts'
-import { globe } from '../world/globe.ts'
+import { skinOf, toyStationOf } from '../content/stations.ts'
 import { model } from '../world/loader.ts'
 import { liven } from '../world/paint.ts'
 import { tint, toon, toy, wear } from '../world/toy.ts'
-import { Robot } from '../world/robot.ts'
 import { Ship } from '../world/ship.ts'
 import { type Berth, face, inbound } from '../world/visitor.ts'
 import type { Effect } from '../core/effects.ts'
@@ -22,9 +20,9 @@ type Found = NonNullable<ReturnType<Anchorage[ 'find' ]>>
 
 /*
     the home place: the station in space,
-    the ship at its berth, robots on the deck,
+    the ship at its berth,
     other ships at anchor round the station,
-    the planet below, the sun of the system.
+    its planet and the dry dock and gas station between them.
     the camera orbits the station. a click on a ship,
     or the s key for ours, opens its card. the t key
     lists the traffic: the players docked here, the npc ships.
@@ -36,7 +34,6 @@ export class Port {
     private readonly stage: Stage
     private readonly kit: Kit
     private readonly hull: string
-    private readonly round: boolean
     private readonly made: T.Object3D[] = []
 
     private untick?: () => void
@@ -53,12 +50,10 @@ export class Port {
     private land?: { path: T.CubicBezierCurve3, t0: number, end: T.Quaternion }
     private visit = 0
 
-    /** `hull`: a far treasure variant to compare, `far-treasure-b`; a `toy/` hull docks at sam's toy station. `round`: the station as a small world. */
-    constructor(stage: Stage, kit: Kit, hull?: string, round = false) {
+    constructor(stage: Stage, kit: Kit) {
         this.stage = stage
         this.kit   = kit
-        this.hull  = hull ?? fleet.player
-        this.round = round
+        this.hull  = fleet.player
     }
 
     async enter(s: Session) {
@@ -66,13 +61,10 @@ export class Port {
         const visit = ++this.visit
 
         const at    = station(s, s.ship?.stid)
-        const sys   = s.universe?.systems.find(x => x.sysid === at?.system)
-        const v     = viewOf(at?.stid ?? '', sys?.sysid ?? 'sol', sys?.star ?? 'G')
-        const toyed = this.hull.startsWith('toy/')
-        const hull  = toyed ? await model(toyStationOf(at?.stid ?? ''), toy).catch(() => model('toy/station', toy)) : this.round ? await globe(seedOf(at?.stid ?? '')) : await model(v.model)
+        const hull  = await model(toyStationOf(at?.stid ?? ''), toy).catch(() => model('toy/station', toy))
 
         if (visit !== this.visit) return // the ship left while the station loaded
-        if (toyed) wear(hull, skinOf(at?.stid ?? ''))
+        wear(hull, skinOf(at?.stid ?? ''))
 
         const ship = this.ship = new Ship(this.hull, HULLS[ this.hull ], mySkin())
 
@@ -86,7 +78,7 @@ export class Port {
 
         if (this.landing) this.approach(ship.group)
 
-        const actors = [ ship, ...toyed ? [] : robots(hull) ]
+        const actors = [ ship ]
         const groups = actors.map(a => a.group)
 
         st.scene.add(hull, ...groups)
@@ -100,21 +92,15 @@ export class Port {
         yard.fill(3)
         st.scene.add(yard.group)
         this.made.push(yard.group)
-        if (toyed) {
-            const world = planet(box, seedOf(at?.stid ?? ''))
-            st.scene.add(world)
-            this.made.push(world)
-            void this.lagrange(box, world.position)
-            void this.dress(world, seedOf(at?.stid ?? ''))
-        }
+        const world = planet(box, seedOf(at?.stid ?? ''))
+        st.scene.add(world)
+        this.made.push(world)
+        void this.lagrange(box, world.position)
+        void this.dress(world, seedOf(at?.stid ?? ''))
 
-        // a small world needs room round it: the lens fits a deck, not a ball
-        this.home  = [ box.getCenter(new T.Vector3), box.getSize(new T.Vector3).length() / 2 * (this.round ? 1.3 : 1) ]
+        this.home  = [ box.getCenter(new T.Vector3), box.getSize(new T.Vector3).length() / 2 ]
         this.marks = spots(hull, ship.group.position).map(s => ({ at: s.at, el: this.kit.spot(s.place) }))
 
-        // the toy planet is in the scene, not in the sky
-        if (toyed) st.sky.show()
-        else st.sky.show(v.planet, v.sun)
         st.view(...this.home)
 
         this.untick = st.tick((t, dt) => {
@@ -176,7 +162,6 @@ export class Port {
         this.made.length = 0
         this.ship = void 0
         this.yard = void 0
-        this.stage.sky.show()
     }
 
     // our ship just arrived: it lands on its berth, from 10 km out
@@ -307,27 +292,4 @@ function pads(hull: T.Object3D) {
         found.push({ at: o.getWorldPosition(new T.Vector3), bow: new T.Vector3(1, 0, 0).applyQuaternion(q), fits: SIZES[ o.userData.size ] ?? SIZES.medium })
     })
     return found
-}
-
-// a deckhand walks the first half
-// of the walk points, a porter the rest
-function robots(hull: T.Object3D) {
-
-    const walk: T.Vector3[] = []
-    hull.traverse(o => {
-        if (/^walk_[a-z]$/.test(o.name))
-            walk[ o.name.charCodeAt(5) - 97 ] = o.getWorldPosition(new T.Vector3)
-    })
-    const n = walk.length
-    return n < 2
-        ? []
-        : [
-            walker('deckhand', walk[ 0 ], walk[ Math.floor(n / 2) ]),
-            walker('porter', walk[ Math.floor(n / 2) ], walk[ n - 1 ]),
-        ]
-}
-
-// a robot walks about 1.25 m/s; its period is the way there and back
-function walker(name: string, a: T.Vector3, b: T.Vector3) {
-    return new Robot(name, a, b, a.distanceTo(b) * 1.6)
 }

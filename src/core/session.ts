@@ -1,4 +1,3 @@
-import type { ModuleId } from '../content/catalogue.ts'
 import type {
     Player, Ship, CargoRow, FittedSlot, MarketRow, TradeRow, MessageRow,
     TrafficRow, Universe, Route, Station, Good, HullSpec, Constants,
@@ -182,22 +181,3 @@ export function etaMs(ship: Ship, now = Date.now()): number {
 }
 
 // ── rendering ────────────────────────────────────────────────
-
-/**
- * the renderer knows 3 visual modules. mk1 modules are net-zero
- * placeholders, so only an upgrade or a transceiver shows.
- */
-const VISUAL: Record<string, ModuleId> = {
-    'cargo.mk2'   : 'cargo',
-    'cruise.mk2'  : 'drive',
-    'maneuver.mk2': 'drive',
-    'ansible.mk1' : 'ansible',
-}
-
-export function visualModule(gid?: string): ModuleId | undefined {
-    return gid ? VISUAL[ gid ] : void 0
-}
-
-export function visualFitted(fitted: FittedSlot[]): ModuleId[] {
-    return [ ...new Set(fitted.flatMap(f => visualModule(f.gid) ?? [])) ]
-}

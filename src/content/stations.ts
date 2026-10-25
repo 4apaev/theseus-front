@@ -1,17 +1,9 @@
 import { SKINS } from './skins.ts'
 
 /**
- * how a station looks from space: its model, the planet below it, the
- * sun of its system. a model is one of sam's 9 painted kits; it carries
- * its own `berth` for the ship and `walk_*` points for the deck robots.
- * a planet is a map in `art/planets/`, a sun a class in `art/suns/`.
+ * how a station looks: its kind, from the kit it belongs to. each kind
+ * has sam's toy model, its small world seen from above, and a skin.
  */
-export interface View {
-    model : string
-    planet: string
-    sun   : string
-}
-
 const KITS: Record<string, string[]> = {
     outpost: [ 'sol.outpost' ],
     yards  : [ 'sol.ganymede' ],
@@ -22,16 +14,6 @@ const KITS: Record<string, string[]> = {
     gas    : [ 'sol.titan', 'ran.aegir' ],
     mine   : [ 'sol.mercury', 'procyon.ember', 'sirius.technora' ],
     relay  : [ 'wolf.reach', 'ran.rorschach', 'ross.beacon', 'lacaille.relay' ],
-}
-
-// sol's stations orbit their own worlds; elsewhere one world per system
-const SOL: Record<string, string> = {
-    'sol.mercury' : 'mercury',
-    'sol.venus'   : 'venus',
-    'sol.outpost' : 'earth',
-    'sol.mars'    : 'mars',
-    'sol.ganymede': 'jupiter',
-    'sol.titan'   : 'saturn',
 }
 
 // the toy look's small world for each kit: sam's sprites in `art/toy/sprites/`
@@ -50,13 +32,3 @@ export const toyStationOf = (stid: string) => `toy/station-${ TOY[ kitOf(stid) ]
 
 /** the toy look's picture of a station: a small world, seen from above. */
 export const worldOf = (stid: string) => `${ import.meta.env.BASE_URL }art/toy/sprites/station-${ TOY[ kitOf(stid) ] }.webp`
-
-/** `star` is the system's spectral type: `G2V yellow dwarf`. */
-export function viewOf(stid: string, sysid: string, star: string): View {
-    const kit = kitOf(stid)
-    return {
-        model : `painted/stations/${ kit }`,
-        planet: SOL[ stid ] ?? sysid.replace(/\.\d+$/, '').replace('.', '-'),
-        sun   : star[ 0 ].toLowerCase(),
-    }
-}

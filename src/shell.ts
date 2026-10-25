@@ -1,25 +1,20 @@
 import { fixture  } from './content/fixtures.ts'
 import { palette  } from './content/palettes.ts'
-import { toyIcons } from './content/places.ts'
-import { toyFleet } from './content/fleet.ts'
 import { useSkin  } from './content/skins.ts'
 
 import { Fail          } from './core/util.ts'
 import { GameClient    } from './core/client.ts'
-import { stationName   } from './core/session.ts'
+import { type Session, stationName } from './core/session.ts'
 import { FixtureClient } from './core/fixture.ts'
 
 import { Stage           } from './world/stage.ts'
+import { loads           } from './world/loader.ts'
 import { hex, usePalette } from './world/toy.ts'
 
 import { Bay      } from './places/bay.ts'
 import { Net      } from './places/net.ts'
-import { Hold     } from './places/hold.ts'
 import { Port     } from './places/port.ts'
 import { Atlas    } from './places/atlas.ts'
-import { Chart    } from './places/chart.ts'
-import { Comms    } from './places/comms.ts'
-import { Exchange } from './places/exchange.ts'
 import { Transit  } from './places/transit.ts'
 import { Market   } from './places/market.ts'
 import { Crates   } from './places/crates.ts'
@@ -31,52 +26,53 @@ import { mount, theme         } from './kit/index.ts'
 
 import { html                 } from 'lit'
 import { save, settings       } from './settings.ts'
-import { sound, speak, voices } from './util.speak.ts'
+import { speak, voices        } from './util.speak.ts'
+import { Sounds               } from './sound.ts'
 
 /**
- * the new shell, beside the old app until it replaces it: boot the
- * client, mount the stage and the kit, and let the router show one
- * place. in transit only the sky shows, until the flight place exists.
- * `?fixture=docked` needs no gateway. without it the shell logs in on
- * the gateway, or reuses a saved token. `&ship=b` shows a hull variant,
- * `&globe` the station as a small world. `&toy` is the toy look, in
- * `&theme=meadow` (the first), `toybox`, `lagoon` or `postcard`.
+ * the client: boot it, mount the stage and the kit, and let the router
+ * show one place. in transit only the sky shows, until the flight place
+ * exists. `?fixture=docked` needs no gateway. without it the client logs
+ * in on the gateway, or reuses a saved token. `?theme=` picks the
+ * palette: meadow (the first), toybox, lagoon or postcard.
  */
 const query  = new URLSearchParams(location.search)
 const name   = query.get('fixture')
-const hull   = query.get('ship')
 const main   = document.querySelector('main') as HTMLElement
 const stage  = new Stage(main)
 const kit    = mount(main)
-const toy    = query.has('toy') ? palette(query.get('theme')) : void 0
+const toy    = palette(query.get('theme'))
+const sounds = new Sounds
 
 useSkin(settings.skin)
 
-// the toy look, before the places: they read the fleet and the icons
-if (toy) {
-    theme(main, query.get('theme') ?? 'meadow', toy)
-    stage.backdrop(hex(toy.space))
-    usePalette(toy)
-    toyFleet()
-    toyIcons()
-}
+// the dev server lets a test, or the console, reach the stage
+if (import.meta.env.DEV) Object.assign(globalThis, { stage })
 
-const variant = hull ? `far-treasure-${ hull }` : void 0
-const port   = new Port(stage, kit, variant, query.has('globe'))
+// the palette, before the places: they read its colours
+theme(main, query.get('theme') ?? 'meadow', toy)
+stage.backdrop(hex(toy.space))
+usePalette(toy)
+
 const client = name
     ? new FixtureClient(() => fixture(name))
     : new GameClient
 
 const router = new Router({
-    port,
-    transit : new Transit(stage, kit, variant),
-    exchange: toy ? new Market(stage, kit, client, toy) : new Exchange(stage, kit, client),
-    rigging : new Bay(stage, kit, client, toy ?? palette()),
-    chart   : toy ? new Atlas(stage, kit, client, toy)  : new Chart(stage, kit, client),
-    comms   : toy ? new Net(stage, kit, client, toy)    : new Comms(stage, kit, client),
-    hold    : toy ? new Crates(stage, kit, toy)         : new Hold(stage, kit),
-    orbit   : new Orbit(stage, kit, toy ?? palette()),
+    port    : new Port(stage, kit),
+    transit : new Transit(stage, kit),
+    exchange: new Market(stage, kit, client, toy),
+    rigging : new Bay(stage, kit, client, toy),
+    chart   : new Atlas(stage, kit, client, toy),
+    comms   : new Net(stage, kit, client, toy),
+    hold    : new Crates(stage, kit, toy),
+    orbit   : new Orbit(stage, kit, toy),
 })
+
+// a line at the top grows while models load, and goes when all are in
+loads.onProgress = (_, done, total) => main.style.setProperty('--loaded', String(done / total))
+loads.onStart    = () => main.toggleAttribute('data-loading', true)
+loads.onLoad     = () => main.toggleAttribute('data-loading', false)
 
 // a label lights under the pointer; a closed card lets go of its thing
 hover(stage, main)
@@ -85,6 +81,7 @@ kit.card.addEventListener('close', () => main.querySelectorAll('kit-mark[selecte
 router.onPlace   = place => {
     kit.hud.place = place
     stage.arrive()
+    sounds.hum(place)
 }
 client.onNotify  = (text, kind) => kit.toast.say(text, kind === 'err')
 client.onAuth    = authed => kit.auth.hidden = authed
@@ -105,18 +102,24 @@ client.onChange  = s => {
     kit.hud.session = s
     kit.log.lines   = s.log
     router.sync(s)
+    if (rigged === void 0 || filled(s) === rigged) return
+    sounds.cue(filled(s) > rigged ? 'install' : 'remove')
+    rigged = void 0
 }
 client.boot()
 
 // ── settings and arrivals ────────────────────────────────────
 
 stage.calm = settings.calm
+sounds.on  = settings.sound
 
 kit.hud.addEventListener('settings', () => {
 
     const pick = (patch: Partial<typeof settings>) => {
         save(patch)
         stage.calm = settings.calm
+        sounds.on  = settings.sound
+        sounds.hum(kit.hud.place ?? '')
     }
 
     const onChange = (e: Event) => {
@@ -129,16 +132,21 @@ kit.hud.addEventListener('settings', () => {
     kit.card.show('settings', html`
         <form @change=${ onChange }>
             <label>voice <kit-select name="voice" .choices=${ voice } .value=${ settings.voice }></kit-select></label>
-            <label>chime       <input type="checkbox" name="sound" ?checked=${ settings.sound }></label>
+            <label>sounds      <input type="checkbox" name="sound" ?checked=${ settings.sound }></label>
             <label>calm motion <input type="checkbox" name="calm"  ?checked=${ settings.calm  }></label>
         </form>`)
     void kit.card.updateComplete.then(() => kit.card.at = [ main.clientWidth, 60 ])
 })
 
-// our ship lands: the chime, and a voice says where
+// the cues: a trade, a flight, a letter. a rig change waits for the new rig, then hears a module on or off
+let rigged: number | undefined
+const filled = (s: Session) => s.fitted.filter(f => f.gid).length
+
 client.onEffect = e => {
     router.effect(e)
-    if (e.kind !== 'arrive' || !e.mine) return
-    if (settings.sound) void sound.play().catch(() => { /* autoplay blocked */ })
-    if (settings.voice) speak(`arrived at ${ stationName(client.session, e.stid) }`, voices[ settings.voice ])
+    if (e.kind === 'cargo') sounds.cue(e.delta > 0 ? 'buy' : 'sell')
+    if (e.kind === 'letter') sounds.cue(e.in ? 'letterIn' : 'letterOut')
+    if (e.kind === 'rig') rigged ??= filled(client.session)
+    if ((e.kind === 'depart' || e.kind === 'arrive') && e.mine) sounds.cue(e.kind)
+    if (e.kind === 'arrive' && e.mine && settings.voice) speak(`arrived at ${ stationName(client.session, e.stid) }`, voices[ settings.voice ])
 }

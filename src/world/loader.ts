@@ -1,22 +1,24 @@
 import * as T from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
-import { paint } from './paint.ts'
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js'
+import { toy } from './toy.ts'
 
-const gltf = new GLTFLoader
+/** the models in flight: `onLoading` hears the share loaded, 1 when all are in. */
+export const loads = new T.LoadingManager
+const gltf = new GLTFLoader(loads).setMeshoptDecoder(MeshoptDecoder)
 const cache = new Map<string, Promise<T.Object3D>>
 
 /**
- * a painted model by its path in `models/`: `painted/far-treasure`, or
- * a kit's `.gltf` by its full name. `look` dresses it: the painted look,
- * or the toy look.
+ * a model by its path in `models/`: `toy/ship-cargo`. `look` dresses
+ * it: the toy look, or the model as built.
  * one fetch each; a failed fetch leaves the cache, so the next call retries.
  * an instance shares geometry and materials. a blinking lamp gets its own.
  */
-export function model(id: string, look: (root: T.Object3D) => T.Object3D = paint): Promise<T.Object3D> {
+export function model(id: string, look: (root: T.Object3D) => T.Object3D = toy): Promise<T.Object3D> {
     const key = `${ look.name } ${ id }`
     let found = cache.get(key)
     if (!found) {
-        found = gltf.loadAsync(`${ import.meta.env.BASE_URL }models/${ /\.gltf$/.test(id) ? id : `${ id }.glb` }`).then(g => look(g.scene))
+        found = gltf.loadAsync(`${ import.meta.env.BASE_URL }models/${ id }.glb`).then(g => look(g.scene))
         cache.set(key, found)
         found.catch(() => cache.delete(key))
     }

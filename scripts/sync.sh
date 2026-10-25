@@ -7,19 +7,17 @@
 
 cd "$(dirname "$0")/.." || exit 1
 a=../assets
-opt="-a --itemize-changes $1"
 
-mkdir -p public/art public/models/painted/stations
-
-# every painted model, the stations, the hulls and the modules. icarus waits: the client shows none yet
-rsync $opt -m --exclude='icarus/' --include='*/' --include='*.glb' --exclude='*' $a/exports/painted/ public/models/painted/
-rsync $opt --include='*.webp' --exclude='*' $a/planets/ public/art/planets/
-rsync $opt --include='*.webp' --exclude='*' $a/suns/ public/art/suns/
-# the places: the plate, the parts and the kit, no sources
-rsync $opt -m --include='*/' --include='plate.webp' --include='parts/*.webp' --include='kit.json' --exclude='*' $a/places/ public/art/places/
-# sam's toy models
-rsync $opt -m --include='*/' --include='*.glb' --exclude='*' $a/exports/toy/ public/models/toy/
-# the cc0 kits: kaykit, kenney, quaternius
-rsync $opt -m --include='*/' --include='*.gltf' --include='*.glb' --include='*.bin' --include='*.png' --exclude='*' $a/kits/ public/models/kits/
+# sam's toy models, meshopt compressed and quantized. a model is redone
+# only when it is missing or older than its export. names, extras and
+# materials stay: the client reads its berths, sockets and roles by them
+find $a/exports/toy -name '*.glb' | while read -r src; do
+    out=public/models/toy/${src#"$a/exports/toy/"}
+    [ "$out" -nt "$src" ] && continue
+    echo "model $out"
+    [ "$1" = -n ] && continue
+    mkdir -p "$(dirname "$out")"
+    npx --no-install gltf-transform meshopt "$src" "$out" --level medium > /dev/null || exit 1
+done
 
 [ "$1" = -n ] || python3 scripts/icons.py

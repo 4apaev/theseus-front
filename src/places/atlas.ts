@@ -12,7 +12,7 @@ import { Ship } from '../world/ship.ts'
 import type { Stage } from '../world/stage.ts'
 import { arc, beads, round, wave } from '../world/beads.ts'
 import { picture, toon } from '../world/toy.ts'
-import { LY, frame, onOrbit, point } from './chart.ts'
+import { LY, frame, onOrbit, point } from './sector.ts'
 import { Click } from './click.ts'
 import { Course } from './course.ts'
 import type { Place } from './router.ts'
@@ -63,7 +63,6 @@ export class Atlas implements Place {
 
     enter(s: Session) {
         this.sync(s)
-        this.stage.sky.show()
         this.stage.scene.add(this.group)
         this.kit.view.hidden = false
         this.untick = this.stage.tick((t, dt) => this.tick(t, dt))

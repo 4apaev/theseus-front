@@ -9,6 +9,7 @@ export type Effect =
     | { kind: 'depart', sid: string, mine: boolean }
     | { kind: 'arrive', sid: string, stid: string, mine: boolean }
     | { kind: 'rig', slot: string }
+    | { kind: 'letter', in: boolean }
 
 type EffectFn = (s: Session, p: Row) => Effect[]
 
@@ -29,4 +30,7 @@ const table: Record<string, EffectFn> = {
     'ship.departed.v1'   : (s, p) => [{ kind: 'depart', sid: text(p, 'sid'), mine: mine(s, p) }],
     'ship.arrived.v1'    : (s, p) => [{ kind: 'arrive', sid: text(p, 'sid'), stid: text(p, 'stid'), mine: mine(s, p) }],
     'ship.rig.changed.v1': (s, p) => own(s, p, () => ({ kind: 'rig', slot: text(p, 'slot') })),
+    // a letter we send goes out; one delivered to us comes in. the channel stays quiet
+    'comms.sent.v1'      : (s, p) => p.to && p.from === s.me?.pid ? [{ kind: 'letter', in: false }] : [],
+    'comms.delivered.v1' : (s, p) => p.to === s.me?.pid ? [{ kind: 'letter', in: true }] : [],
 }

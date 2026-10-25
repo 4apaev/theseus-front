@@ -3,27 +3,24 @@
 ## boundaries
 
 `core/client.ts` owns the session: auth, hydration, commands, and the feed.
-`app.ts` owns navigation, the hull preview choice, and notifications.
-`src/screens/` contains lit components for auth, port, rigging, exchange,
-comms, and flight. each keeps its own input state when hidden and
-releases its rendered scenes. a screen renders one immutable session
-snapshot and calls commands on the client. it never computes the next
-state: the server does, and `core/events.ts` folds the result in from the
-feed. the map is its own screen under `src/maps/`. see
-[architecture](../../docs/architecture.client.md) for the full layout.
+`shell.ts` boots the client, mounts the stage and the kit, and lets the
+router show one place. a place renders one immutable session snapshot
+and calls commands on the client. it never computes the next state: the
+server does, and `core/events.ts` folds the result in from the feed.
+`core/effects.ts` names what happened, for the places to animate and for
+the sounds. see [architecture](../../docs/architecture.client.md) for the
+full layout.
 
-the painted client grows beside it, from `shell.html` and `src/shell.ts`:
-`src/world/` (the stage and its orbit camera, the 360° sky, the paint,
-the loader, the ship, the robots), `src/places/` (the port) and
-`src/content/` (the station views, the fixtures). it replaces `src/screens/`, `src/render/` and
-`src/components/` place by place.
-
-`src/components/` provides native-control template components, shared
-ship viewport composition, a panel surface, theme selection, and the hull
-catalog. template buttons and fields produce real buttons, labels,
-selects and inputs: disabled behavior, keyboard activation, label
-association and form submission stay native. `icons.ts` is the shared
-svg icon component and path catalog.
+- `src/world/`: the stage and its orbit camera, the sky, the loader, the
+  toy look, the ship, the plane of the diagrams.
+- `src/places/`: one class per place: port, transit, market (the
+  exchange), crates (the hold), atlas (the chart), orbit, bay (the
+  rigging), net (comms), and their helpers.
+- `src/kit/`: the lit elements over the stage: the top line, cards,
+  the tray, toasts, the feed, the dropdown.
+- `src/content/`: the fleet, the station kinds, the palettes, the skins,
+  the icons, the fixtures.
+- `sound.ts`: the cues and the bed of each place, made with web audio.
 
 `src/core/util.ts` contains browser-safe `Fail`, `ValidationError`, `assert`,
 `raise`, number, credit, distance and time formatting, clamping, and
@@ -32,38 +29,14 @@ as garage's do.
 
 ## styling
 
-`src/styles/styles.css` is an import manifest. the ordered styles are:
+`src/kit/kit.css` holds the kit's layout; `src/kit/toy.css` holds the toy
+look over it, under `main[data-toy]`. the palette of `?theme=` sets the
+`--toy-*` variables on `main`; the 3D materials read the same palette by
+role (`toy-red` … `toy-glow`). styles use native css nesting and relative
+units. component states and descendants belong under their owner.
 
-- tokens: semantic theme colors, spacing, type scales, weights, and control sizes.
-- reset: document defaults, focus visibility, hidden content, reduced motion.
-- typography: local font faces and semantic headings and inline text.
-- forms and panels: shared native controls and surface and readout rules.
-- layout and scene: shell, navigation, camera, and world annotations.
-- station, comms, flight, fleet, atlas, lem-port, client: screen layout and artwork.
-- components: shared component contracts and responsive adjustments.
-
-styles use native css nesting and relative layout and type units.
-component states and descendants belong under their owner. colors are
-defined in tokens; renderer material colors belong to the models. canvas
-annotations read the same theme tokens as the interface.
-
-headings request local sf pro rounded medium, semibold, and bold. other
-text requests sf mono. the project does not distribute apple font files;
-the declared fallback stacks apply where those fonts are unavailable.
-
-inline semantics are explicit: `em` and `i` emphasize prose, `small` is
-supporting text or units, `samp` is machine status, `kbd` is keyboard
-input, `mark` is a highlight, `time` is a timestamp, `dl` is a readout.
-decorative geometry uses aria-hidden spans. all icon-only controls have
-names.
-
-## themes
-
-use the theme select in the header: system, dark, or light. an explicit
-choice persists in local storage; system follows the operating system.
-denied storage falls back to a session-only choice. changes synchronize
-across tabs and redraw canvas annotations. screen state and game data
-are independent of theme state.
+the rounded sans is local sf pro rounded, with a system fallback. the
+project does not distribute apple font files.
 
 ## code style
 
@@ -80,7 +53,7 @@ one-line doc comment where its name does not say everything.
 
 ## validation
 
-`npm run check` runs eslint, the node tests, type checking, and the
-production build. browser checks cover login, navigation, buying,
-fitting, messaging, departing from the port and the map, the hull
-catalog, theme persistence, and narrow layouts, against a live gateway.
+`npm run check` runs eslint, the node tests, type checking, the
+production build, and the screen checks: each place on its fixture in
+headless chromium against `test/screens/`, and 20 place changes that
+must keep the gpu memory flat.

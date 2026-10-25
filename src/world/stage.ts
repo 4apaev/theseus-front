@@ -107,10 +107,9 @@ export class Stage {
         this.orbit.update()
     }
 
-    /** a plain backdrop of one colour in place of the ether; the stars stay. */
+    /** the backdrop: one colour behind the stars. */
     backdrop(color: number) {
         this.gl.setClearColor(raw(color))
-        this.sky.plain()
     }
 
     /** fly in 0.8 s to orbit `target`, `size` metres across, from the same side. */

@@ -1,32 +1,10 @@
 /**
- * the ships at a port. a hull is its model in `models/painted/` and its
- * length in metres: the client scales the model to that length, so a
- * hull built in any unit fits. players fly the far treasure; the npc
- * ships fly the rest.
+ * the ships at a port. a hull is sam's toy model in `models/toy/` and
+ * its length in metres: the client scales the model to that length, so
+ * a hull built in any unit fits. players fly the cargo ship; the npc
+ * ships fly every hull.
  */
 export const HULLS: Record<string, number> = {
-    'far-treasure'       : 70,
-    'far-treasure-b'     : 70,
-    hauler               : 130,
-    nobody               : 60,
-    'patrol-cutter'      : 40,
-    tug                  : 30,
-    'hangar/freighter'   : 140,
-    'hangar/tanker'      : 150,
-    'hangar/liner'       : 170,
-    'hangar/transport'   : 90,
-    'hangar/colony'      : 200,
-    'hangar/research'    : 110,
-    'hangar/corvette'    : 60,
-    'hangar/frigate'     : 120,
-    'hangar/battleship'  : 260,
-    'hangar/prison'      : 150,
-    'hangar/yacht'       : 40,
-    'hangar/tug'         : 35,
-    'hangar/police-light': 45,
-    'hangar/police-heavy': 90,
-    'hangar/police-patrol': 50,
-    'hangar/police-inspector': 40,
     'toy/ship-cargo'     : 70,
     'toy/ship-military'  : 90,
     'toy/ship-industrial': 80,
@@ -49,15 +27,8 @@ export const HULLS: Record<string, number> = {
     'toy/ship-repair-tender': 70,
 }
 
-export const NPC = Object.keys(HULLS).filter(h => !/^(far-treasure|toy\/)/.test(h))
-
-/** who flies what: players a far treasure, npc ships the rest. */
-export const fleet = { player: 'far-treasure', npc: NPC }
-
-/** the toy look flies sam's 4 toy ships; players fly the cargo ship. */
-export function toyFleet() {
-    Object.assign(fleet, { player: 'toy/ship-cargo', npc: Object.keys(HULLS).filter(h => h.startsWith('toy/')) })
-}
+/** who flies what: players the cargo ship, npc ships every hull. */
+export const fleet = { player: 'toy/ship-cargo', npc: Object.keys(HULLS) }
 
 /** the modules of each socket family. an empty mount is a choice too. */
 export const MODULES: Record<string, string[]> = {

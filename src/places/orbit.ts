@@ -66,7 +66,6 @@ export class Orbit implements Place {
     enter(s: Session) {
         this.session = s
         this.build(s)
-        this.stage.sky.show()
         this.stage.scene.add(this.world, this.plan)
         this.stage.view(new T.Vector3, 17 * U)
         this.stage.tilt(.05, .4)
