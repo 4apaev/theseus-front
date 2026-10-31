@@ -19,11 +19,14 @@ const BEDS: Record<string, number> = { port: 220, transit: 140, exchange: 420, h
  * the sounds of the client, made in the browser: no files. a cue plays
  * its notes; a place hums its bed of filtered noise, and the bed fades
  * to the next place's. the browser lets audio start only after the
- * player's first click: until then nothing plays. `on` mutes it all.
+ * player's first click: until then nothing plays. `on` mutes it all,
+ * `volume` (0 to 1) sets the level of it all.
  */
 export class Sounds {
     on = true
+    volume = 1
     private ctx?: AudioContext
+    private out?: GainNode
     private bed?: { filter: BiquadFilterNode, gain: GainNode }
     private place = ''
 
@@ -43,17 +46,20 @@ export class Sounds {
         const bed = this.bed, ctx = this.ctx
         if (!bed || !ctx) return
         const t = ctx.currentTime
+        this.out!.gain.setTargetAtTime(this.volume, t, .1)
         bed.filter.frequency.setTargetAtTime(BEDS[ place ] ?? 300, t, .6)
         bed.gain.gain.setTargetAtTime(this.on ? .035 : 0, t, .4)
     }
 
     private wake() {
         const ctx = this.ctx = new AudioContext
+        this.out = ctx.createGain()
+        this.out.connect(ctx.destination)
         const noise = ctx.createBufferSource(), filter = ctx.createBiquadFilter(), gain = ctx.createGain()
         noise.buffer = brown(ctx)
         noise.loop = true
         gain.gain.value = 0
-        noise.connect(filter).connect(gain).connect(ctx.destination)
+        noise.connect(filter).connect(gain).connect(this.out)
         noise.start()
         this.bed = { filter, gain }
         this.hum(this.place)
@@ -67,7 +73,7 @@ export class Sounds {
         gain.gain.setValueAtTime(0, at)
         gain.gain.linearRampToValueAtTime(.12, at + .01)
         gain.gain.exponentialRampToValueAtTime(.001, at + length)
-        osc.connect(gain).connect(ctx.destination)
+        osc.connect(gain).connect(this.out!)
         osc.start(at)
         osc.stop(at + length + .05)
     }

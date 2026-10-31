@@ -103,6 +103,12 @@ export function peerOf(s: Session, pid: string): TrafficRow | undefined {
     return sid ? s.traffic[ sid ] : void 0
 }
 
+/** a peer's name. a stranger shows a tag of their pid till the server sends handles (phase 4, 4.9). */
+export function peerName(s: Session, pid: string): string {
+    const t = peerOf(s, pid)
+    return t?.handle ?? t?.name ?? `pilot ${ pid.slice(-4) }`
+}
+
 export function pidOf(s: Session, sid: string): string | undefined {
     return Object.keys(s.peers).find(pid => s.peers[ pid ] === sid)
 }

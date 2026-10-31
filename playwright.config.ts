@@ -13,7 +13,8 @@ export default defineConfig({
     timeout      : 60_000,
     workers      : 1,
     reporter     : 'list',
-    expect       : { toHaveScreenshot: { maxDiffPixelRatio: .02 }},
+    // a pixel counts as changed past 5% colour distance: a new tint fails, webgl's noise passes
+    expect       : { toHaveScreenshot: { maxDiffPixelRatio: .02, threshold: .05 }},
     use          : { baseURL: 'http://localhost:5174', viewport: { width: 1280, height: 800 }},
     webServer    : { command: 'npm run dev', url: 'http://localhost:5174', reuseExistingServer: true },
 })

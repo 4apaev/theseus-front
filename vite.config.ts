@@ -24,4 +24,19 @@ export default defineConfig({
             },
         },
     },
+
+    // the libraries change less than the game: each has its own file, the browser keeps it
+    build: {
+        chunkSizeWarningLimit: 800,
+        rolldownOptions      : {
+            output: {
+                codeSplitting: {
+                    groups: [
+                        { name: 'three', test: /node_modules[\\/]three[\\/]/ },
+                        { name: 'lit',   test: /node_modules[\\/](lit|@lit|lit-html|lit-element)[\\/]/ },
+                    ],
+                },
+            },
+        },
+    },
 })

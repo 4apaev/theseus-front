@@ -115,6 +115,8 @@ main[data-toy] {
     }
 
     & kit-comms {
+        /* the panel sits darker than its messages, so each message stands out */
+        background: var(--toy-deep);
         top   : auto;
         width : 22rem;
         height: 45cqh;
@@ -130,7 +132,7 @@ main[data-toy] {
 
     & kit-select {
         & > button { color: var(--toy-cream); background: var(--toy-panel2); border: 0; border-radius: .375rem; box-shadow: var(--lip) }
-        & menu { background: var(--toy-panel); border: var(--block); border-radius: .5rem; box-shadow: var(--lip), 0 .75rem 1.5rem rgb(0 0 0 / .35) }
+        & menu { display: grid; gap: .125rem; background: var(--toy-panel); border: var(--block); border-radius: .5rem; box-shadow: var(--lip), 0 .75rem 1.5rem rgb(0 0 0 / .35) }
         & menu button { color: var(--toy-cream); border-radius: .25rem }
         & menu button:hover { background: var(--toy-panel2) }
         & menu button[aria-selected='true'] { color: var(--toy-ink); background: var(--toy-amber) }
@@ -179,6 +181,22 @@ main[data-toy] {
         }
         &:checked { background: var(--toy-green) }
         &:checked::after { translate: .875rem 0 }
+    }
+
+    /* a range is a track like the toggle's, with the same knob */
+    & input[type='range'] {
+        appearance   : none;
+        width        : 6rem;
+        height       : .5rem;
+        margin       : 0;
+        border-radius: 1rem;
+        background   : var(--toy-panel2);
+        box-shadow   : inset 0 .125rem 0 var(--toy-deep);
+        cursor       : pointer;
+
+        /* each engine drops a rule with the other's thumb in it: one rule each */
+        &::-webkit-slider-thumb { appearance: none; width: .875rem; height: .875rem; border-radius: 50%; background: var(--toy-cream); box-shadow: 0 .125rem 0 var(--toy-deep) }
+        &::-moz-range-thumb     { border: 0;        width: .875rem; height: .875rem; border-radius: 50%; background: var(--toy-cream); box-shadow: 0 .125rem 0 var(--toy-deep) }
     }
 }
 

@@ -1,5 +1,5 @@
 import { fixture  } from './content/fixtures.ts'
-import { palette  } from './content/palettes.ts'
+import { PALETTES, palette } from './content/palettes.ts'
 import { useSkin  } from './content/skins.ts'
 
 import { Fail          } from './core/util.ts'
@@ -9,7 +9,7 @@ import { FixtureClient } from './core/fixture.ts'
 
 import { Stage           } from './world/stage.ts'
 import { loads           } from './world/loader.ts'
-import { hex, usePalette } from './world/toy.ts'
+import { usePalette      } from './world/toy.ts'
 
 import { Bay      } from './places/bay.ts'
 import { Net      } from './places/net.ts'
@@ -41,7 +41,10 @@ const name   = query.get('fixture')
 const main   = document.querySelector('main') as HTMLElement
 const stage  = new Stage(main)
 const kit    = mount(main)
-const toy    = palette(query.get('theme'))
+const named  = query.get('theme') ?? settings.theme
+const toy    = palette(named)
+// space is one deep dark for every palette: a theme tints the toys, not the sky
+const SPACE  = 0x081020
 const sounds = new Sounds
 
 useSkin(settings.skin)
@@ -50,8 +53,8 @@ useSkin(settings.skin)
 if (import.meta.env.DEV) Object.assign(globalThis, { stage })
 
 // the palette, before the places: they read its colours
-theme(main, query.get('theme') ?? 'meadow', toy)
-stage.backdrop(hex(toy.space))
+theme(main, named, toy)
+stage.backdrop(SPACE)
 usePalette(toy)
 
 const client = name
@@ -86,7 +89,6 @@ router.onPlace   = place => {
 client.onNotify  = (text, kind) => kit.toast.say(text, kind === 'err')
 client.onAuth    = authed => kit.auth.hidden = authed
 
-kit.hud.addEventListener('logout', () => client.logout())
 kit.auth.addEventListener('auth', async e => {
     const { act, handle, password } = (e as CustomEvent<Record<string, string>>).detail
     Object.assign(kit.auth, { busy: true, error: void 0 })
@@ -110,30 +112,46 @@ client.boot()
 
 // ── settings and arrivals ────────────────────────────────────
 
-stage.calm = settings.calm
-sounds.on  = settings.sound
+stage.calm    = settings.calm
+sounds.on     = settings.sound
+sounds.volume = settings.volume
 
 kit.hud.addEventListener('settings', () => {
 
     const pick = (patch: Partial<typeof settings>) => {
         save(patch)
-        stage.calm = settings.calm
-        sounds.on  = settings.sound
+        stage.calm    = settings.calm
+        sounds.on     = settings.sound
+        sounds.volume = settings.volume
         sounds.hum(kit.hud.place ?? '')
     }
 
     const onChange = (e: Event) => {
         const f = e.currentTarget as HTMLFormElement
-        pick({ voice: f.voice.value, sound: f.sound.checked, calm: f.calm.checked })
+        pick({ voice: f.voice.value, sound: f.sound.checked, volume: f.volume.valueAsNumber, calm: f.calm.checked })
     }
 
-    const voice = [ '', ...Object.keys(voices).sort() ].map(v => ({ value: v, label: v || 'off' }))
+    // the 3D takes its colours as the models load: a new theme reloads the page
+    const recolour = (e: CustomEvent<string>) => {
+        save({ theme: e.detail })
+        if (e.detail === named) return
+        if (!query.has('theme')) return location.reload()
+        // the address picks a theme over the saved one: drop it, keep the rest
+        query.delete('theme')
+        location.replace(`${ location.pathname }${ query.size ? `?${ query }` : '' }${ location.hash }`)
+    }
+
+    const voice  = [ '', ...Object.keys(voices).sort() ].map(v => ({ value: v, label: v || 'off' }))
+    const themes = Object.keys(PALETTES).map(t => ({ value: t, label: t }))
 
     kit.card.show('settings', html`
         <form @change=${ onChange }>
             <label>voice <kit-select name="voice" .choices=${ voice } .value=${ settings.voice }></kit-select></label>
             <label>sounds      <input type="checkbox" name="sound" ?checked=${ settings.sound }></label>
+            <label>volume      <input type="range" name="volume" min="0" max="1" step=".05" .value=${ String(settings.volume) }></label>
             <label>calm motion <input type="checkbox" name="calm"  ?checked=${ settings.calm  }></label>
+            <label>theme <kit-select name="theme" .choices=${ themes } .value=${ named } @change=${ recolour }></kit-select></label>
+            <menu><button type="button" @click=${ () => client.logout() }>logout</button></menu>
         </form>`)
     void kit.card.updateComplete.then(() => kit.card.at = [ main.clientWidth, 60 ])
 })

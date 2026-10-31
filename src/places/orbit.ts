@@ -213,7 +213,7 @@ export class Orbit implements Place {
                 <dt>period</dt>    <dd>${ escapes ? '—' : span(period(c, MU) / (2 * Math.PI * Math.sqrt(R0 ** 3 / MU)) * 5400e3) }</dd>
             </dl>
             <p><small>drag the node round the orbit, and an arrow to burn: green ahead, red back, amber out, pink in. ${ s ? `round ${ station(s, s.ship?.stid)?.name ?? 'here' }` : '' }</small></p>
-            <menu><button @click=${ () => this.reset() }>reset</button><button @click=${ () => this.kit.toast.say('the server flies no maneuver yet') }>burn</button></menu>`, 'toy')
+            <menu><button @click=${ () => this.reset() }>reset</button><button @click=${ () => this.kit.toast.say('the server flies no maneuver yet') }>burn</button></menu>`)
         this.kit.card.at = [ this.stage.host.clientWidth - 24, 240 ]
     }
 

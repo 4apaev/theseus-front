@@ -19,7 +19,7 @@ import {
 
 import type { Row                            } from './transport/validate.ts'
 import { credits, fmtYears, fmtVel           } from './util.ts'
-import { goodName, stationName, mine, peerOf } from './session.ts'
+import { goodName, stationName, mine, peerName } from './session.ts'
 import type { Session, LogKind               } from './session.ts'
 
 export type Refresh = 'rig' | 'market' | 'traffic'
@@ -208,7 +208,7 @@ function who(s: Session, p: Row): string {
 function sender(s: Session, p: Row): string {
     const from = text(p, 'from')
     if (from === s.me?.pid) return 'you'
-    return peerOf(s, from)?.handle ?? 'a pilot'
+    return peerName(s, from)
 }
 
 /* incoming and outgoing say which of the 3 operations ran.
