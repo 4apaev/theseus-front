@@ -7,7 +7,6 @@
     ],
 
     "settings": {
-
         "files.exclude": {
             ".git"        : true,
             ".github"     : true,
