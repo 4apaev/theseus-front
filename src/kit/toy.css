@@ -70,24 +70,33 @@ main[data-toy] {
         & menu button { color: var(--toy-cream); background: none; border: 0; border-radius: .375rem }
         & menu button[data-on] { color: var(--toy-ink); background: var(--toy-amber); box-shadow: var(--lip) }
 
-        /* a group of goods: a panel with its kind on top */
-        & > ul > li { padding: .25rem; background: var(--toy-panel) }
-        & > ul > li > b { color: var(--toy-mist) }
+        /* a deck: a panel; its stack, small cards with a cream edge */
+        & > ul > li { background: var(--toy-panel) }
+        & > ul > li > button b { color: var(--toy-mist) }
+        & > ul > li > button i img { background: var(--toy-panel2); border: .125rem solid var(--toy-cream) }
+        & > ul > li[data-open] { outline: .125rem solid var(--toy-amber) }
 
-        & li li { flex: 0 0 calc(4.5rem * var(--zoom, 1)) }
-        & img   { width: calc(2rem * var(--zoom, 1)) }
-
-        /* the swell follows the pointer at once; it eases back when the pointer leaves */
-        & > ul:not(:hover) li li { transition: flex-basis .15s ease-out }
-        & > ul:not(:hover) img   { transition: width .15s ease-out }
-        & li button {
-            background: var(--toy-panel2);
-            box-shadow: var(--lip);
-            border-radius: .375rem;
-            border: 0;
+        /* a card of the fan: cream edged, a shadow under it */
+        & ol button {
+            background   : var(--toy-panel2);
+            border       : .1875rem solid var(--toy-cream);
+            border-radius: .5rem;
+            box-shadow   : var(--lip), 0 .5rem 1rem rgb(0 0 0 / .3);
         }
-        & li button:hover { outline: .125rem solid var(--toy-amber) }
+        & ol button:hover { border-color: var(--toy-amber) }
+        & ol data { color: var(--toy-amber) }
         & s { color: var(--toy-green) }
+    }
+
+    /* the trip: the stops in the palette, the bar a block */
+    & kit-trip {
+        & [data-start]  { fill: var(--toy-amber) }
+        & [data-passed] { fill: var(--toy-pink); stroke: var(--toy-amber); stroke-width: 5; stroke-linejoin: round }
+        & [data-next]   { fill: var(--toy-teal) }
+        & [data-end]    { fill: var(--toy-pink) }
+        & [data-halo]   { opacity: .3 }
+        & footer        { background: var(--toy-panel); border: var(--block); border-radius: .5rem; box-shadow: var(--lip) }
+        & s[data-passed] { background: var(--toy-pink) }
     }
 
     & kit-toast p { background: var(--toy-panel); border-color: var(--toy-green) }

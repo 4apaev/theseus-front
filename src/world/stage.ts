@@ -112,9 +112,9 @@ export class Stage {
         this.gl.setClearColor(raw(color))
     }
 
-    /** fly in 0.8 s to orbit `target`, `size` metres across, from the same side. */
-    focus(target: T.Vector3, size: number) {
-        const side = this.camera.position.clone().sub(this.orbit.target).normalize()
+    /** fly in 0.8 s to orbit `target`, `size` metres across, from the same side, turned `rad` round it. */
+    focus(target: T.Vector3, size: number, rad = 0) {
+        const side = this.camera.position.clone().sub(this.orbit.target).normalize().applyAxisAngle(new T.Vector3(0, 1, 0), rad)
         this.flight = {
             from: [ this.orbit.target.clone(), this.camera.position.clone() ],
             to  : [ target.clone(), target.clone().addScaledVector(side, size * 2.4) ],

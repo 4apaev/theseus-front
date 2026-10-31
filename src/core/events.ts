@@ -107,10 +107,11 @@ const folds: Record<string, FoldFn> = {
         const patch = { from: void 0, to: void 0, arrives: void 0, stid: text(p, 'stid'), status: 'docked' as const }
         if (!mine(s, p)) return keep(patchTraffic(s, text(p, 'sid'), patch))
         const next = patchShip(s, patch)
-        return keep({ ...next, course: next.course === patch.stid ? void 0 : next.course }, 'market', 'traffic')
+        const done = next.course === patch.stid
+        return keep({ ...next, course: done ? void 0 : next.course, origin: done ? void 0 : next.origin }, 'market', 'traffic')
     },
 
-    'ship.travel.rejected.v1': (s, p) => keep(mine(s, p) ? { ...s, course: void 0 } : s),
+    'ship.travel.rejected.v1': (s, p) => keep(mine(s, p) ? { ...s, course: void 0, origin: void 0 } : s),
 
     'ship.renamed.v1'(s, p) {
         const name = text(p, 'name')

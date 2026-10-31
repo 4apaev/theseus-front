@@ -16,72 +16,65 @@ export interface Tile {
 }
 
 /**
- * the goods on offer, by kind, and the modules in a list of their own.
- * the switch picks the side: a sale shows only what is aboard. each tile
- * shows its price for the side. a pick emits `pick` with the gid; the
- * place reads `side`. a good drags into the hold; a hold piece dropped
- * here emits `sell`. under the pointer the tiles swell, like the dock.
+ * the goods on offer as decks, one closed deck per kind, the modules
+ * last. a deck names its kind, its count and its lowest price. a hover,
+ * or a tap, fans it out; a card from the fan emits `pick` with the gid,
+ * and the place reads `side`. the switch picks the side: a sale shows
+ * only what is aboard. a card drags into the hold; a hold piece dropped
+ * here emits `sell`.
  */
 export class KitTray extends AppElement {
-    static properties = { tiles: { attribute: false }, side: {}}
+    static properties = { tiles: { attribute: false }, side: {}, open: { state: true }}
     declare tiles?: Tile[]
     declare side: Side
-    private readonly rest = new WeakMap<Element, { left: number, width: number }>
-    private readonly scrolled = new WeakMap<Element, number>
-    private readonly sizer = new ResizeObserver(() => this.updated())
+    declare open: string
 
     constructor() {
         super()
         this.side = 'buy'
+        this.open = ''
     }
 
-    override connectedCallback() {
-        super.connectedCallback()
-        this.sizer.observe(this)
-    }
-
-    override disconnectedCallback() {
-        super.disconnectedCallback()
-        this.sizer.disconnect()
-    }
-
+    // the open fan's half width, as the css lays it, kept inside the row of decks, and clear of the view's keys over its left end
     override updated() {
-        for (const list of this.querySelectorAll<HTMLElement>(':scope > ul')) more(list)
+        const row = this.querySelector(':scope > ul'), li = row?.querySelector<HTMLElement>(':scope > li[data-open]'), fan = li?.querySelector('ol')
+        if (!row || !li || !fan) return
+        const rem = parseFloat(getComputedStyle(document.documentElement).fontSize), n = fan.children.length, half = ((n - 1) * Math.min(4.75, 28 / n) / 2 + 3.25) * rem
+        const box = row.getBoundingClientRect(), r = li.getBoundingClientRect(), mid = r.left + r.width / 2
+        const left = box.left + rem + half - mid, right = mid + half - box.right
+        fan.style.setProperty('--shift', `${ left > 0 ? left : right > 0 ? -right : 0 }px`)
     }
 
     override render() {
         const shown = (this.tiles ?? []).filter(t => this.side === 'buy' || t.aboard > 0)
-        const modules = shown.filter(t => t.group === 'module')
+        const groups = [ ...new Set(shown.map(t => t.group)) ].sort((a, b) => +(a === 'module') - +(b === 'module'))
         return html`
             <menu>${ ([ 'buy', 'sell' ] as const).map(side => html`
                 <button ?data-on=${ side === this.side } @click=${ () => this.side = side }>${ side }</button>`) }
             </menu>
-            ${ this.list(shown.filter(t => t.group !== 'module'), this.side === 'buy' ? 'nothing on offer' : 'nothing aboard') }
-            ${ modules.length ? this.list(modules, '') : '' }`
-    }
-
-    // a list of groups, each a row of tiles
-    private list(tiles: Tile[], none: string) {
-        const groups = [ ...new Set(tiles.map(t => t.group)) ]
-        return html`
-            <ul
-                @dragover=${ (e: DragEvent) => e.preventDefault() }
-                @drop=${ (e: DragEvent) => this.drop(e) }
-                @pointerenter=${ this.measure }
-                @pointermove=${ this.swell }
-                @pointerleave=${ this.calm }
-                @scroll=${ (e: Event) => more(e.currentTarget as HTMLElement) }
-                @wheel=${ this.calm }>${ groups.map(g => html`
-                <li><b>${ g === 'module' ? 'modules' : g }</b><ul>${ tiles.filter(t => t.group === g).map(t => this.tile(t)) }</ul></li>`) }${ groups.length
-                    ? ''
-                    : html`<li><b>${ none }</b></li>`
-                }
+            <ul @dragover=${ (e: DragEvent) => e.preventDefault() } @drop=${ (e: DragEvent) => this.drop(e) }>${ groups.map(g => this.deck(g, shown.filter(t => t.group === g))) }${ groups.length
+                ? ''
+                : html`<li><b>${ this.side === 'buy' ? 'nothing on offer' : 'nothing aboard' }</b></li>` }
             </ul>`
     }
 
-    private tile(t: Tile) {
+    // a closed deck: its kind, its count, its lowest price, a stack of its first icons; its fan over it
+    private deck(group: string, tiles: Tile[]) {
+        const from = Math.min(...tiles.map(t => t.price[ this.side ]))
         return html`
-            <li>
+            <li style="--n: ${ tiles.length }" ?data-open=${ this.open === group } @pointerenter=${ (e: PointerEvent) => this.hover(e, group) } @pointerleave=${ (e: PointerEvent) => this.hover(e, '') }>
+                <button @click=${ (e: PointerEvent) => this.open = e.pointerType === 'mouse' || this.open !== group ? group : '' }>
+                    <b>${ group === 'module' ? 'modules' : group }</b>
+                    <small>${ tiles.length } ${ tiles.length > 1 ? 'goods' : 'good' } · from ${ credits(from, 0) }</small>
+                    <i>${ tiles.slice(0, 4).map(t => html`<img src=${ t.icon } alt="">`) }</i>
+                </button>
+                <ol>${ tiles.map((t, i) => this.card(t, i)) }</ol>
+            </li>`
+    }
+
+    private card(t: Tile, i: number) {
+        return html`
+            <li style="--i: ${ i }">
                 <button
                     value=${ t.gid }
                     draggable="true"
@@ -99,44 +92,9 @@ export class KitTray extends AppElement {
             </li>`
     }
 
-    // the tiles at rest, along their list, before they swell, and the list's scroll then
-    private readonly measure = (e: Event) => {
-        const list = e.currentTarget
-        if (!(list instanceof HTMLElement)) return
-        rest(list)
-        const left = list.getBoundingClientRect().left - list.scrollLeft
-        this.scrolled.set(list, list.scrollLeft)
-        for (const li of cells(list)) {
-            const r = li.getBoundingClientRect()
-            this.rest.set(li, { left: r.left - left, width: r.width })
-        }
-    }
-
-    /*
-        like the dock: the tile under the pointer swells, its neighbours less.
-        `--zoom` carries it to the css. the tiles left of the pointer grow
-        too; the list scrolls by their growth, so the point under the
-        pointer stays under it.
-    */
-    private readonly swell = (e: PointerEvent) => {
-        const list = e.currentTarget
-        if (!(list instanceof HTMLElement)) return
-        if (!this.scrolled.has(list)) this.measure(e)
-        const scrolled = this.scrolled.get(list) ?? 0, x = e.clientX - list.getBoundingClientRect().left + scrolled
-        let shift = 0
-        for (const li of cells(list)) {
-            const r = this.rest.get(li) ?? { left: x, width: 0 }
-            const z = 1 + .6 * Math.cos(Math.min(1, Math.abs(x - r.left - r.width / 2) / 160) * Math.PI / 2)
-            li.style.setProperty('--zoom', String(z))
-            shift += (z - 1) * Math.max(0, Math.min(r.width, x - r.left))
-        }
-        list.scrollLeft = scrolled + shift
-    }
-
-    private readonly calm = (e: Event) => {
-        if (!(e.currentTarget instanceof HTMLElement)) return
-        rest(e.currentTarget)
-        this.scrolled.delete(e.currentTarget)
+    // a mouse fans a deck as it comes over it, and closes it as it goes; a touch waits for the tap
+    private hover(e: PointerEvent, group: string) {
+        if (e.pointerType === 'mouse') this.open = group
     }
 
     private drop(e: DragEvent) {
@@ -145,24 +103,6 @@ export class KitTray extends AppElement {
     }
 }
 customElements.define('kit-tray', KitTray)
-
-// every tile of a list back to its size at rest
-function rest(list: HTMLElement) {
-    for (const li of cells(list))
-        li.style.removeProperty('--zoom')
-}
-
-// marks the edges of a list with tiles past them: the css fades them
-function more(list: HTMLElement) {
-    const left = list.scrollLeft > 1, right = list.scrollLeft + list.clientWidth < list.scrollWidth - 1
-    if (left || right) list.dataset.more = left && right ? 'both' : left ? 'left' : 'right'
-    else delete list.dataset.more
-}
-
-// a list's tiles, in order
-function cells(list: HTMLElement) {
-    return list.querySelectorAll<HTMLLIElement>('li li')
-}
 
 /** the station's quotes as tiles: a module apart, a good by its kind. */
 export function tilesOf(s: Session, busy: Map<string, number>): Tile[] {

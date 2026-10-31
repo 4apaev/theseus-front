@@ -11,8 +11,9 @@ export interface LogLine { kind: LogKind, text: string, time: string }
  * immutable: every change produces a new object, so lit re-renders.
  * `peers` maps a pid to a sid. the feed names players by pid and
  * traffic names ships by sid. a sent message teaches one pair.
- * `course` is the station the last travel command asked for. the
- * server flies hop by hop and does not publish the manifest.
+ * `course` is the station the last travel command asked for, `origin`
+ * the station it left from. the server flies hop by hop and does not
+ * publish the manifest.
  */
 export interface Session {
     me?      : Player
@@ -27,6 +28,7 @@ export interface Session {
     peers    : Record<string, string>
     log      : LogLine[]
     course?  : string
+    origin?  : string
 }
 
 const LOG_SIZE = 60

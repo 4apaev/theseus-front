@@ -13,7 +13,7 @@ import { toon, picture } from '../world/toy.ts'
 import { compose, fill } from './letters.ts'
 import type { Place } from './router.ts'
 
-interface Node { at: At, up?: string }
+interface Node { at: At, up?: string, wire?: At[] }
 interface Letter { m: MessageRow, way: At[], length: number, mesh: T.Object3D, el: KitMark }
 
 /**
@@ -22,7 +22,8 @@ interface Letter { m: MessageRow, way: At[], length: number, mesh: T.Object3D, e
  * it, 2 hops on a wider ring, each joined to the station it is reached
  * through. a letter in flight rides its way to the peer's station and
  * shows when it lands; a letter to an unknown place waits over here. the
- * comms panel lists the channel and the letters, and sends.
+ * comms panel lists the channel and the letters, and sends. a pick of a
+ * peer lights the way to its station, on the grid, and both stations.
  */
 export class Net implements Place {
     private readonly stage: Stage
@@ -33,8 +34,11 @@ export class Net implements Place {
     private marks: { at: T.Vector3, el: KitMark }[] = []
     private letters: Letter[] = []
     private untick?: () => void
+    private lit?: T.Group
+    private aimed?: string
     private drawn = ''
     private told = 0
+    private session?: Session
 
     constructor(stage: Stage, kit: Kit, client: GameClient, p: Palette) {
         this.stage = stage
@@ -42,6 +46,7 @@ export class Net implements Place {
         this.p     = p
         compose(kit, client)
         kit.view.addEventListener('turn', e => this.plane && stage.turn((e as CustomEvent<number>).detail * Math.PI / 8))
+        kit.comms.addEventListener('aim', e => this.aim((e as CustomEvent<string | undefined>).detail))
         kit.view.addEventListener('zoom', e => this.plane && stage.zoom((e as CustomEvent<number>).detail > 0 ? 1.25 : .8))
     }
 
@@ -52,9 +57,11 @@ export class Net implements Place {
     }
 
     sync(s: Session) {
+        this.session = s
         fill(this.kit, s)
         if (s.ship?.stid !== this.drawn) this.draw(s)
         this.post(s)
+        this.light(this.aimed)
     }
 
     leave() {
@@ -98,7 +105,9 @@ export class Net implements Place {
             kids.forEach((stid, i) => {
                 const kid = this.nodes.get(stid)?.at ?? at
                 const e = Math.round(kids.length > 1 ? -h + 2 * h * i / (kids.length - 1) : Math.max(-h, Math.min(h, kid[ m ] - at[ m ])))
-                this.plane?.route(wire(at, kid, e, [ up === this.drawn ? 1.5 : 1, 1 ]), [ up === this.drawn ? this.p.cream : this.p.teal, this.p.teal ], .12, 0)
+                const way = wire(at, kid, e, [ up === this.drawn ? 1.5 : 1, 1 ]), n = this.nodes.get(stid)
+                if (n) n.wire = way
+                this.plane?.route(way, [ up === this.drawn ? this.p.cream : this.p.teal, this.p.teal ], .12, 0)
             })
         }
     }
@@ -112,6 +121,30 @@ export class Net implements Place {
         const far = near.flatMap(up => next(up).filter(x => !this.nodes.has(x)).map(stid => ({ stid, up })))
             .filter((x, i, all) => all.findIndex(y => y.stid === x.stid) === i).slice(0, 8)
         far.forEach(({ stid, up }, i) => this.nodes.set(stid, { at: polar(7.4, (near.indexOf(up) + .5) / near.length + (i % 2 ? .04 : -.04)), up }))
+    }
+
+    // a pick lights the way, and the camera turns to see it from the side
+    private aim(sid?: string) {
+        const at = this.light(sid)
+        if (!at) return
+        const look = this.stage.camera.getWorldDirection(new T.Vector3), side = Math.atan2(-look.x, -look.z), way = Math.atan2(at[ 0 ], at[ 1 ])
+        const turn = [ way + Math.PI / 2, way - Math.PI / 2 ].map(a => Math.atan2(Math.sin(a - side), Math.cos(a - side))).sort((a, b) => Math.abs(a) - Math.abs(b))[ 0 ]
+        this.stage.focus(this.plane?.point([ at[ 0 ] / 2, at[ 1 ] / 2 ]) ?? new T.Vector3, (Math.hypot(...at) + 5) * CELL, turn)
+    }
+
+    // the way from here to the peer's station, along the wires, and the 2 stations lit; the station's cell, or none off the plane
+    private light(sid?: string): At | undefined {
+        this.aimed = sid
+        this.lit?.removeFromParent()
+        this.lit?.traverse(o => o instanceof T.Mesh && o.geometry.dispose())
+        this.lit = void 0
+        const stid = sid && this.session?.traffic[ sid ]?.stid, ways: At[][] = []
+        let n = stid ? this.nodes.get(stid) : void 0
+        if (!this.plane || !n) return
+        const at = n.at, tiles: [ At, number ][] = stid === this.drawn ? [[ at, 3 ]] : [[[ 0, 0 ], 3 ], [ at, 2 ]]
+        for (; n?.wire; n = n.up ? this.nodes.get(n.up) : void 0) ways.push(n.wire)
+        this.lit = this.plane.glow(ways, tiles, [ this.p.pink, this.p.amber ])
+        return at
     }
 
     // letters in flight: each rides from its sender's station to its reader's, through here
@@ -171,7 +204,7 @@ export class Net implements Place {
 
     private clear() {
         this.plane?.dispose()
-        this.plane = void 0
+        this.plane = this.lit = void 0
         this.nodes.clear()
         this.letters.forEach(l => l.el.remove())
         this.letters = []

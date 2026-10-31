@@ -21,6 +21,13 @@
       "to": "barnards.rama",
       "arrives": "+120s",
       "years_abs": "6.1"
+    },
+    {
+      "sid": "5a1d0000-0000-4000-8000-000000000004",
+      "name": "gray area",
+      "handle": "diziet",
+      "status": "docked",
+      "stid": "sol.venus"
     }
   ],
   "messages": [

@@ -79,6 +79,12 @@ export function countdown(ms: number) {
 }
 
 /** a real-time span, `12s`, `4m 10s`, `2h 05m`. */
+/** a time left as a clock: 3:45, or 1:02:09 past an hour. */
+export function clock(ms: number) {
+    const t = Math.max(0, Math.round(ms / 1000)), two = (n: number) => String(n).padStart(2, '0')
+    return t < 3600 ? `${ Math.floor(t / 60) }:${ two(t % 60) }` : `${ Math.floor(t / 3600) }:${ two(Math.floor(t % 3600 / 60)) }:${ two(t % 60) }`
+}
+
 export function span(ms: number) {
     const total = Math.max(0, Math.round(ms / 1000))
     if (total < 60) return `${ total }s`

@@ -75,6 +75,8 @@ export class FixtureClient extends GameClient {
             traffic : Object.fromEntries(parse.traffic(parse.list(r.traffic, rebase)).map(t => [ t.sid, t ])),
             messages: parse.messages(r.messages),
             trades  : parse.trades(r.trades),
+            course  : typeof r.course === 'string' ? r.course : void 0,
+            origin  : typeof r.origin === 'string' ? r.origin : void 0,
         })
         this.setStatus('online')
         this.land()

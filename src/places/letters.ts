@@ -12,10 +12,11 @@ export function compose(kit: Kit, client: GameClient) {
     })
 }
 
-/** the comms panel from the session: the channel here and the letters, oldest first, and who is docked here. */
+/** the comms panel from the session: the channel here and the letters, oldest first, and the pilots docked anywhere, here first. */
 export function fill(kit: Kit, s: Session) {
+    const here = dockedAt(s, s.ship?.stid), away = Object.values(s.traffic).filter(t => t.status === 'docked' && !here.includes(t))
     kit.comms.lines = lines(s, Date.now())
-    kit.comms.peers = dockedAt(s, s.ship?.stid).map(t => ({ sid: t.sid, name: t.handle ?? t.name }))
+    kit.comms.peers = [ ...here, ...away ].map(t => ({ sid: t.sid, name: t.handle ?? t.name }))
 }
 
 /**

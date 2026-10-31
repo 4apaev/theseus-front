@@ -8,6 +8,7 @@ import type { KitLog } from './log.ts'
 import type { KitMark } from './mark.ts'
 import type { KitToast } from './toast.ts'
 import type { KitTray } from './tray.ts'
+import type { KitTrip } from './trip.ts'
 import type { KitView } from './view.ts'
 import type { Palette } from '../content/palettes.ts'
 import './auth.ts'
@@ -21,14 +22,15 @@ import './select.ts'
 import './spot.ts'
 import './toast.ts'
 import './tray.ts'
+import './trip.ts'
 import './view.ts'
 import './kit.css'
 import './toy.css'
 
-export { previewRows, shipRows, visitorRows, voyageRows } from './ship.ts'
+export { previewRows, shipRows, visitorRows } from './ship.ts'
 
-/** the kit over one stage: the top line, one card, the toasts, the way in, a tray of goods, the hold, comms, the feed and its console, the keys of a plane, labels for places. */
-export interface Kit { hud: KitHud, card: KitCard, toast: KitToast, auth: KitAuth, tray: KitTray, hold: KitHold, comms: KitComms, log: KitLog, view: KitView, spot: (place: string) => KitSpot, mark: (name: string, value: string) => KitMark }
+/** the kit over one stage: the top line, one card, the toasts, the way in, a tray of goods, a trip under way, the hold, comms, the feed and its console, the keys of a plane, labels for places. */
+export interface Kit { hud: KitHud, card: KitCard, toast: KitToast, auth: KitAuth, tray: KitTray, trip: KitTrip, hold: KitHold, comms: KitComms, log: KitLog, view: KitView, spot: (place: string) => KitSpot, mark: (name: string, value: string) => KitMark }
 
 export function mount(host: HTMLElement): Kit {
     const kit = {
@@ -37,6 +39,7 @@ export function mount(host: HTMLElement): Kit {
         toast: document.createElement('kit-toast') as KitToast,
         auth : Object.assign(document.createElement('kit-auth') as KitAuth, { hidden: true }),
         tray : Object.assign(document.createElement('kit-tray') as KitTray, { hidden: true }),
+        trip : Object.assign(document.createElement('kit-trip') as KitTrip, { hidden: true }),
         hold : Object.assign(document.createElement('kit-hold') as KitHold, { hidden: true }),
         comms: Object.assign(document.createElement('kit-comms') as KitComms, { hidden: true }),
         log  : document.createElement('kit-log') as KitLog,
@@ -44,7 +47,7 @@ export function mount(host: HTMLElement): Kit {
         spot : (place: string) => host.appendChild(Object.assign(document.createElement('kit-spot') as KitSpot, { place })),
         mark : (name: string, value: string) => host.appendChild(Object.assign(document.createElement('kit-mark') as KitMark, { name, value })),
     }
-    host.append(kit.hud, kit.tray, kit.hold, kit.comms, kit.view, kit.card, kit.toast, kit.log, kit.auth)
+    host.append(kit.trip, kit.hud, kit.tray, kit.hold, kit.comms, kit.view, kit.card, kit.toast, kit.log, kit.auth)
     return kit
 }
 

@@ -8,7 +8,8 @@ export interface Peer { sid: string, name: string }
 /**
  * the comms panel: the station channel and the letters, oldest first,
  * then the composer. a letter in flight says so until it lands. send
- * emits `send` with `{ body, to }`; no `to` is the station channel.
+ * emits `send` with `{ body, to }`; no `to` is the station channel. a
+ * pick in "to" emits `aim` with the peer's sid, or none.
  */
 export class KitComms extends AppElement {
     static properties = { lines: { attribute: false }, peers: { attribute: false }}
@@ -23,7 +24,7 @@ export class KitComms extends AppElement {
                 <li ?data-letter=${ l.letter }><b>${ l.who }</b> <q>${ l.body }</q> <small>${ l.flying ? 'in flight' : l.when }</small></li>`) }${ none }
             </ol>
             <form @submit=${ this.send }>
-                <kit-select name="to" up aria-label="to" .choices=${ to }></kit-select>
+                <kit-select name="to" up aria-label="to" .choices=${ to } @change=${ (e: CustomEvent<string>) => emit(this, 'aim', e.detail || void 0) }></kit-select>
                 <textarea name="body" rows="2" required placeholder="a message"></textarea>
                 <button>send</button>
             </form>`

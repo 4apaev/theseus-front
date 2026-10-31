@@ -34,6 +34,21 @@ for (const place of PLACES) {
     })
 }
 
+test('a peer picked in comms lights the way to it', async ({ page }) => {
+    await open(page, '/?fixture=full#comms')
+    await page.getByRole('button', { name: 'station channel' }).click()
+    await page.getByRole('option', { name: 'letter → diziet' }).click()
+    await page.waitForTimeout(300)
+    await expect(page).toHaveScreenshot('comms-aim.png')
+})
+
+test('a deck of goods fans out under the pointer', async ({ page }) => {
+    await open(page, '/?fixture=full#exchange')
+    await page.locator('kit-tray > ul > li > button').first().hover()
+    await page.waitForTimeout(300)
+    await expect(page).toHaveScreenshot('exchange-fan.png')
+})
+
 test('the ship underway', async ({ page }) => {
     await open(page, '/?fixture=transit')
     await expect(page).toHaveScreenshot('transit.png')

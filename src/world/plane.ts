@@ -52,6 +52,25 @@ export class Plane {
         this.runs.push({ at, dots, length, speed })
     }
 
+    /** a lit way over the routes: fat lines along `ways` and filled tiles, `[ at, size ]`, in `line`, their floors in `fill`. the caller frees it. */
+    glow(ways: At[][], tiles: [ At, number ][], [ line, fill ]: [ string, string ]) {
+        const g = new T.Group, c = raw(hex(line)), w = .34
+        for (const at of ways) {
+            at.forEach((a, i) => {
+                if (i) g.add(bar([ at[ i - 1 ], a ], w, [ c, c ]))
+                g.add(joint(a, w / 2, c))
+            })
+        }
+        for (const [ at, n ] of tiles) {
+            const ring = rounded(n + .1, n + .1, n * .24)
+            ring.holes.push(rounded(n - .3, n - .3, n * .2, new T.Path))
+            g.add(laid(new T.Mesh(new T.ShapeGeometry(rounded(n, n, n * .22)), flat(fill, .85)), at, .005), laid(new T.Mesh(new T.ShapeGeometry(ring), flat(line)), at, .01))
+        }
+        g.position.y = .015
+        this.group.add(g)
+        return g
+    }
+
     /** frees what this plane made on the gpu: its geometry, a sprite's material. shared materials and pictures stay. */
     dispose() {
         this.group.removeFromParent()
@@ -76,10 +95,8 @@ export class Plane {
         this.rocks.forEach((m, i) => m.rotation.set(t * .05 * (i % 3 + 1), t * .07, 0))
     }
 
-    private lay(m: T.Mesh, [ x, z ]: At, y: number) {
-        m.rotation.x = -Math.PI / 2
-        m.position.set(x, y, z)
-        this.group.add(m)
+    private lay(m: T.Mesh, at: At, y: number) {
+        this.group.add(laid(m, at, y))
     }
 
     // rocks drift round the slab, low and high, none on it
@@ -106,6 +123,13 @@ export function rounded(w: number, h: number, r: number, path: T.Shape | T.Path 
     path.lineTo(-x, -y + r)
     path.quadraticCurveTo(-x, -y, -x + r, -y)
     return path as T.Shape
+}
+
+// a flat shape laid on the plane at a cell point, `y` over it
+function laid(m: T.Mesh, [ x, z ]: At, y: number) {
+    m.rotation.x = -Math.PI / 2
+    m.position.set(x, y, z)
+    return m
 }
 
 // the slab: a rounded block, its top at the plane

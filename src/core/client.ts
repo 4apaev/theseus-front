@@ -170,7 +170,7 @@ export class GameClient {
     async travel(to: string) {
         const { sid, stid } = this.needShip()
         await this.command('post', `/api/ship/${ sid }/travel`, { to, from: stid }, { label: `travel → ${ stationName(this.session, to) }` })
-        this.commit({ course: to })
+        this.commit({ course: to, origin: stid })
     }
 
     /** `skin` rides along; the server ignores it until it knows skins. */
